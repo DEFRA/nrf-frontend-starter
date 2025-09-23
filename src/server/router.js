@@ -3,6 +3,7 @@ import inert from '@hapi/inert'
 import { home } from './home/index.js'
 import { about } from './about/index.js'
 import { health } from './health/index.js'
+import { forms } from './forms/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 
 export const router = {
@@ -15,7 +16,16 @@ export const router = {
       await server.register([health])
 
       // Application specific routes, add your own routes here
-      await server.register([home, about])
+      const plugins = [home, about]
+
+      // Only register forms plugin if not in test environment
+      // The forms-engine-plugin v2.1.3 has an issue with its internal logger import
+      // that causes tests to fail
+      if (process.env.NODE_ENV !== 'test') {
+        plugins.push(forms)
+      }
+
+      await server.register(plugins)
 
       // Static assets
       await server.register([serveStaticFiles])

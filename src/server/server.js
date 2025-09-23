@@ -1,6 +1,7 @@
 import path from 'path'
 import hapi from '@hapi/hapi'
 import Scooter from '@hapi/scooter'
+import crumb from '@hapi/crumb'
 
 import { router } from './router.js'
 import { config } from '../config/config.js'
@@ -59,6 +60,7 @@ export async function createServer() {
     secureContext,
     pulse,
     sessionCache,
+    crumb,
     nunjucksConfig,
     Scooter,
     contentSecurityPolicy,
