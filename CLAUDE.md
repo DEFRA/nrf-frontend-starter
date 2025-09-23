@@ -1,5 +1,15 @@
 # DEFRA NRF Frontend Starter - Development Guide
 
+## ⚠️ CRITICAL: Code Quality Rules for AI Assistants
+
+**NEVER ADD OBVIOUS COMMENTS** - If a function is named `registerForm`, do NOT add a comment saying "// Register a form"
+
+- Function and variable names should be self-documenting
+- Only add comments to explain WHY, not WHAT
+- Bad: `// Register a form` above `registerForm()`
+- Bad: `// Form service` above `formService`
+- Good: Comments that explain complex business logic or workarounds
+
 ## Project Overview
 
 Core delivery platform Node.js Frontend Template for DEFRA services.
@@ -32,6 +42,23 @@ src/
 ```
 
 ## Coding Standards
+
+## Best Practices for AI-Assisted Development
+
+1. **Keep templates simple** - Use GOV.UK components where possible
+2. **Progressive enhancement** - HTML first, then add JS if needed
+3. **Follow GDS patterns** - Check design-system.service.gov.uk
+4. **Use semantic HTML** - For accessibility
+5. **Test with keyboard** - Ensure keyboard navigation works
+6. **Mobile-first** - Test responsive design
+7. **Write self-documenting code** - Clear names over comments
+
+### Self-Documenting Code
+
+- Write clear, descriptive variable and function names
+- Avoid comments that state the obvious
+- Use comments only when the "why" isn't clear from the code
+- Prefer refactoring unclear code over adding explanatory comments
 
 ### JavaScript/Node.js
 
@@ -347,9 +374,11 @@ export const forms = {
 
 ### Resources
 
-- Documentation: https://defra.github.io/forms-engine-plugin/
-- Example UI: https://github.com/DEFRA/forms-engine-plugin-example-ui
-- Main Repository: https://github.com/DEFRA/forms-engine-plugin
+- [Defra forms engine plugin](https://defra.github.io/forms-engine-plugin/)
+- [Defra forms engine plugin example UI](https://github.com/DEFRA/forms-engine-plugin-example-ui)
+- [GOV.UK Design System](https://design-system.service.gov.uk/)
+- [DEFRA GitHub](https://github.com/DEFRA)
+- [GDS Service Manual](https://www.gov.uk/service-manual)
 
 ## Development Best Practices
 
@@ -365,22 +394,9 @@ export const forms = {
 
 - Use meaningful commit messages
 - Run `npm run git:pre-commit-hook` before committing
-- Keep commits atomic and focused
-- Use conventional commits format when possible
-
-### Testing Strategy
-
-- Write tests for all new functionality
-- Maintain minimum 80% code coverage
-- Test edge cases and error scenarios
-- Use descriptive test names
-
-### Performance Considerations
-
-- Use caching appropriately
-- Implement proper error boundaries
-- Monitor memory usage
-- Use production builds for performance testing
+- Keep commits minimal and focused
+- Use conventional commits format when possible: https://www.conventionalcommits.org/en/v1.0.0/
+- Keep commit messages concise
 
 ## Environment Variables
 

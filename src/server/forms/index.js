@@ -39,24 +39,37 @@ export const forms = {
               path.resolve(dirname, '..')
             ]
           },
-          viewContext: (request) => ({
-            // Add any global view context here
-            appName: 'NRF Frontend Starter',
-            isProduction: process.env.NODE_ENV === 'production',
-            getAssetPath: (asset) => {
-              // Map the asset paths to match our webpack output
-              if (asset === 'stylesheets/application.scss') {
-                return '/public/stylesheets/application.css'
-              }
-              if (asset === 'application.js') {
-                return '/public/javascripts/application.js'
-              }
-              return `/public/${asset}`
-            },
-            serviceName: 'NRF Frontend Starter',
-            assetPath: '/public/assets',
-            manifestPath: '/public/assets/manifest.json'
-          }),
+          viewContext: (request) => {
+            return {
+              // Add any global view context here
+              appName: 'NRF Frontend Starter',
+              isProduction: process.env.NODE_ENV === 'production',
+              getAssetPath: (asset) => {
+                // Map the asset paths to match our webpack output
+                if (asset === 'stylesheets/application.scss') {
+                  return '/public/stylesheets/application.css'
+                }
+                if (asset === 'application.js') {
+                  return '/public/javascripts/application.js'
+                }
+                return `/public/${asset}`
+              },
+              serviceName: 'Nature Restoration Fund User Journey Prototypes',
+              serviceUrl: '/',
+              assetPath: '/public/assets',
+              manifestPath: '/public/assets/manifest.json',
+              breadcrumbs: [
+                {
+                  text: 'Home',
+                  href: '/'
+                },
+                {
+                  text: 'Contact form',
+                  href: '/contact-form'
+                }
+              ]
+            }
+          },
           baseUrl: process.env.BASE_URL || 'http://localhost:3000'
         }
       })
@@ -73,6 +86,17 @@ export const forms = {
             return h.view('forms/index', {
               pageTitle: 'Available Forms',
               heading: 'Available Forms',
+              serviceName: 'Nature Restoration Fund User Journey Prototypes',
+              serviceUrl: '/',
+              breadcrumbs: [
+                {
+                  text: 'Home',
+                  href: '/'
+                },
+                {
+                  text: 'Available Forms'
+                }
+              ],
               forms: [
                 {
                   slug: 'contact-form',

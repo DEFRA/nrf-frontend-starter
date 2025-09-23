@@ -1,34 +1,29 @@
 {% extends 'layouts/page.njk' %}
 
 {% block content %}
-  {{ appHeading({
-    text: heading,
-    caption: "nrf-frontend-starter"
-  }) }}
+  <h1 class="govuk-heading-xl">{{ heading }}</h1>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-body" data-testid="app-page-body">
-        <p>Welcome to the NRF Frontend Starter application with forms engine support.</p>
+  <p class="govuk-body">
+    This prototype contains different user journeys that will be trialled with stakeholders. Select a journey below to access the journey.
+  </p>
 
-        <h2 class="govuk-heading-m">Forms</h2>
-        <p>Try out our forms powered by the DEFRA Forms Engine:</p>
-
-        <div class="govuk-button-group">
-          <a href="/contact-form" class="govuk-button" data-module="govuk-button">
-            Contact Form
-          </a>
-          <a href="/forms" class="govuk-link">
-            View all forms
-          </a>
-        </div>
-
-        <h2 class="govuk-heading-m">Other Pages</h2>
-        <p>
-          <a href="/about" class="govuk-link">About this service</a>
-        </p>
-      </div>
-    </div>
-  </div>
+  <table class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">User Journey</th>
+        <th scope="col" class="govuk-table__header">Description</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">
+          <a href="/contact-form" class="govuk-link">Contact form</a>
+        </td>
+        <td class="govuk-table__cell">
+          Submit enquiries and get responses about the Nature Restoration Fund.
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
 {% endblock %}

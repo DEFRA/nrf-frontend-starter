@@ -5,8 +5,10 @@
 export const homeController = {
   handler(_request, h) {
     return h.view('home/index', {
-      pageTitle: 'Home',
-      heading: 'Home'
+      pageTitle: 'Examples',
+      heading: 'Examples',
+      serviceName: 'Nature Restoration Fund User Journey Prototypes',
+      serviceUrl: '/'
     })
   }
 }

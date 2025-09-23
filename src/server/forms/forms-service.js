@@ -1,10 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import Boom from '@hapi/boom'
 
-// Form metadata registry
 const formsRegistry = new Map()
-
-// Helper to create metadata for forms
 const createMetadata = (slug, title, organisation = 'Defra') => {
   const now = new Date()
   const user = { id: 'system', displayName: 'System' }
@@ -24,25 +21,22 @@ const createMetadata = (slug, title, organisation = 'Defra') => {
     teamName: 'Development Team',
     teamEmail: 'dev-team@defra.gov.uk',
     submissionGuidance: `
-We have received your contact form submission and will respond within 5 working days.
+## Form submitted successfully
 
-### Your submission details
+**Reference number: HDJ2123F**
 
-- A confirmation email has been sent to the address you provided
-- Please keep this page for your records
-- If you don't receive an email within 24 hours, please check your spam folder
+We have received your contact form and will respond within 5 working days.
 
-### Need urgent help?
+### What happens next
 
-If your query is urgent, you can:
-- Call us on **0345 600 3078** (Monday to Friday, 8am to 6pm)
-- Email **urgent@defra.gov.uk**
+We'll review your message and respond to the email address you provided.
 
-### What would you like to do next?
+**Important:** Check your spam folder if you don't receive a confirmation email within 24 hours.
 
-- [Return to homepage](/)
-- [Submit another form](/contact-form)
-- [View our help pages](https://www.gov.uk/government/organisations/department-for-environment-food-rural-affairs)
+### What would you like to do?
+
+* [Submit another enquiry](/contact-form)
+* [Return to examples page](/)
 `,
     notificationEmail: 'submissions@defra.gov.uk',
     ...author,
@@ -50,7 +44,6 @@ If your query is urgent, you can:
   }
 }
 
-// Register a form
 export const registerForm = (slug, definition) => {
   const metadata = createMetadata(slug, definition.name)
   formsRegistry.set(slug, {
@@ -60,7 +53,6 @@ export const registerForm = (slug, definition) => {
   return metadata
 }
 
-// Form submission service for handling form data
 export const formSubmissionService = {
   /**
    * Persist files (for file upload support)
@@ -126,7 +118,6 @@ export const formSubmissionService = {
   }
 }
 
-// Forms service implementation
 export const formsService = {
   /**
    * Get form metadata by slug
@@ -149,7 +140,7 @@ export const formsService = {
    * @param {string} formState - The form state (draft or live)
    * @returns {Promise<Object>} Form definition
    */
-  async getFormDefinition(id, formState = 'live') {
+  async getFormDefinition(id, _formState = 'live') {
     // Find form by metadata ID
     for (const form of formsRegistry.values()) {
       if (form.metadata.id === id) {
@@ -184,7 +175,6 @@ export const formsService = {
   }
 }
 
-// Initialize with a default contact form
 const contactFormDefinition = {
   engine: 'V2',
   name: 'Contact Form',
@@ -272,7 +262,6 @@ const contactFormDefinition = {
   conditions: []
 }
 
-// Output service for handling notifications
 export const outputService = {
   /**
    * Submit notification - matches the interface from notifyService.js
@@ -283,7 +272,7 @@ export const outputService = {
    * @param {Array} items - Form submission items
    * @param {Object} submitResponse - Response from formSubmissionService.submit()
    */
-  async submit(context, request, model, emailAddress, items, submitResponse) {
+  async submit(_context, request, model, emailAddress, items, submitResponse) {
     const logTags = ['submit', 'notification']
 
     request.logger.info(logTags, 'Processing output notification', {
@@ -351,5 +340,4 @@ export const outputService = {
   }
 }
 
-// Register the default contact form
 registerForm('contact-form', contactFormDefinition)
