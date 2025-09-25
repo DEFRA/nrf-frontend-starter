@@ -1,0 +1,82 @@
+{% extends 'layouts/edp-base.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{{ heading }}</h1>
+
+      <p class="govuk-body">
+        Manage and track your Environmental Development Plan applications.
+      </p>
+
+      <a href="/edp-calculator/new" class="govuk-button">
+        Submit a new application
+      </a>
+
+      {% if applications and applications.length > 0 %}
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Application ID</th>
+              <th scope="col" class="govuk-table__header">Date submitted</th>
+              <th scope="col" class="govuk-table__header">Development name</th>
+              <th scope="col" class="govuk-table__header">Status</th>
+              <th scope="col" class="govuk-table__header">Levy amount</th>
+              <th scope="col" class="govuk-table__header">Action</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for application in applications %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{{ application.id }}</td>
+                <td class="govuk-table__cell">{{ application.date }}</td>
+                <td class="govuk-table__cell">
+                  {{ application.name }}<br>
+                  <span class="govuk-body-s govuk-!-margin-top-1">{{ application.houses }}</span>
+                </td>
+                <td class="govuk-table__cell">
+                  {% if application.status == 'pending-payment' %}
+                    <strong class="govuk-tag govuk-tag--yellow">{{ application.statusText }}</strong>
+                  {% elif application.status == 'paid' %}
+                    <strong class="govuk-tag govuk-tag--green">{{ application.statusText }}</strong>
+                  {% elif application.status == 'approved' %}
+                    <strong class="govuk-tag govuk-tag--blue">{{ application.statusText }}</strong>
+                  {% else %}
+                    <strong class="govuk-tag">{{ application.statusText }}</strong>
+                  {% endif %}
+                </td>
+                <td class="govuk-table__cell">{{ application.levyAmount }}</td>
+                <td class="govuk-table__cell">
+                  {% if application.status == 'pending-payment' %}
+                    <a href="/edp-calculator/payment/{{ application.id }}" class="govuk-link">Make payment</a>
+                  {% else %}
+                    <a href="/edp-calculator/view/{{ application.id }}" class="govuk-link">View</a>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="govuk-body">You have no applications yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <aside class="govuk-!-padding-top-2">
+        <h2 class="govuk-heading-m">Related services</h2>
+        <ul class="govuk-list">
+          <li>
+            <a href="#" class="govuk-link">Planning permission guidance</a>
+          </li>
+          <li>
+            <a href="#" class="govuk-link">Environmental impact assessment</a>
+          </li>
+          <li>
+            <a href="#" class="govuk-link">Nature Restoration Fund</a>
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+{% endblock %}

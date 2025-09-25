@@ -1,0 +1,223 @@
+{% extends 'layouts/edp-form.njk' %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
+{% set backLink = { href: "/edp-calculator/details" } %}
+
+{% set progressSteps = [
+  { text: "Location", complete: true },
+  { text: "EDP check", complete: true },
+  { text: "Development details", complete: true },
+  { text: "Review quote", active: true },
+  { text: "Payment" }
+] %}
+
+{% set helpContent = {
+  title: "What happens next",
+  content: '
+    <p class="govuk-body-s">After you submit your application:</p>
+    <ol class="govuk-list govuk-list--number govuk-body-s">
+      <li>You\'ll receive a reference number</li>
+      <li>We\'ll send you payment instructions</li>
+      <li>Once paid, you\'ll receive confirmation</li>
+      <li>Your EDP certificate will be issued</li>
+    </ol>
+  '
+} %}
+
+{% block formContent %}
+      <h1 class="govuk-heading-l">{{ heading }}</h1>
+
+      <h2 class="govuk-heading-m">Development location</h2>
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Location method"
+            },
+            value: {
+              text: locationMethod | replace("-", " ") | title if locationMethod else "Not provided"
+            },
+            actions: {
+              items: [
+                {
+                  href: "/edp-calculator/location",
+                  text: "Change",
+                  visuallyHiddenText: "location method"
+                }
+              ]
+            }
+          } if locationMethod,
+          {
+            key: {
+              text: "Postcode"
+            },
+            value: {
+              text: postcode if postcode else "Not provided"
+            },
+            actions: {
+              items: [
+                {
+                  href: "/edp-calculator/enter-postcode",
+                  text: "Change",
+                  visuallyHiddenText: "postcode"
+                }
+              ]
+            }
+          } if postcode,
+          {
+            key: {
+              text: "Coordinates"
+            },
+            value: {
+              text: "Lat: " + coordinates.latitude + ", Long: " + coordinates.longitude if coordinates else "Not provided"
+            },
+            actions: {
+              items: [
+                {
+                  href: "/edp-calculator/enter-coordinates",
+                  text: "Change",
+                  visuallyHiddenText: "coordinates"
+                }
+              ]
+            }
+          } if coordinates
+        ] | selectattr('key')
+      }) }}
+
+      <h2 class="govuk-heading-m">Development details</h2>
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Development name"
+            },
+            value: {
+              text: details.developmentName if details.developmentName else "Not provided"
+            },
+            actions: {
+              items: [
+                {
+                  href: "/edp-calculator/details",
+                  text: "Change",
+                  visuallyHiddenText: "development name"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Number of houses"
+            },
+            value: {
+              text: details.housesCount if details.housesCount else "0"
+            },
+            actions: {
+              items: [
+                {
+                  href: "/edp-calculator/details",
+                  text: "Change",
+                  visuallyHiddenText: "number of houses"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Development type"
+            },
+            value: {
+              text: details.developmentType | replace("-", " ") | title if details.developmentType else "Not selected"
+            },
+            actions: {
+              items: [
+                {
+                  href: "/edp-calculator/details",
+                  text: "Change",
+                  visuallyHiddenText: "development type"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Wastewater treatment site"
+            },
+            value: {
+              text: "Regional Treatment Works" if details.wastewaterSite else "Not selected"
+            },
+            actions: {
+              items: [
+                {
+                  href: "/edp-calculator/details",
+                  text: "Change",
+                  visuallyHiddenText: "wastewater treatment site"
+                }
+              ]
+            }
+          }
+        ]
+      }) }}
+
+      <h2 class="govuk-heading-m">Environmental levy calculation</h2>
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "EDP boundaries"
+            },
+            value: {
+              html: '<strong class="govuk-tag govuk-tag--green">Within EDP area</strong>'
+            }
+          },
+          {
+            key: {
+              text: "Base levy per unit"
+            },
+            value: {
+              text: "£2,500.00"
+            }
+          },
+          {
+            key: {
+              text: "Number of units"
+            },
+            value: {
+              text: details.housesCount if details.housesCount else "0"
+            }
+          },
+          {
+            key: {
+              text: "Total levy amount",
+              classes: "govuk-!-font-weight-bold"
+            },
+            value: {
+              html: '<span class="govuk-!-font-weight-bold govuk-!-font-size-24">' + levyAmount + '</span>'
+            }
+          }
+        ]
+      }) }}
+
+      {{ govukWarningText({
+        text: "By submitting this application, you agree to pay the calculated environmental levy before development begins.",
+        iconFallbackText: "Warning"
+      }) }}
+
+      <form method="POST" novalidate>
+        <input type="hidden" name="crumb" value="{{ crumb }}">
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Submit application",
+            type: "submit"
+          }) }}
+          {{ govukButton({
+            text: "Cancel",
+            classes: "govuk-button--secondary",
+            href: "/edp-calculator/applications"
+          }) }}
+        </div>
+      </form>
+{% endblock %}

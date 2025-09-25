@@ -4,6 +4,7 @@ import { home } from './home/index.js'
 import { about } from './about/index.js'
 import { health } from './health/index.js'
 import { forms } from './forms/index.js'
+import { edpCalculator } from './forms/edp-calculator/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 
 export const router = {
@@ -16,7 +17,7 @@ export const router = {
       await server.register([health])
 
       // Application specific routes, add your own routes here
-      const plugins = [home, about]
+      const plugins = [home, about, edpCalculator]
 
       // Only register forms plugin if not in test environment
       // The forms-engine-plugin v2.1.3 has an issue with its internal logger import
