@@ -40,6 +40,9 @@ export const forms = {
             ]
           },
           viewContext: (request) => {
+            // Check if this is an EDP levy form
+            const isEdpLevy = request.path.includes('edp-levy')
+
             return {
               // Add any global view context here
               appName: 'NRF Frontend Starter',
@@ -58,16 +61,19 @@ export const forms = {
               serviceUrl: '/',
               assetPath: '/public/assets',
               manifestPath: '/public/assets/manifest.json',
-              breadcrumbs: [
-                {
-                  text: 'Home',
-                  href: '/'
-                },
-                {
-                  text: 'Contact form',
-                  href: '/contact-form'
-                }
-              ]
+              // Only show breadcrumbs for contact form, not EDP levy
+              breadcrumbs: isEdpLevy
+                ? []
+                : [
+                    {
+                      text: 'Home',
+                      href: '/'
+                    },
+                    {
+                      text: 'Contact form',
+                      href: '/contact-form'
+                    }
+                  ]
             }
           },
           baseUrl: process.env.BASE_URL || 'http://localhost:3000'

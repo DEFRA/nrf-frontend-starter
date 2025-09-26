@@ -1,0 +1,93 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">
+          Application submitted
+        </h1>
+        <div class="govuk-panel__body">
+          Your reference number<br>
+          <strong>{{ application.id }}</strong>
+        </div>
+      </div>
+
+      <p class="govuk-body">We have sent a confirmation email with your application details.</p>
+
+      <h2 class="govuk-heading-m">What happens next</h2>
+
+      <p class="govuk-body">
+        Your Environmental Development Plan levy application has been submitted successfully.
+      </p>
+
+      <p class="govuk-body">
+        The levy amount for your development is:
+      </p>
+
+      <div class="govuk-inset-text">
+        <p class="govuk-heading-l govuk-!-margin-bottom-1">{{ application.levyAmount }}</p>
+        <p class="govuk-body-s">Due within 30 days</p>
+      </div>
+
+      <h2 class="govuk-heading-m">Payment instructions</h2>
+
+      <p class="govuk-body">
+        You'll receive payment instructions by email within 2 working days. Payment must be made before development work begins.
+      </p>
+
+      <p class="govuk-body">You can pay by:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>Bank transfer (BACS)</li>
+        <li>Debit or credit card online</li>
+        <li>Cheque (allow 5 working days for processing)</li>
+      </ul>
+
+      <h2 class="govuk-heading-m">Your EDP certificate</h2>
+
+      <p class="govuk-body">
+        Once payment is received, we'll issue your Environmental Development Plan certificate. This must be displayed at your development site.
+      </p>
+
+      <div class="govuk-button-group">
+        <a href="#" class="govuk-button">Make payment now</a>
+        <a href="/edp-levy/applications" class="govuk-button govuk-button--secondary">View all applications</a>
+      </div>
+
+      <p class="govuk-body">
+        <a href="#" class="govuk-link">Download application summary (PDF)</a>
+      </p>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <aside class="govuk-!-margin-top-5">
+        <h2 class="govuk-heading-s">Application details</h2>
+        <dl class="govuk-summary-list govuk-summary-list--no-border">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Reference</dt>
+            <dd class="govuk-summary-list__value">{{ application.id }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Date submitted</dt>
+            <dd class="govuk-summary-list__value">{{ application.date }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Development</dt>
+            <dd class="govuk-summary-list__value">{{ application.name }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Houses</dt>
+            <dd class="govuk-summary-list__value">{{ application.houses }}</dd>
+          </div>
+        </dl>
+
+        <h3 class="govuk-heading-s govuk-!-margin-top-4">Need help?</h3>
+        <ul class="govuk-list">
+          <li><a href="#" class="govuk-link">Contact support</a></li>
+          <li><a href="#" class="govuk-link">Payment help</a></li>
+          <li><a href="#" class="govuk-link">FAQs</a></li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+{% endblock %}

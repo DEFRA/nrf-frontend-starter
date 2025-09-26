@@ -1,6 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import Boom from '@hapi/boom'
 
+import { contactDefinition } from './basic/contact/definition.js'
+import { conditionalRoutingDemoDefinition } from './basic/conditional/definition.js'
+import { edpLevyDefinition } from './advanced/edp-levy/definition.js'
+
 const formsRegistry = new Map()
 const createMetadata = (slug, title, organisation = 'Defra') => {
   const now = new Date()
@@ -76,8 +80,9 @@ export const formSubmissionService = {
    *     main: Array<{name: string, title: string, value: any}>,
    *     repeaters: Array<{name: string, title: string, value: Array}>
    *   }
+   * @param {Object} request - Hapi request object (for session access)
    */
-  async submit(data) {
+  async submit(data, request) {
     console.log('Form submission received:', JSON.stringify(data, null, 2))
 
     // Validate that we have the expected data structure
@@ -92,22 +97,64 @@ export const formSubmissionService = {
       )
     }
 
-    // In a real application, you would:
-    // 1. Validate the data against the form schema
-    // 2. Save to database with proper error handling
-    // 3. Send email notifications
-    // 4. Integrate with other services
-    // 5. Return proper response structure
-
     // Generate a reference number
+    const appId = `APP-${Date.now().toString().slice(-3)}`
     const reference = `REF-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
 
     console.log(`Form submitted successfully with reference: ${reference}`)
+
+    // For EDP Levy form, save to session for persistence
+    if (data.retrievalKey && data.retrievalKey.includes('edp-levy')) {
+      // Extract form data
+      const formData = {}
+      if (data.main && Array.isArray(data.main)) {
+        data.main.forEach((item) => {
+          formData[item.name] = item.value
+        })
+      }
+
+      // Calculate levy amount based on number of houses
+      const houses = parseInt(formData.numberOfHouses) || 100
+      const levyPerHouse = 2500 // £2,500 per house as shown in screenshot
+      const levyAmount = houses * levyPerHouse
+
+      // Create application object
+      const application = {
+        id: appId,
+        date: new Date().toLocaleDateString('en-GB'),
+        name: formData.developmentName || 'New Development',
+        houses: `${houses} houses`,
+        status:
+          formData.paymentChoice === 'pay-now'
+            ? 'pending-payment'
+            : 'submitted',
+        statusText:
+          formData.paymentChoice === 'pay-now'
+            ? 'Pending Payment'
+            : 'Submitted',
+        levyAmount: `£${levyAmount.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      }
+
+      // Get existing applications from session
+      if (request && request.yar) {
+        const existingApplications =
+          request.yar.get('edpLevyApplications') || []
+
+        // Add new application to the beginning of the list
+        existingApplications.unshift(application)
+
+        // Save back to session
+        request.yar.set('edpLevyApplications', existingApplications)
+
+        console.log('Application saved to session:', application)
+      }
+    }
 
     // Return the response structure expected by the plugin
     return {
       id: randomUUID(),
       reference,
+      appId,
       sessionId: data.sessionId,
       retrievalKey: data.retrievalKey,
       submittedAt: new Date().toISOString(),
@@ -175,93 +222,6 @@ export const formsService = {
   }
 }
 
-const contactFormDefinition = {
-  engine: 'V2',
-  name: 'Contact Form',
-  pages: [
-    {
-      title: 'Contact Us',
-      path: '/contact',
-      components: [
-        {
-          name: 'fullName',
-          title: 'Full name',
-          type: 'TextField',
-          options: {
-            classes: 'govuk-input--width-20'
-          },
-          schema: {
-            min: 2,
-            max: 100
-          },
-          validation: {
-            required: true
-          }
-        },
-        {
-          name: 'email',
-          title: 'Email address',
-          type: 'EmailAddressField',
-          hint: "We'll use this to contact you",
-          options: {},
-          schema: {},
-          validation: {
-            required: true
-          }
-        },
-        {
-          name: 'subject',
-          title: 'Subject',
-          type: 'TextField',
-          options: {
-            classes: 'govuk-input--width-30'
-          },
-          schema: {
-            max: 200
-          },
-          validation: {
-            required: true
-          }
-        },
-        {
-          name: 'message',
-          title: 'Message',
-          type: 'MultilineTextField',
-          hint: 'Please provide as much detail as possible',
-          options: {
-            rows: 8
-          },
-          schema: {
-            max: 2000
-          },
-          validation: {
-            required: true
-          }
-        }
-      ],
-      next: [
-        {
-          path: '/summary'
-        }
-      ]
-    },
-    {
-      path: '/summary',
-      title: 'Check your answers',
-      controller: 'SummaryPageController',
-      components: [],
-      next: [
-        {
-          path: '/status'
-        }
-      ]
-    }
-  ],
-  lists: [],
-  sections: [],
-  conditions: []
-}
-
 export const outputService = {
   /**
    * Submit notification - matches the interface from notifyService.js
@@ -308,6 +268,60 @@ export const outputService = {
 
       console.log('=====================================\n')
 
+      // For EDP Levy form, save to session for persistence
+      if (model.name === 'EDP Levy Calculator' && request.yar) {
+        // Extract form data from submitResponse
+        const formData = {}
+        if (submitResponse.main && Array.isArray(submitResponse.main)) {
+          submitResponse.main.forEach((item) => {
+            // Use the field name as key
+            formData[item.name] = item.value
+          })
+        }
+
+        console.log('Form data extracted from submitResponse:', formData)
+
+        // For V1 forms, check the session under the form ID
+        const formId = 'aaaa1111-bbbb-2222-cccc-333344445555'
+        const formState = request.yar.get(formId) || {}
+
+        console.log('V1 Form state from session:', formState)
+
+        // Use the actual field names from the form
+        const numberOfHouses =
+          formData.numberOfHouses || formState.numberOfHouses || 100
+        const developmentName =
+          formData.developmentName ||
+          formState.developmentName ||
+          'New Development'
+
+        // Create application object
+        const application = {
+          id: `APP-${String(Math.floor(Math.random() * 10000)).padStart(3, '0')}`,
+          date: new Date().toLocaleDateString('en-GB'),
+          name: developmentName,
+          houses: `${numberOfHouses} houses`,
+          status: 'pending-payment',
+          statusText: 'Pending Payment',
+          levyAmount: '£85,000.00'
+        }
+
+        // Get existing applications from session
+        const existingApplications =
+          request.yar.get('edpLevyApplications') || []
+
+        // Add new application to the beginning of the list
+        existingApplications.unshift(application)
+
+        // Save back to session
+        request.yar.set('edpLevyApplications', existingApplications)
+
+        console.log(
+          'Application saved to session via outputService:',
+          application
+        )
+      }
+
       // In a real application, you would:
       // 1. Send email notification using GOV.UK Notify or similar service
       // 2. Format the submission data appropriately
@@ -340,4 +354,27 @@ export const outputService = {
   }
 }
 
-registerForm('contact-form', contactFormDefinition)
+const contactMetadata = createMetadata('contact', contactDefinition.name)
+contactMetadata.id = 'contact-form-uuid-1234-5678-90ab-cdef12345678'
+formsRegistry.set('contact', {
+  metadata: contactMetadata,
+  definition: contactDefinition
+})
+
+const edpLevyMetadata = createMetadata('edp-levy', edpLevyDefinition.name)
+edpLevyMetadata.id = 'aaaa1111-bbbb-2222-cccc-333344445555'
+edpLevyMetadata.notificationEmail = 'edp-levy@defra.gov.uk'
+formsRegistry.set('edp-levy', {
+  metadata: edpLevyMetadata,
+  definition: edpLevyDefinition
+})
+
+const conditionalRoutingMetadata = createMetadata(
+  'conditional-routing',
+  conditionalRoutingDemoDefinition.name
+)
+conditionalRoutingMetadata.id = 'dddd4444-eeee-5555-ffff-666677778888'
+formsRegistry.set('conditional-routing', {
+  metadata: conditionalRoutingMetadata,
+  definition: conditionalRoutingDemoDefinition
+})

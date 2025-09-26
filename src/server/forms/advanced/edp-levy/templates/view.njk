@@ -1,0 +1,174 @@
+{% extends 'layouts/page.njk' %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/edp-levy/applications"
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{{ heading }}</h1>
+
+      <h2 class="govuk-heading-m">Application {{ application.id }}</h2>
+
+      <p class="govuk-body-l">
+        Status:
+        {% if application.status == 'pending-payment' %}
+          {{ govukTag({
+            text: application.statusText,
+            classes: "govuk-tag--yellow"
+          }) }}
+        {% elif application.status == 'paid' %}
+          {{ govukTag({
+            text: application.statusText,
+            classes: "govuk-tag--green"
+          }) }}
+        {% elif application.status == 'approved' %}
+          {{ govukTag({
+            text: application.statusText,
+            classes: "govuk-tag--blue"
+          }) }}
+        {% else %}
+          {{ govukTag({
+            text: application.statusText
+          }) }}
+        {% endif %}
+      </p>
+
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Application reference"
+            },
+            value: {
+              text: application.id
+            }
+          },
+          {
+            key: {
+              text: "Date submitted"
+            },
+            value: {
+              text: application.date
+            }
+          },
+          {
+            key: {
+              text: "Development name"
+            },
+            value: {
+              text: application.name
+            }
+          },
+          {
+            key: {
+              text: "Number of houses"
+            },
+            value: {
+              text: application.houses
+            }
+          },
+          {
+            key: {
+              text: "Environmental levy amount"
+            },
+            value: {
+              html: '<span class="govuk-!-font-weight-bold">' + application.levyAmount + '</span>'
+            }
+          }
+        ]
+      }) }}
+
+      <h2 class="govuk-heading-m">Environmental Development Plans</h2>
+
+      <p class="govuk-body">
+        This development falls within the following Environmental Development Plan boundaries:
+      </p>
+
+      <ul class="govuk-list govuk-list--bullet">
+        <li>District Level Licensing (DLL) - Great Crested Newts</li>
+        <li>Nutrient Mitigation - Nitrogen reduction</li>
+      </ul>
+
+      <h2 class="govuk-heading-m">Documents</h2>
+
+      <ul class="govuk-list">
+        <li>
+          <a href="#" class="govuk-link">Application form (PDF, 245KB)</a>
+        </li>
+        <li>
+          <a href="#" class="govuk-link">Site boundary map (PDF, 1.2MB)</a>
+        </li>
+        <li>
+          <a href="#" class="govuk-link">Environmental impact assessment (PDF, 456KB)</a>
+        </li>
+      </ul>
+
+      {% if application.status == 'pending-payment' %}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Make payment",
+            href: "/edp-levy/payment"
+          }) }}
+          {{ govukButton({
+            text: "Download invoice",
+            classes: "govuk-button--secondary",
+            href: "#"
+          }) }}
+        </div>
+      {% elif application.status == 'paid' %}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Download certificate",
+            href: "#"
+          }) }}
+          {{ govukButton({
+            text: "Download receipt",
+            classes: "govuk-button--secondary",
+            href: "#"
+          }) }}
+        </div>
+      {% endif %}
+
+      <p class="govuk-body">
+        <a href="/edp-levy/applications" class="govuk-link">Return to applications</a>
+      </p>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <aside class="govuk-!-padding-top-2">
+        <h3 class="govuk-heading-s">Need help?</h3>
+        <ul class="govuk-list govuk-body-s">
+          <li>
+            <a href="#" class="govuk-link">Contact support</a>
+          </li>
+          <li>
+            <a href="#" class="govuk-link">Payment help</a>
+          </li>
+          <li>
+            <a href="#" class="govuk-link">FAQs</a>
+          </li>
+        </ul>
+
+        {% if application.status == 'pending-payment' %}
+          <h3 class="govuk-heading-s govuk-!-margin-top-4">Payment due</h3>
+          <p class="govuk-body-s">
+            Your environmental levy payment of <strong>{{ application.levyAmount }}</strong> is due within 30 days of application submission.
+          </p>
+          <p class="govuk-body-s">
+            Late payment may delay your development approval.
+          </p>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+{% endblock %}
