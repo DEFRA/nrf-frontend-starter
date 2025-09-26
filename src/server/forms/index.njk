@@ -1,0 +1,26 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  {{ appHeading({
+    text: heading,
+    caption: "Available forms and applications"
+  }) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-body">
+        <p>Select a form from the list below to get started.</p>
+
+        {% for form in forms %}
+        <div class="govuk-!-margin-bottom-6">
+          <h2 class="govuk-heading-m">{{ form.title }}</h2>
+          <p class="govuk-body">{{ form.description }}</p>
+          <a href="/{{ form.slug }}" class="govuk-button" data-module="govuk-button">
+            Start form
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

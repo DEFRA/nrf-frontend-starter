@@ -1,0 +1,95 @@
+{% extends 'layouts/edp-form.njk' %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% set backLink = { href: "/edp-calculator/new" } %}
+
+{% set progressSteps = [
+  { text: "Location - You are here", active: true },
+  { text: "EDP check" },
+  { text: "Additional details" },
+  { text: "Review quote" },
+  { text: "Payment" }
+] %}
+
+{% set helpContent = {
+  title: "Need help?",
+  content: '
+    <p class="govuk-body-s">If you\'re unsure which method to use:</p>
+    <ul class="govuk-list govuk-body-s">
+      <li><strong>File upload</strong> - Best if you have a digital boundary file from your planning application</li>
+      <li><strong>Coordinates</strong> - Best if you have a GPS reading of your central point or survey coordinates</li>
+      <li><strong>Postcode</strong> - Best if you have a general location but need to define the exact boundary on a map</li>
+      <li><strong>Draw on map</strong> - Best if you want to define the boundary visually</li>
+    </ul>
+  '
+} %}
+
+{% block formContent %}
+      {% include 'partials/error-summary.njk' %}
+
+      <h1 class="govuk-heading-l">{{ heading }}</h1>
+
+      <p class="govuk-body">
+        Choose the method that works best for you. You can upload a file with your development boundary, enter a postcode, provide coordinates, or draw on a map.
+      </p>
+
+      <form method="POST" novalidate>
+        <input type="hidden" name="crumb" value="{{ crumb }}">
+        {{ govukRadios({
+          id: "location-method",
+          name: "locationMethod",
+          errorMessage: errors[0] if errors and errors[0].href == '#location-method' else null,
+          fieldset: {
+            legend: {
+              text: "Select your preferred method",
+              isPageHeading: false,
+              classes: "govuk-visually-hidden"
+            }
+          },
+          items: [
+            {
+              value: "upload",
+              text: "Upload a boundary file",
+              hint: {
+                text: "Upload a shape file (.shp), KML file (.kml), or GeoJSON file (.geojson) containing your development boundary"
+              },
+              checked: locationMethod == "upload"
+            },
+            {
+              value: "postcode",
+              text: "Enter a postcode",
+              hint: {
+                text: "Enter the postcode of your development site and area file boundary on a map"
+              },
+              checked: locationMethod == "postcode"
+            },
+            {
+              value: "coordinates",
+              text: "Enter coordinates",
+              hint: {
+                text: "Enter the latitude and longitude coordinates of your development site and area file boundary on a map"
+              },
+              checked: locationMethod == "coordinates"
+            },
+            {
+              value: "draw",
+              text: "Draw on a map",
+              hint: {
+                text: "Draw on map outline map to locate and draw your development boundary"
+              },
+              checked: locationMethod == "draw"
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit"
+          }) }}
+        </div>
+      </form>
+{% endblock %}

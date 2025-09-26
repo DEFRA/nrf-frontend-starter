@@ -1,0 +1,19 @@
+<aside class="govuk-!-padding-top-2" aria-label="Help information">
+  {% if helpContent %}
+    <h2 class="govuk-heading-s">{{ helpContent.title }}</h2>
+    {{ helpContent.content | safe }}
+  {% endif %}
+
+  {% if contactInfo %}
+    <div class="govuk-!-margin-top-6">
+      <h3 class="govuk-heading-s">Need help?</h3>
+      <p class="govuk-body-s">
+        Contact our support team:<br>
+        <a href="tel:{{ contactInfo.phone | default('0300 123 4567') }}" class="govuk-link">
+          {{ contactInfo.phone | default('0300 123 4567') }}
+        </a><br>
+        Monday to Friday, 9am to 5pm
+      </p>
+    </div>
+  {% endif %}
+</aside>

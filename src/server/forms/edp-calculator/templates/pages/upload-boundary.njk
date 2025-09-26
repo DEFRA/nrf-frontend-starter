@@ -1,0 +1,66 @@
+{% extends 'layouts/edp-base.njk' %}
+
+{% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/edp-calculator/location"
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{{ heading }}</h1>
+
+      <p class="govuk-body">
+        Upload a file containing your development boundary. We accept the following file formats:
+      </p>
+
+      <ul class="govuk-list govuk-list--bullet">
+        <li>Shape file (.shp)</li>
+        <li>KML file (.kml)</li>
+        <li>GeoJSON file (.geojson)</li>
+      </ul>
+
+      <form method="POST" enctype="multipart/form-data" novalidate>
+        <input type="hidden" name="crumb" value="{{ crumb }}">
+
+        {{ govukFileUpload({
+          id: "boundary-file",
+          name: "boundaryFile",
+          label: {
+            text: "Upload boundary file",
+            classes: "govuk-label--m"
+          },
+          hint: {
+            text: "The file must be less than 10MB"
+          }
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Upload and continue",
+            type: "submit"
+          }) }}
+        </div>
+      </form>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <aside class="govuk-!-padding-top-2">
+        <h3 class="govuk-heading-s">Application progress</h3>
+        <ol class="govuk-list govuk-list--number govuk-body-s">
+          <li class="govuk-!-font-weight-bold">Location - Upload file</li>
+          <li>EDP check</li>
+          <li>Development details</li>
+          <li>Review quote</li>
+          <li>Payment</li>
+        </ol>
+      </aside>
+    </div>
+  </div>
+{% endblock %}

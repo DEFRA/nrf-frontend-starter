@@ -2,6 +2,7 @@
 
 {# Import GOVUK components globally #}
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
 
 {# Import custom components globally #}
@@ -34,7 +35,9 @@
 {% endblock %}
 
 {% block beforeContent %}
-  {% if breadcrumbs.length > 1 %}
+  {% if backLink %}
+    {{ govukBackLink(backLink) }}
+  {% elif breadcrumbs and breadcrumbs.length > 1 %}
     {{ govukBreadcrumbs({
       items: breadcrumbs
     }) }}

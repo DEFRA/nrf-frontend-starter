@@ -1,0 +1,148 @@
+{% extends 'layouts/edp-base.njk' %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/edp-calculator/view/" + application.id
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{{ heading }}</h1>
+
+      <h2 class="govuk-heading-m">Payment summary</h2>
+
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Application reference"
+            },
+            value: {
+              text: application.id
+            }
+          },
+          {
+            key: {
+              text: "Development"
+            },
+            value: {
+              text: application.name
+            }
+          },
+          {
+            key: {
+              text: "Number of houses"
+            },
+            value: {
+              text: application.houses
+            }
+          },
+          {
+            key: {
+              text: "Amount to pay",
+              classes: "govuk-!-font-weight-bold"
+            },
+            value: {
+              html: '<span class="govuk-!-font-weight-bold govuk-!-font-size-24">' + application.levyAmount + '</span>'
+            }
+          }
+        ]
+      }) }}
+
+      <h2 class="govuk-heading-m">Choose payment method</h2>
+
+      <form method="POST" novalidate>
+        <input type="hidden" name="crumb" value="{{ crumb }}">
+
+        {{ govukRadios({
+          name: "paymentMethod",
+          fieldset: {
+            legend: {
+              text: "How would you like to pay?",
+              classes: "govuk-visually-hidden"
+            }
+          },
+          items: [
+            {
+              value: "card",
+              text: "Debit or credit card",
+              hint: {
+                text: "Pay immediately using a debit or credit card"
+              }
+            },
+            {
+              value: "bacs",
+              text: "Bank transfer (BACS)",
+              hint: {
+                text: "We'll email you the bank details and payment reference"
+              }
+            },
+            {
+              value: "cheque",
+              text: "Cheque",
+              hint: {
+                text: "We'll email you details of where to send your cheque"
+              }
+            }
+          ]
+        }) }}
+
+        <div class="govuk-inset-text">
+          This is a demo payment page. In production, this would redirect to GOV.UK Pay for card payments.
+        </div>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue to payment",
+            type: "submit"
+          }) }}
+          {{ govukButton({
+            text: "Cancel",
+            classes: "govuk-button--secondary",
+            href: "/edp-calculator/view/" + application.id
+          }) }}
+        </div>
+      </form>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <aside class="govuk-!-padding-top-2">
+        <h3 class="govuk-heading-s">Payment information</h3>
+
+        <h4 class="govuk-heading-s">Secure payment</h4>
+        <p class="govuk-body-s">
+          Your payment will be processed securely through GOV.UK Pay.
+        </p>
+
+        <h4 class="govuk-heading-s">Payment deadline</h4>
+        <p class="govuk-body-s">
+          Payment must be received within 30 days of your application submission date.
+        </p>
+
+        <h4 class="govuk-heading-s">What happens after payment</h4>
+        <ol class="govuk-list govuk-list--number govuk-body-s">
+          <li>Payment confirmation sent by email</li>
+          <li>EDP certificate issued within 5 working days</li>
+          <li>Development can proceed</li>
+        </ol>
+
+        <h4 class="govuk-heading-s govuk-!-margin-top-4">Need help?</h4>
+        <p class="govuk-body-s">
+          Contact our payment support team:
+        </p>
+        <ul class="govuk-list govuk-body-s">
+          <li>Phone: 0300 123 4567</li>
+          <li>Email: payments@environment-agency.gov.uk</li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+{% endblock %}
