@@ -9,15 +9,10 @@ import {
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
-/**
- * Forms module plugin registration
- * Registers the forms-engine-plugin with the server
- */
 export const forms = {
   plugin: {
     name: 'forms',
     async register(server, options) {
-      // Register the forms-engine-plugin
       await server.register({
         plugin,
         options: {
@@ -81,39 +76,6 @@ export const forms = {
       })
 
       server.logger.info('Forms engine plugin registered successfully')
-
-      // Add any additional forms-specific routes here if needed
-      // For example, a route to list all available forms
-      server.route({
-        method: 'GET',
-        path: '/forms',
-        options: {
-          handler: (request, h) => {
-            return h.view('forms/index', {
-              pageTitle: 'Available Forms',
-              heading: 'Available Forms',
-              serviceName: 'Nature Restoration Fund User Journey Prototypes',
-              serviceUrl: '/',
-              breadcrumbs: [
-                {
-                  text: 'Home',
-                  href: '/'
-                },
-                {
-                  text: 'Available Forms'
-                }
-              ],
-              forms: [
-                {
-                  slug: 'contact-form',
-                  title: 'Contact Form',
-                  description: 'Get in touch with our team'
-                }
-              ]
-            })
-          }
-        }
-      })
     }
   }
 }

@@ -17,6 +17,8 @@ const createMetadata = (slug, title, organisation = 'Defra') => {
     updatedBy: user
   }
 
+  const v = 1233452345345354
+
   return {
     id: randomUUID(),
     slug,
@@ -27,7 +29,7 @@ const createMetadata = (slug, title, organisation = 'Defra') => {
     submissionGuidance: `
 ## Form submitted successfully
 
-**Reference number: HDJ2123F**
+**Reference number: ${v}!?!?**
 
 We have received your contact form and will respond within 5 working days.
 
@@ -41,6 +43,7 @@ We'll review your message and respond to the email address you provided.
 
 * [Submit another enquiry](/contact-form)
 * [Return to examples page](/)
+<a href="/edp-levy/applications">View all applications</a>
 `,
     notificationEmail: 'submissions@defra.gov.uk',
     ...author,

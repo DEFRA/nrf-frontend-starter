@@ -1,8 +1,0 @@
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-
-{% if backLink %}
-  {{ govukBackLink({
-    text: backLink.text or "Back",
-    href: backLink.href
-  }) }}
-{% endif %}

@@ -1,5 +1,0 @@
-<form method="POST" novalidate {% if formAction %}action="{{ formAction }}"{% endif %} {% if formEnctype %}enctype="{{ formEnctype }}"{% endif %}>
-  <input type="hidden" name="crumb" value="{{ crumb }}">
-  {% block formFields %}
-  {% endblock %}
-</form>
