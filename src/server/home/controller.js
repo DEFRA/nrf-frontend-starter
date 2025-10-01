@@ -13,7 +13,7 @@ export const homeController = {
     return h.view('home/index', {
       pageTitle: 'Home',
       heading: 'Home',
-      submissions: submissions
+      submissions
     })
   }
 }

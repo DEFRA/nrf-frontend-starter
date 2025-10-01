@@ -310,6 +310,71 @@ const outputService = {
     // Generate a reference number
     const referenceNumber = `REF-${Date.now()}`
 
+    // Extract form data - prefer submitResponse if available (V2 forms engine)
+    const formData = {}
+
+    // Check if we have submitResponse with processed data (from formSubmissionService)
+    if (submitResponse && submitResponse.main) {
+      console.log('Using submitResponse data (V2 format)')
+      if (Array.isArray(submitResponse.main)) {
+        submitResponse.main.forEach((item) => {
+          formData[item.name] = {
+            label: item.title || item.name,
+            value: item.value
+          }
+        })
+      }
+    }
+    // Fallback to items if no submitResponse (shouldn't happen in V2)
+    else if (Array.isArray(items)) {
+      console.log('Falling back to items array')
+      items.forEach((item) => {
+        try {
+          // Only extract simple, serializable properties
+          if (
+            item &&
+            typeof item === 'object' &&
+            item.name &&
+            item.value !== undefined
+          ) {
+            formData[item.name] = {
+              label: String(item.label || item.name || ''),
+              value: String(item.value || '')
+            }
+          }
+        } catch (e) {
+          console.log('Error extracting item:', e.message)
+        }
+      })
+    }
+
+    // Log the extracted data (safe to stringify)
+    console.log('Form data extracted:', JSON.stringify(formData, null, 2))
+
+    // Extract location method and details for easier display
+    let locationMethod = '-'
+    let locationDetails = '-'
+
+    // Get location method (from the first question)
+    if (formData['SYQpGU']) {
+      locationMethod = formData['SYQpGU'].value
+    }
+
+    // Get location details based on the method selected
+    if (formData['StTHJK']) {
+      // Postcode
+      locationDetails = formData['StTHJK'].value
+    } else if (formData['nVXqZE']) {
+      // Coordinates
+      locationDetails = formData['nVXqZE'].value
+    } else if (formData['NiAeAB']) {
+      // Map drawing - this would contain the drawn polygon data
+      locationDetails = formData['NiAeAB'].value || 'Map boundary drawn'
+    } else if (formData['dVAPFw']) {
+      // File upload
+      locationDetails = 'File uploaded'
+    }
+
     // Create a simple submission record that matches what the template expects
     const simpleSubmission = {
       id: referenceNumber,
@@ -317,10 +382,18 @@ const outputService = {
       status: 'Pending Payment', // More realistic status
       formName: 'Environmental Development Plan',
       levy: Math.floor(Math.random() * 10000) + 1000, // Random levy amount for demo
+      // Store location method and details separately for cleaner display
+      locationMethod,
+      locationDetails,
+      // Store all the form data for reference
+      formData,
       data: {
-        // Extract the location from the form answers
+        // Also keep the location for backward compatibility - extract safely
         location:
-          items?.find((item) => item.name === 'hwhT0g')?.value || 'SW1A 1AA'
+          formData['StTHJK']?.value ||
+          formData['nVXqZE']?.value ||
+          formData['NiAeAB']?.value ||
+          'Unknown location'
       }
     }
 
@@ -353,13 +426,23 @@ const outputService = {
 // Form submission service for handling file uploads
 const formSubmissionService = {
   // Submit form data - called by the plugin during form submission
-  submit: async function (payload) {
-    // Mock implementation - just return a success response
-    console.log('Form submission payload:', payload)
+  submit: async function (payload, request) {
+    console.log('Form submission service called')
+
+    // Generate a unique reference
+    const reference = `REF-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+
+    // Return the structure that outputService.submit expects
+    // This includes the main array with properly formatted data
     return {
-      id: Date.now().toString(),
-      reference: `REF-${Date.now()}`,
-      status: 'success'
+      id: reference,
+      reference,
+      sessionId: payload.sessionId || 'unknown',
+      retrievalKey: payload.retrievalKey || 'unknown',
+      submittedAt: new Date().toISOString(),
+      status: 'submitted',
+      main: payload.main || [], // This contains {name, title, value} objects
+      repeaters: payload.repeaters || []
     }
   },
 
