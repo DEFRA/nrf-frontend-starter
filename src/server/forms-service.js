@@ -12,19 +12,6 @@ const author = {
 }
 
 const metadata = {
-  id: '48158770-647d-4fde-a3c5-1fc1e28f780d',
-  slug: 'example-form',
-  title: 'Example form',
-  organisation: 'Defra',
-  teamName: 'Example team',
-  teamEmail: 'example-team@defra.gov.uk',
-  submissionGuidance: "Thanks for your submission, we'll be in touch",
-  notificationEmail: 'example-email-submission-recipient@defra.com',
-  ...author,
-  live: author
-}
-
-const metadata2 = {
   id: '12345678-90ab-cdef-1234-567890abcdef',
   slug: 'location-form',
   title: 'Development Site Location Form',
@@ -38,49 +25,6 @@ const metadata2 = {
 }
 
 const definition = {
-  engine: 'V2',
-  name: 'Example form',
-  pages: [
-    {
-      title: 'Start page',
-      path: '/start',
-      controller: 'StartPageController',
-      components: [
-        {
-          name: 'Jhimsh',
-          title: 'Html',
-          type: 'Html',
-          content: '<p class="govuk-body">Example</p>',
-          options: {},
-          schema: {}
-        }
-      ]
-    },
-    {
-      path: '/full-name',
-      title: 'Enter your full name',
-      components: [
-        {
-          name: 'sdrGvs',
-          title: 'Full name',
-          type: 'TextField',
-          options: {},
-          schema: {}
-        }
-      ]
-    },
-    {
-      path: '/summary',
-      title: 'Check your answers',
-      controller: 'SummaryPageController'
-    }
-  ],
-  lists: [],
-  sections: [],
-  conditions: []
-}
-
-const definition2 = {
   name: 'Dan - test',
   engine: 'V2',
   schema: 2,
@@ -335,8 +279,6 @@ const formsService = {
     switch (slug) {
       case metadata.slug:
         return Promise.resolve(metadata)
-      case metadata2.slug:
-        return Promise.resolve(metadata2)
       default:
         throw Boom.notFound(`Form '${slug}' not found`)
     }
@@ -345,12 +287,88 @@ const formsService = {
     switch (id) {
       case metadata.id:
         return Promise.resolve(definition)
-      case metadata2.id:
-        return Promise.resolve(definition2)
       default:
         throw Boom.notFound(`Form '${id}' not found`)
     }
   }
 }
 
-export default { formsService }
+// Output service for handling form submissions
+const outputService = {
+  // Submit form data - store ONLY simple, serializable data
+  // The plugin calls this with: (context, request, model, emailAddress, items, submitResponse)
+  submit: async function (
+    context,
+    request,
+    model,
+    emailAddress,
+    items,
+    submitResponse
+  ) {
+    console.log('OUTPUT SERVICE SUBMIT CALLED')
+
+    // Generate a reference number
+    const referenceNumber = `REF-${Date.now()}`
+
+    // Create a simple submission record that matches what the template expects
+    const simpleSubmission = {
+      id: referenceNumber,
+      date: new Date().toISOString(), // Template expects 'date', not 'timestamp'
+      status: 'Pending Payment', // More realistic status
+      formName: 'Environmental Development Plan',
+      levy: Math.floor(Math.random() * 10000) + 1000, // Random levy amount for demo
+      data: {
+        // Extract the location from the form answers
+        location:
+          items?.find((item) => item.name === 'hwhT0g')?.value || 'SW1A 1AA'
+      }
+    }
+
+    // Store in session (this is safe now - no circular refs)
+    const session = request.yar
+    const submissions = session.get('submissions') || []
+    submissions.push(simpleSubmission)
+    session.set('submissions', submissions)
+
+    console.log('Submission stored:', simpleSubmission)
+
+    // Return what the plugin expects for the confirmation page
+    return {
+      reference: referenceNumber,
+      confirmation: {
+        title: 'Application complete',
+        message: `Your reference number is ${referenceNumber}`
+      }
+    }
+  },
+
+  // Get all submissions from session
+  getSubmissions: async function (request) {
+    const session = request.yar
+    const submissions = session.get('submissions') || []
+    return submissions
+  }
+}
+
+// Form submission service for handling file uploads
+const formSubmissionService = {
+  // Submit form data - called by the plugin during form submission
+  submit: async function (payload) {
+    // Mock implementation - just return a success response
+    console.log('Form submission payload:', payload)
+    return {
+      id: Date.now().toString(),
+      reference: `REF-${Date.now()}`,
+      status: 'success'
+    }
+  },
+
+  // Persist files - placeholder implementation as we don't need actual file handling yet
+  persistFiles: async function (context, request, model) {
+    // File persistence not required for this example
+    // Just return resolved promise to satisfy the plugin requirements
+    return Promise.resolve()
+  }
+}
+
+export default { formsService, outputService, formSubmissionService }

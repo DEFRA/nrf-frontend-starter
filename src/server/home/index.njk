@@ -1,17 +1,82 @@
 {% extends 'layouts/page.njk' %}
 
 {% block content %}
-  {{ appHeading({
-    text: heading,
-    caption: "nrf-frontend-starter"
-  }) }}
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-body" data-testid="app-page-body">
-        <p></p>
+      <h1 class="govuk-heading-xl">Your Development Applications</h1>
+      <p class="govuk-body-l">View and manage your environmental development plan applications and levy payments.</p>
+
+      {% if submissions and submissions.length > 0 %}
+        <table class="govuk-table">
+          <caption class="govuk-table__caption govuk-visually-hidden">Development applications</caption>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Application</th>
+              <th scope="col" class="govuk-table__header">Development</th>
+              <th scope="col" class="govuk-table__header">Status</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Levy Amount</th>
+              <th scope="col" class="govuk-table__header">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for submission in submissions %}
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header">
+                <strong>{{ submission.id }}</strong><br>
+                <span class="govuk-body-s">{{ submission.date }}</span>
+              </th>
+              <td class="govuk-table__cell">
+                <strong>{{ submission.formName or 'Development Application' }}</strong><br>
+                <span class="govuk-body-s">{{ submission.data.location or 'Location details' }}</span>
+              </td>
+              <td class="govuk-table__cell">
+                <strong class="govuk-tag govuk-tag--orange">{{ submission.status }}</strong>
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                <strong>£{{ submission.levy.toLocaleString() }}</strong>
+              </td>
+              <td class="govuk-table__cell">
+                <a href="#" class="govuk-link">View details</a>
+                {% if submission.status == 'Pending Payment' %}
+                  <br><a href="#" class="govuk-link">Make payment</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="govuk-body">You don't have any applications yet.</p>
+        <p class="govuk-body">Click the button below to create your first application.</p>
+      {% endif %}
+
+      <div class="govuk-button-group">
+        <a href="/location-form" role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
+          Create new application
+          <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
+          </svg>
+        </a>
       </div>
     </div>
-  </div>
 
+    <div class="govuk-grid-column-one-third">
+      <aside>
+        <h2 class="govuk-heading-m">Application Status Guide</h2>
+        <ul class="govuk-list govuk-list--bullet govuk-body-s">
+          <li><strong>Draft</strong> - Application in progress</li>
+          <li><strong>Pending Payment</strong> - Quote received, payment required</li>
+          <li><strong>Paid</strong> - Payment completed, under review</li>
+          <li><strong>Approved</strong> - Application approved and active</li>
+        </ul>
+
+        <h2 class="govuk-heading-m govuk-!-margin-top-6">Environmental Development Plans</h2>
+        <p class="govuk-body-s">Your development may be subject to one or more Environmental Development Plans:</p>
+        <ul class="govuk-list govuk-list--bullet govuk-body-s">
+          <li><strong>District Level Licensing (DLL)</strong> - For developments affecting protected species</li>
+          <li><strong>Nutrient Mitigation</strong> - For developments affecting water quality</li>
+        </ul>
+      </aside>
+    </div>
+  </div>
 {% endblock %}
