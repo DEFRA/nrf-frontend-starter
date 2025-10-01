@@ -1,0 +1,27 @@
+{% extends baseLayoutPath %}
+
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "partials/components.html" import componentList with context %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errors %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: checkErrorTemplates(errors)
+        }) }}
+      {% endif %}
+
+      {% include "partials/heading.html" %}
+
+      <div class="govuk-inset-text">
+        <strong>Map Drawing Placeholder</strong><br>
+        In the future, this will display an interactive map where you can draw your development boundary.
+        For now, please enter the boundary coordinates using the fields below.
+      </div>
+
+      {% include "partials/form.html" %}
+    </div>
+  </div>
+{% endblock %}

@@ -186,8 +186,9 @@ const definition2 = {
       condition: '00c2571c-6ae1-4445-91b6-ade76b95126c'
     },
     {
-      title: '',
+      title: 'Draw your development boundary',
       path: '/draw-your-development-boundary',
+      controller: 'MapDrawingController',
       components: [
         {
           type: 'TextField',

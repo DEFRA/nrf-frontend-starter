@@ -18,6 +18,7 @@ import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
 import { contentSecurityPolicy } from './common/helpers/content-security-policy.js'
 import { context } from '../config/nunjucks/context/context.js'
 import services from './forms-service.js'
+import { MapDrawingController } from './forms/controllers/MapDrawingController.js'
 
 export async function createServer() {
   setupProxy()
@@ -75,6 +76,9 @@ export async function createServer() {
     plugin,
     options: {
       services,
+      controllers: {
+        MapDrawingController
+      },
       nunjucks: {
         baseLayoutPath: 'layouts/page.njk',
         paths: [
