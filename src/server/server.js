@@ -20,6 +20,7 @@ import { context } from '../config/nunjucks/context/context.js'
 import services from './forms-service.js'
 import { MapDrawingController } from './forms/controllers/MapDrawingController.js'
 import { MockFileUploadPageController } from './forms/controllers/MockFileUploadPageController.js'
+import { AdditionalDetailsPageController } from './forms/controllers/AdditionalDetailsPageController.js'
 
 export async function createServer() {
   setupProxy()
@@ -79,7 +80,8 @@ export async function createServer() {
       services,
       controllers: {
         MapDrawingController,
-        MockFileUploadPageController
+        MockFileUploadPageController,
+        AdditionalDetailsPageController
       },
       nunjucks: {
         baseLayoutPath: 'layouts/page.njk',

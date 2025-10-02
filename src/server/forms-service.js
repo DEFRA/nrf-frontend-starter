@@ -57,7 +57,7 @@ const definition = {
       path: '/upload-your-development-boundary-file',
       controller: 'MockFileUploadPageController',
       components: [],
-      next: [],
+      next: [{ path: '/additional-development-details' }],
       id: '84254391-93ae-445c-96b1-ef5018948577',
       condition: '4d237c09-217e-4ad2-aae9-fa8243276d56'
     },
@@ -86,7 +86,7 @@ const definition = {
           id: '218110d5-3b2c-4023-86c3-0f1f071da37b'
         }
       ],
-      next: [],
+      next: [{ path: '/additional-development-details' }],
       id: '41fcecf7-b004-442c-bd4c-941013ef88fc',
       condition: 'cad5f36c-71db-4ece-83ec-26b8921dcea4'
     },
@@ -107,7 +107,7 @@ const definition = {
           id: '9bf931d7-c1b0-4437-89af-311bc9648541'
         }
       ],
-      next: [],
+      next: [{ path: '/additional-development-details' }],
       id: '48d045de-8306-4a34-b77b-6d441b1fcfd0',
       condition: '00c2571c-6ae1-4445-91b6-ade76b95126c'
     },
@@ -129,9 +129,41 @@ const definition = {
           id: '0d1c3d79-6f26-4fdf-ab0c-e57ec9740b63'
         }
       ],
-      next: [],
+      next: [{ path: '/additional-development-details' }],
       id: '138dfccf-aff9-4e5b-8ca4-54edc5862a6d',
       condition: 'a971b6c9-a565-4500-b8eb-903e9dfbaff5'
+    },
+    {
+      title: 'Additional development details',
+      path: '/additional-development-details',
+      controller: 'AdditionalDetailsPageController',
+      components: [
+        {
+          type: 'TextField',
+          title: 'Development name',
+          name: 'developmentName',
+          options: {
+            required: true
+          },
+          schema: {},
+          id: 'a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d'
+        },
+        {
+          type: 'NumberField',
+          title: 'Number of houses in the development',
+          name: 'numberOfHouses',
+          hint: 'Enter the total number of residential units in your development',
+          options: {
+            required: true,
+            min: 1,
+            max: 10000
+          },
+          schema: {},
+          id: 'b2c3d4e5-6f7a-8b9c-0d1e-2f3a4b5c6d7e'
+        }
+      ],
+      next: [{ path: '/summary' }],
+      id: 'f1e2d3c4-b5a6-9788-6543-21fedcba9876'
     },
     {
       id: '449a45f6-4541-4a46-91bd-8b8931b07b50',
