@@ -19,6 +19,7 @@ import { contentSecurityPolicy } from './common/helpers/content-security-policy.
 import { context } from '../config/nunjucks/context/context.js'
 import services from './forms-service.js'
 import { MapDrawingController } from './forms/controllers/MapDrawingController.js'
+import { MockFileUploadPageController } from './forms/controllers/MockFileUploadPageController.js'
 
 export async function createServer() {
   setupProxy()
@@ -77,7 +78,8 @@ export async function createServer() {
     options: {
       services,
       controllers: {
-        MapDrawingController
+        MapDrawingController,
+        MockFileUploadPageController
       },
       nunjucks: {
         baseLayoutPath: 'layouts/page.njk',

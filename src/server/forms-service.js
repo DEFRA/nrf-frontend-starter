@@ -53,28 +53,10 @@ const definition = {
       id: 'e4f50276-7e2c-42d4-988f-3c3ad3d4ac83'
     },
     {
-      controller: 'FileUploadPageController',
-      title: '',
+      title: 'Upload your development boundary file',
       path: '/upload-your-development-boundary-file',
-      components: [
-        {
-          type: 'FileUploadField',
-          title: 'Upload your development boundary file',
-          name: 'dVAPFw',
-          shortDescription: 'File upload',
-          hint: 'Upload a file containing your development site boundary. We support shape files, KML files, and GeoJSON files.',
-          options: {
-            required: true,
-            accept:
-              'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.oasis.opendocument.text,text/plain,image/jpeg,text/csv,application/vnd.oasis.opendocument.spreadsheet'
-          },
-          schema: {
-            min: 1,
-            max: 5
-          },
-          id: 'ed408497-a753-4642-89e6-3c671a82abe7'
-        }
-      ],
+      controller: 'MockFileUploadPageController',
+      components: [],
       next: [],
       id: '84254391-93ae-445c-96b1-ef5018948577',
       condition: '4d237c09-217e-4ad2-aae9-fa8243276d56'
