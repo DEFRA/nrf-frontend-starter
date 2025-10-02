@@ -2,6 +2,29 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Plan, Review, Validate, Repeat
+
+### Before starting work
+
+- Always in plan mode to make a plan
+- After get the plan, make sure you Write the plan to .claude/tasks/{CURRENT_DATE_TIME}\_TASK_NAME.md.
+- The plan should be a detailed implementation plan and the reasoning behind them, as well as tasks broken down.
+- If the task require external knowledge or certain package, also research to get latest knowledge (Use Task tool for research)
+- Don't over plan it, always think MVP.
+- Once you write the plan, firstly ask me to review it. Do not continue until I approve the plan.
+
+### While implementing
+
+- You should update the plan as you work.
+- After you complete tasks in the plan, you should update and append detailed descriptions of the changes you made, so following tasks can be easily hand over to other engineers.
+
+### Once you have completed your work
+
+- Verify it works. For instances where we can use the Chrome Dev Tools MCP server, use it!
+- Where this cannot be tested via a frontend, look for alternate ways to test / validate the functionalotu works and you've not created any regressions in the codebase.
+- Don't spend too much time on validating. If it's difficult to do so, then ask me!
+- If you find issues, iterate until everything is working. However be careful not to over engineer a spend too much time going down a rabbit hole. We might need to stop and re-assess rather than doing a big refactor to fix things.
+
 ## Project Overview
 
 This is a DEFRA (Department for Environment, Food & Rural Affairs) Node.js frontend application built on the Core Delivery Platform (CDP) template. It uses Hapi.js for the server framework and integrates with `@defra/forms-engine-plugin` v2 for form handling.
@@ -180,4 +203,6 @@ launchOptions: {
 }
 ```
 
-The MCP server doesn't read the environment variable from Claude Desktop config, so explicit path is required.
+## Misc things to remember:
+
+- Know when to quit. If you have spent more than a few minutes on a task, and are making little progress, stop, summarise where you are at and as the human for some guidance.
