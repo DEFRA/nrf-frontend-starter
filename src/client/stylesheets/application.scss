@@ -5,3 +5,7 @@
 @use "core";
 @use "components";
 @use "partials";
+
+// Import Leaflet CSS (must use @import for CSS files)
+@import "leaflet";
+@import "leaflet-draw";

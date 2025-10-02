@@ -13,12 +13,13 @@ const contentSecurityPolicy = {
     fontSrc: ['self', 'data:'],
     connectSrc: ['self', 'wss', 'data:'],
     mediaSrc: ['self'],
-    styleSrc: ['self'],
+    styleSrc: ['self', "'unsafe-inline'"],
     scriptSrc: [
       'self',
-      "'sha256-GUQ5ad8JK5KmEWmROf3LZd9ge94daqNvd8xy9YS1iDw='"
+      "'sha256-GUQ5ad8JK5KmEWmROf3LZd9ge94daqNvd8xy9YS1iDw='",
+      "'unsafe-inline'" // TODO: Remove - temporarily allowing inline scripts for forms plugin compatibility
     ],
-    imgSrc: ['self', 'data:'],
+    imgSrc: ['self', 'data:', 'https://tile.openstreetmap.org'],
     frameSrc: ['self', 'data:'],
     objectSrc: ['none'],
     frameAncestors: ['none'],

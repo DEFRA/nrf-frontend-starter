@@ -36,15 +36,41 @@
                 {% endif %}
               </td>
               <td class="govuk-table__cell">
-                {% if submission.locationDetails %}
+                {% if submission.polygonCoordinates %}
+                  <details class="govuk-details govuk-body-s" data-module="govuk-details">
+                    <summary class="govuk-details__summary">
+                      <span class="govuk-details__summary-text">
+                        Polygon with {{ submission.polygonCoordinates | length }} points
+                      </span>
+                    </summary>
+                    <div class="govuk-details__text">
+                      <table class="govuk-table govuk-body-s">
+                        <thead class="govuk-table__head">
+                          <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">Point</th>
+                            <th scope="col" class="govuk-table__header">Latitude</th>
+                            <th scope="col" class="govuk-table__header">Longitude</th>
+                          </tr>
+                        </thead>
+                        <tbody class="govuk-table__body">
+                          {% for coord in submission.polygonCoordinates %}
+                            <tr class="govuk-table__row">
+                              <td class="govuk-table__cell">{{ loop.index }}</td>
+                              <td class="govuk-table__cell">{{ coord.lat }}</td>
+                              <td class="govuk-table__cell">{{ coord.lng }}</td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </details>
+                {% elif submission.locationDetails %}
                   {{ submission.locationDetails }}
                 {% elif submission.formData %}
                   {% if submission.formData['StTHJK'] %}
                     {{ submission.formData['StTHJK'].value }}
                   {% elif submission.formData['nVXqZE'] %}
                     {{ submission.formData['nVXqZE'].value }}
-                  {% elif submission.formData['NiAeAB'] %}
-                    {{ submission.formData['NiAeAB'].value | default('Map boundary drawn') }}
                   {% elif submission.formData['dVAPFw'] %}
                     File uploaded
                   {% else %}

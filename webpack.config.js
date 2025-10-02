@@ -24,9 +24,6 @@ export default {
       import: ['./javascripts/application.js', './stylesheets/application.scss']
     }
   },
-  experiments: {
-    outputModule: true
-  },
   mode: NODE_ENV === 'production' ? 'production' : 'development',
   devtool: NODE_ENV === 'production' ? 'source-map' : 'inline-source-map',
   watchOptions: {
@@ -46,8 +43,7 @@ export default {
 
     path: path.join(dirname, '.public'),
     publicPath: '/public/',
-    libraryTarget: 'module',
-    module: true
+    iife: true
   },
   resolve: {
     alias: {
@@ -70,10 +66,7 @@ export default {
           cacheDirectory: true,
           extends: path.join(dirname, 'babel.config.cjs'),
           presets: [['@babel/preset-env']]
-        },
-
-        // Flag loaded modules as side effect free
-        sideEffects: false
+        }
       },
       {
         test: /\.scss$/,
@@ -174,6 +167,10 @@ export default {
         {
           from: path.join(govukFrontendPath, 'dist/govuk/assets/rebrand'),
           to: 'assets'
+        },
+        {
+          from: path.join(dirname, 'node_modules/leaflet-draw/dist/images'),
+          to: 'assets/images'
         }
       ]
     })

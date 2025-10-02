@@ -1,0 +1,36 @@
+{% extends baseLayoutPath %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "partials/components.html" import componentList with context %}
+
+{% block beforeContent %}
+  {% if backLink %}
+    {{ govukBackLink(backLink) }}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if errors %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: checkErrorTemplates(errors)
+        }) }}
+      {% endif %}
+
+      {% include "partials/heading.html" %}
+
+      <div id="map" style="height: 500px; width: 100%; margin-bottom: 30px;"{% if existingCoordinates %} data-existing-coordinates='{{ existingCoordinates | dump | safe }}'{% endif %}></div>
+
+      <div class="govuk-form-group" style="margin-bottom: 30px;">
+        <h2 class="govuk-heading-m">Boundary coordinates</h2>
+        <p class="govuk-body">Draw a polygon on the map above. The coordinates will appear here.</p>
+        <div id="coordinates-list"></div>
+      </div>
+
+      {% include "partials/form.html" %}
+    </div>
+  </div>
+{% endblock %}

@@ -18,7 +18,7 @@ import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
 import { contentSecurityPolicy } from './common/helpers/content-security-policy.js'
 import { context } from '../config/nunjucks/context/context.js'
 import services from './forms-service.js'
-import { MapDrawingController } from './forms/controllers/MapDrawingController.js'
+import { MapDrawingController } from '../features/map-drawing/server/controller.js'
 
 export async function createServer() {
   setupProxy()
@@ -85,7 +85,8 @@ export async function createServer() {
           'node_modules/govuk-frontend/dist/',
           'src/server/common/templates',
           'src/server/common/components',
-          'src/server/forms/views'
+          'src/server/forms/views',
+          'src/features/map-drawing/server' // Map drawing feature views
         ]
       },
       viewContext: context,

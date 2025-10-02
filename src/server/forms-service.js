@@ -136,12 +136,13 @@ const definition = {
       components: [
         {
           type: 'TextField',
-          title: 'Draw your development boundary',
+          title: 'Boundary coordinates (hidden)',
           name: 'NiAeAB',
           shortDescription: 'Map drawing',
-          hint: 'Use the map below to draw the boundary of your development site. Click on the map to add points and create a polygon.',
+          hint: '',
           options: {
-            required: true
+            required: true,
+            classes: 'govuk-visually-hidden'
           },
           schema: {},
           id: '0d1c3d79-6f26-4fdf-ab0c-e57ec9740b63'
@@ -368,8 +369,17 @@ const outputService = {
       // Coordinates
       locationDetails = formData['nVXqZE'].value
     } else if (formData['NiAeAB']) {
-      // Map drawing - this would contain the drawn polygon data
-      locationDetails = formData['NiAeAB'].value || 'Map boundary drawn'
+      // Map drawing - parse the polygon coordinates
+      try {
+        const coordinates = JSON.parse(formData['NiAeAB'].value)
+        if (Array.isArray(coordinates) && coordinates.length > 0) {
+          locationDetails = `Polygon with ${coordinates.length} points`
+        } else {
+          locationDetails = 'Map boundary drawn'
+        }
+      } catch (e) {
+        locationDetails = formData['NiAeAB'].value || 'Map boundary drawn'
+      }
     } else if (formData['dVAPFw']) {
       // File upload
       locationDetails = 'File uploaded'
