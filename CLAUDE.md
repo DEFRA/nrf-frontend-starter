@@ -18,13 +18,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - You should update the plan as you work.
 - After you complete tasks in the plan, you should update and append detailed descriptions of the changes you made, so following tasks can be easily hand over to other engineers.
 
-### Once you have completed your work
-
-- Verify it works. For instances where we can use the Chrome Dev Tools MCP server, use it!
-- Where this cannot be tested via a frontend, look for alternate ways to test / validate the functionalotu works and you've not created any regressions in the codebase.
-- Don't spend too much time on validating. If it's difficult to do so, then ask me!
-- If you find issues, iterate until everything is working. However be careful not to over engineer a spend too much time going down a rabbit hole. We might need to stop and re-assess rather than doing a big refactor to fix things.
-
 ## Project Overview
 
 This is a DEFRA (Department for Environment, Food & Rural Affairs) Node.js frontend application built on the Core Delivery Platform (CDP) template. It uses Hapi.js for the server framework and integrates with `@defra/forms-engine-plugin` v2 for form handling.
@@ -191,18 +184,3 @@ Requires Node.js >= 22.16.0 (use `nvm use` to set correct version)
 - **Proxy Configuration**: Uses `global-agent` with `HTTP_PROXY` env var for outbound requests
 - **Security**: HSTS, XSS protection, noSniff, frame protection enabled by default
 - **CSRF Protection**: Enabled via @hapi/crumb plugin
-
-## Puppeteer MCP Configuration
-
-When using Puppeteer MCP server, always include these launch options:
-
-```javascript
-launchOptions: {
-  "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  "headless": true
-}
-```
-
-## Misc things to remember:
-
-- Know when to quit. If you have spent more than a few minutes on a task, and are making little progress, stop, summarise where you are at and as the human for some guidance.
