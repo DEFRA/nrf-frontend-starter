@@ -8,7 +8,6 @@ import { QuestionPageController } from '@defra/forms-engine-plugin/controllers/Q
 export class AdditionalDetailsPageController extends QuestionPageController {
   constructor(model, pageDef) {
     super(model, pageDef)
-    // Override the view to use our custom template
     this.viewName = 'additional-development-details'
   }
 
@@ -22,7 +21,6 @@ export class AdditionalDetailsPageController extends QuestionPageController {
   getViewModel(formData, errors) {
     const viewModel = super.getViewModel(formData, errors)
 
-    // Add sidebar context with development location summary
     viewModel.sidebarContext = {
       location: {
         coordinates: '51.5, -0.4',

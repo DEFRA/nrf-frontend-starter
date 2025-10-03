@@ -6,7 +6,6 @@ import services from '../forms-service.js'
  */
 export const homeController = {
   async handler(request, h) {
-    // Get submissions from the outputService (it's async!)
     const submissions =
       (await services.outputService?.getSubmissions?.(request)) || []
 

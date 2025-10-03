@@ -1,4 +1,5 @@
 import { SummaryPageController } from '@defra/forms-engine-plugin/controllers/SummaryPageController.js'
+import { formatCurrency } from '../../../config/nunjucks/filters/format-currency.js'
 
 /**
  * Controller for the Quote page.
@@ -8,7 +9,6 @@ import { SummaryPageController } from '@defra/forms-engine-plugin/controllers/Su
 export class QuotePageController extends SummaryPageController {
   constructor(model, pageDef) {
     super(model, pageDef)
-    // Override the view to use our custom template
     this.viewName = 'quote-page'
   }
 
@@ -23,18 +23,6 @@ export class QuotePageController extends SummaryPageController {
     return numberOfHouses * ratePerHouse
   }
 
-  /**
-   * Format number as GBP currency
-   * @param {number} amount - Amount to format
-   * @returns {string} Formatted currency string
-   */
-  formatCurrency(amount) {
-    return new Intl.NumberFormat('en-GB', {
-      style: 'currency',
-      currency: 'GBP'
-    }).format(amount)
-  }
-
   getSummaryPath() {
     return '/quote'
   }
@@ -46,31 +34,28 @@ export class QuotePageController extends SummaryPageController {
     const viewModel = super.getSummaryViewModel(request, context)
     const { state } = context
 
-    // Calculate levy
     const levy = this.calculateLevy(state)
     const numberOfHouses = parseInt(state?.numberOfHouses || 0, 10)
     const ratePerHouse = 2500
 
-    // Add quote-specific context
     viewModel.quote = {
       totalLevy: levy,
-      totalLevyFormatted: this.formatCurrency(levy),
+      totalLevyFormatted: formatCurrency(levy),
       numberOfHouses,
       ratePerHouse,
-      ratePerHouseFormatted: this.formatCurrency(ratePerHouse),
+      ratePerHouseFormatted: formatCurrency(ratePerHouse),
       edpBreakdown: [
         {
           type: 'DLL',
           description: 'District Level Licensing - Thames Valley',
           ratePerHouse,
-          ratePerHouseFormatted: this.formatCurrency(ratePerHouse),
+          ratePerHouseFormatted: formatCurrency(ratePerHouse),
           amount: levy,
-          amountFormatted: this.formatCurrency(levy)
+          amountFormatted: formatCurrency(levy)
         }
       ]
     }
 
-    // Add "What happens next" steps
     viewModel.nextSteps = [
       'Review your quote',
       'Accept the terms',

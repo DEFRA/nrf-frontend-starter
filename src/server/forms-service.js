@@ -327,10 +327,7 @@ const formsService = {
   }
 }
 
-// Output service for handling form submissions
 const outputService = {
-  // Submit form data - store ONLY simple, serializable data
-  // The plugin calls this with: (context, request, model, emailAddress, items, submitResponse)
   submit: async function (
     context,
     request,
@@ -341,7 +338,6 @@ const outputService = {
   ) {
     console.log('OUTPUT SERVICE SUBMIT CALLED')
 
-    // Generate a reference number
     const referenceNumber = `REF-${Date.now()}`
 
     // Extract form data - prefer submitResponse if available (V2 forms engine)
@@ -382,52 +378,41 @@ const outputService = {
       })
     }
 
-    // Log the extracted data (safe to stringify)
     console.log('Form data extracted:', JSON.stringify(formData, null, 2))
 
-    // Extract location method and details for easier display
     let locationMethod = '-'
     let locationDetails = '-'
 
-    // Get location method (from the first question)
     if (formData['SYQpGU']) {
       locationMethod = formData['SYQpGU'].value
     }
 
-    // Get location details based on the method selected
     if (formData['StTHJK']) {
-      // Postcode
       locationDetails = formData['StTHJK'].value
     } else if (formData['nVXqZE']) {
-      // Coordinates
       locationDetails = formData['nVXqZE'].value
     } else if (formData['NiAeAB']) {
-      // Map drawing - this would contain the drawn polygon data
       locationDetails = formData['NiAeAB'].value || 'Map boundary drawn'
     } else if (formData['dVAPFw']) {
-      // File upload
       locationDetails = 'File uploaded'
     }
 
-    // Calculate levy based on number of houses (£2,500 per house)
+    // £2,500 per house for DLL
     const numberOfHouses = parseInt(formData['numberOfHouses']?.value || 0, 10)
     const ratePerHouse = 2500
     const calculatedLevy = numberOfHouses * ratePerHouse
 
-    // Create a simple submission record that matches what the template expects
     const simpleSubmission = {
       id: referenceNumber,
       date: new Date().toISOString(), // Template expects 'date', not 'timestamp'
-      status: 'Pending Payment', // More realistic status
+      status: 'Pending Payment',
       formName: 'Environmental Development Plan',
-      levy: calculatedLevy, // Calculated levy: numberOfHouses * £2,500
-      // Store location method and details separately for cleaner display
+      levy: calculatedLevy,
       locationMethod,
       locationDetails,
-      // Store all the form data for reference
       formData,
       data: {
-        // Also keep the location for backward compatibility - extract safely
+        // Keep for backward compatibility
         location:
           formData['StTHJK']?.value ||
           formData['nVXqZE']?.value ||
@@ -436,7 +421,6 @@ const outputService = {
       }
     }
 
-    // Store in session (this is safe now - no circular refs)
     const session = request.yar
     const submissions = session.get('submissions') || []
     submissions.push(simpleSubmission)
@@ -444,7 +428,6 @@ const outputService = {
 
     console.log('Submission stored:', simpleSubmission)
 
-    // Return what the plugin expects for the confirmation page
     return {
       reference: referenceNumber,
       confirmation: {
@@ -462,17 +445,12 @@ const outputService = {
   }
 }
 
-// Form submission service for handling file uploads
 const formSubmissionService = {
-  // Submit form data - called by the plugin during form submission
   submit: async function (payload, request) {
     console.log('Form submission service called')
 
-    // Generate a unique reference
     const reference = `REF-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
 
-    // Return the structure that outputService.submit expects
-    // This includes the main array with properly formatted data
     return {
       id: reference,
       reference,
@@ -480,15 +458,12 @@ const formSubmissionService = {
       retrievalKey: payload.retrievalKey || 'unknown',
       submittedAt: new Date().toISOString(),
       status: 'submitted',
-      main: payload.main || [], // This contains {name, title, value} objects
+      main: payload.main || [],
       repeaters: payload.repeaters || []
     }
   },
 
-  // Persist files - placeholder implementation as we don't need actual file handling yet
   persistFiles: async function (context, request, model) {
-    // File persistence not required for this example
-    // Just return resolved promise to satisfy the plugin requirements
     return Promise.resolve()
   }
 }

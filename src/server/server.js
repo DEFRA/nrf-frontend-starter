@@ -1,9 +1,9 @@
 import path from 'path'
 import plugin from '@defra/forms-engine-plugin'
+import { secureContext } from '@defra/hapi-secure-context'
 import hapi from '@hapi/hapi'
 import Scooter from '@hapi/scooter'
 import Crumb from '@hapi/crumb'
-import { secureContext } from '@defra/hapi-secure-context'
 
 import { router } from './router.js'
 import { config } from '../config/config.js'
@@ -72,10 +72,9 @@ export async function createServer() {
     Scooter,
     Crumb,
     contentSecurityPolicy,
-    router // Register all the controllers/routes defined in src/server/router.js
+    router
   ])
 
-  // Register the forms-engine-plugin
   await server.register({
     plugin,
     options: {
