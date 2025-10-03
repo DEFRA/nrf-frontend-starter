@@ -18,9 +18,11 @@ import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
 import { contentSecurityPolicy } from './common/helpers/content-security-policy.js'
 import { context } from '../config/nunjucks/context/context.js'
 import services from './forms-service.js'
+import { FormQuestionPageController } from './forms/controllers/FormQuestionPageController.js'
 import { MapDrawingController } from './forms/controllers/MapDrawingController.js'
 import { MockFileUploadPageController } from './forms/controllers/MockFileUploadPageController.js'
 import { AdditionalDetailsPageController } from './forms/controllers/AdditionalDetailsPageController.js'
+import { QuotePageController } from './forms/controllers/QuotePageController.js'
 
 export async function createServer() {
   setupProxy()
@@ -79,9 +81,11 @@ export async function createServer() {
     options: {
       services,
       controllers: {
+        FormQuestionPageController,
         MapDrawingController,
         MockFileUploadPageController,
-        AdditionalDetailsPageController
+        AdditionalDetailsPageController,
+        QuotePageController
       },
       nunjucks: {
         baseLayoutPath: 'layouts/page.njk',

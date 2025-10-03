@@ -6,4 +6,8 @@ export class MapDrawingController extends QuestionPageController {
     // Override the view to use our custom template
     this.viewName = 'map-drawing'
   }
+
+  getSummaryPath() {
+    return '/quote'
+  }
 }

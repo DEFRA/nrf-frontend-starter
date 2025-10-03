@@ -12,6 +12,10 @@ export class AdditionalDetailsPageController extends QuestionPageController {
     this.viewName = 'additional-development-details'
   }
 
+  getSummaryPath() {
+    return '/quote'
+  }
+
   /**
    * Override getViewModel to add sidebar data
    */

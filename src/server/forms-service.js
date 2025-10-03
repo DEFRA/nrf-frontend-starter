@@ -28,11 +28,12 @@ const definition = {
   name: 'Dan - test',
   engine: 'V2',
   schema: 2,
-  startPage: '/summary',
+  startPage: '/quote',
   pages: [
     {
       title: '',
       path: '/how-would-you-like-to-provide-your-development-site-location',
+      controller: 'FormQuestionPageController',
       components: [
         {
           type: 'RadiosField',
@@ -49,7 +50,24 @@ const definition = {
           id: 'd6c8c6a5-7ecb-4272-bd32-0b9db772c756'
         }
       ],
-      next: [],
+      next: [
+        {
+          path: '/upload-your-development-boundary-file',
+          condition: '4d237c09-217e-4ad2-aae9-fa8243276d56'
+        },
+        {
+          path: '/enter-your-development-site-postcode',
+          condition: 'cad5f36c-71db-4ece-83ec-26b8921dcea4'
+        },
+        {
+          path: '/enter-your-development-site-coordinates',
+          condition: '00c2571c-6ae1-4445-91b6-ade76b95126c'
+        },
+        {
+          path: '/draw-your-development-boundary',
+          condition: 'a971b6c9-a565-4500-b8eb-903e9dfbaff5'
+        }
+      ],
       id: 'e4f50276-7e2c-42d4-988f-3c3ad3d4ac83'
     },
     {
@@ -64,6 +82,7 @@ const definition = {
     {
       title: '',
       path: '/enter-your-development-site-postcode',
+      controller: 'FormQuestionPageController',
       components: [
         {
           type: 'TextField',
@@ -93,6 +112,7 @@ const definition = {
     {
       title: '',
       path: '/enter-your-development-site-coordinates',
+      controller: 'FormQuestionPageController',
       components: [
         {
           type: 'TextField',
@@ -162,14 +182,14 @@ const definition = {
           id: 'b2c3d4e5-6f7a-8b9c-0d1e-2f3a4b5c6d7e'
         }
       ],
-      next: [{ path: '/summary' }],
+      next: [{ path: '/quote' }],
       id: 'f1e2d3c4-b5a6-9788-6543-21fedcba9876'
     },
     {
       id: '449a45f6-4541-4a46-91bd-8b8931b07b50',
-      title: 'Summary',
-      path: '/summary',
-      controller: 'SummaryPageController',
+      title: 'Quote',
+      path: '/quote',
+      controller: 'QuotePageController',
       next: []
     }
   ],
@@ -389,13 +409,18 @@ const outputService = {
       locationDetails = 'File uploaded'
     }
 
+    // Calculate levy based on number of houses (£2,500 per house)
+    const numberOfHouses = parseInt(formData['numberOfHouses']?.value || 0, 10)
+    const ratePerHouse = 2500
+    const calculatedLevy = numberOfHouses * ratePerHouse
+
     // Create a simple submission record that matches what the template expects
     const simpleSubmission = {
       id: referenceNumber,
       date: new Date().toISOString(), // Template expects 'date', not 'timestamp'
       status: 'Pending Payment', // More realistic status
       formName: 'Environmental Development Plan',
-      levy: Math.floor(Math.random() * 10000) + 1000, // Random levy amount for demo
+      levy: calculatedLevy, // Calculated levy: numberOfHouses * £2,500
       // Store location method and details separately for cleaner display
       locationMethod,
       locationDetails,

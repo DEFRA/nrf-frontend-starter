@@ -1,0 +1,127 @@
+{% extends baseLayoutPath %}
+
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if previewMode %}
+        {% include "partials/preview-banner.html" %}
+      {% endif %}
+
+      {% if hasMissingNotificationEmail %}
+        {% include "partials/warn-missing-notification-email.html" %}
+      {% endif %}
+
+      <h1 class="govuk-heading-l">
+        Your environmental levy quote
+      </h1>
+
+      <p class="govuk-body">
+        Based on your development details, here is your environmental levy calculation.
+      </p>
+
+      {# Green panel with total levy amount #}
+      <div class="app-quote-panel">
+        <h2 class="app-quote-panel__title govuk-heading-m">Total Environmental Levy</h2>
+        <p class="app-quote-panel__amount">{{ quote.totalLevyFormatted }}</p>
+      </div>
+
+      {# Development summary section #}
+      <h2 class="govuk-heading-m govuk-!-margin-top-6">Development summary</h2>
+
+      {% for section in checkAnswers %}
+        {{ govukSummaryList(section.summaryList) }}
+      {% endfor %}
+
+      {# EDP breakdown table #}
+      <h2 class="govuk-heading-m govuk-!-margin-top-6">Environmental Development Plan breakdown</h2>
+
+      {{ govukTable({
+        head: [
+          {
+            text: "EDP Type"
+          },
+          {
+            text: "Description"
+          },
+          {
+            text: "Rate per house",
+            format: "numeric"
+          },
+          {
+            text: "Amount",
+            format: "numeric"
+          }
+        ],
+        rows: [
+          [
+            {
+              text: "DLL"
+            },
+            {
+              text: "District Level Licensing - Thames Valley"
+            },
+            {
+              text: quote.ratePerHouseFormatted,
+              format: "numeric"
+            },
+            {
+              text: quote.totalLevyFormatted,
+              format: "numeric"
+            }
+          ],
+          [
+            {
+              text: "Total",
+              attributes: {
+                colspan: "3"
+              }
+            },
+            {
+              text: quote.totalLevyFormatted,
+              format: "numeric"
+            }
+          ]
+        ]
+      }) }}
+
+      {# Submit form #}
+      <form method="post" novalidate class="govuk-!-margin-top-6">
+        <input type="hidden" name="crumb" value="{{ crumb }}">
+        <input type="hidden" name="action" value="send">
+
+        {{ govukButton({
+          text: "Accept quote and pay",
+          classes: "govuk-!-margin-right-3"
+        }) }}
+      </form>
+    </div>
+
+    {# Sidebar #}
+    <div class="govuk-grid-column-one-third">
+      <aside class="app-related-items" role="complementary">
+        <h2 class="govuk-heading-s">Quote summary</h2>
+        <p class="govuk-body-s">
+          <strong>Total levy:</strong> {{ quote.totalLevyFormatted }}<br>
+          <strong>Houses:</strong> {{ quote.numberOfHouses }}<br>
+          <strong>EDPs:</strong> 1
+        </p>
+
+        <h2 class="govuk-heading-s govuk-!-margin-top-4">What happens next</h2>
+        <ol class="govuk-list govuk-list--number govuk-body-s">
+          {% for step in nextSteps %}
+            <li>{{ step }}</li>
+          {% endfor %}
+        </ol>
+      </aside>
+    </div>
+  </div>
+
+  {% if config.cdpEnvironment == 'local' and context | length and not context.isForceAccess %}
+    {% include "partials/debug.html" %}
+  {% endif %}
+{% endblock %}

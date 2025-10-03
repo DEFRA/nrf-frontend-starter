@@ -18,12 +18,14 @@ export class MockFileUploadPageController extends QuestionPageController {
     this.viewName = 'mock-file-upload'
   }
 
+  getSummaryPath() {
+    return '/quote'
+  }
+
   /**
    * Override the get handler to add custom data to the view model
    */
   makeGetRouteHandler() {
-    const originalHandler = super.makeGetRouteHandler()
-
     return (request, context, h) => {
       const viewModel = this.getViewModel(request, context)
 
@@ -53,7 +55,6 @@ export class MockFileUploadPageController extends QuestionPageController {
     return async (request, context, h) => {
       const { payload } = request
       const { state } = context
-      const { path } = this
 
       // Check if this is a simulation button click (not actual file upload)
       if (payload && payload.simulateUpload === 'true') {
@@ -66,7 +67,8 @@ export class MockFileUploadPageController extends QuestionPageController {
           'land-registry.geojson'
         ]
 
-        const randomName = fileNames[Math.floor(Math.random() * fileNames.length)]
+        const randomName =
+          fileNames[Math.floor(Math.random() * fileNames.length)]
         const randomSize = Math.floor(Math.random() * 100000) + 10000 // 10KB to 100KB
 
         // Create mock file metadata
@@ -74,11 +76,12 @@ export class MockFileUploadPageController extends QuestionPageController {
           id: `mock-${Date.now()}`,
           filename: randomName,
           size: randomSize,
-          type: randomName.endsWith('.json') || randomName.endsWith('.geojson')
-            ? 'application/geo+json'
-            : randomName.endsWith('.kml')
-              ? 'application/vnd.google-earth.kml+xml'
-              : 'application/octet-stream',
+          type:
+            randomName.endsWith('.json') || randomName.endsWith('.geojson')
+              ? 'application/geo+json'
+              : randomName.endsWith('.kml')
+                ? 'application/vnd.google-earth.kml+xml'
+                : 'application/octet-stream',
           uploadedAt: new Date().toISOString()
         }
 
