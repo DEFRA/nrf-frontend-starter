@@ -1,5 +1,6 @@
 import Boom from '@hapi/boom'
 import { routes } from './common/constants/routes.js'
+import { formIds } from './common/constants/form-ids.js'
 
 // Form metadata
 const now = new Date()
@@ -40,7 +41,7 @@ const definition = {
         {
           type: 'TextField',
           title: 'Development name',
-          name: 'developmentName',
+          name: formIds.developmentName,
           options: {
             required: true
           },
@@ -59,7 +60,7 @@ const definition = {
         {
           type: 'NumberField',
           title: 'Number of houses in the development',
-          name: 'numberOfHouses',
+          name: formIds.numberOfHouses,
           hint: 'Enter the total number of residential units in your development',
           options: {
             required: true,
@@ -83,7 +84,7 @@ const definition = {
           type: 'RadiosField',
           title:
             'How would you like to provide your development site location?',
-          name: 'locationMethod',
+          name: formIds.locationMethod,
           shortDescription: 'Select your preferred method',
           hint: 'Choose the method that works best for you. You can upload a file with your development boundary, enter a postcode, provide coordinates, or draw on a map.',
           options: {
@@ -131,7 +132,7 @@ const definition = {
         {
           type: 'TextField',
           title: 'Enter your development site postcode',
-          name: 'postcode',
+          name: formIds.postcode,
           shortDescription: 'Postcode',
           hint: "Enter the postcode of your development site. We'll use this to locate your site on a map where you can draw the boundary.",
           options: {
@@ -161,7 +162,7 @@ const definition = {
         {
           type: 'TextField',
           title: 'Enter your development site coordinates',
-          name: 'coordinates',
+          name: formIds.coordinates,
           shortDescription: 'Coordinates',
           hint: "Enter the latitude and longitude coordinates of your development site. We'll use this to locate your site on a map where you can draw the boundary.",
           options: {
@@ -183,7 +184,7 @@ const definition = {
         {
           type: 'TextField',
           title: 'Draw your development boundary',
-          name: 'mapBoundary',
+          name: formIds.mapBoundary,
           shortDescription: 'Map drawing',
           hint: 'Use the map below to draw the boundary of your development site. Click on the map to add points and create a polygon.',
           options: {
@@ -395,22 +396,26 @@ const outputService = {
     let locationMethod = '-'
     let locationDetails = '-'
 
-    if (formData['locationMethod']) {
-      locationMethod = formData['locationMethod'].value
+    if (formData[formIds.locationMethod]) {
+      locationMethod = formData[formIds.locationMethod].value
     }
 
-    if (formData['postcode']) {
-      locationDetails = formData['postcode'].value
-    } else if (formData['coordinates']) {
-      locationDetails = formData['coordinates'].value
-    } else if (formData['mapBoundary']) {
-      locationDetails = formData['mapBoundary'].value || 'Map boundary drawn'
-    } else if (formData['dVAPFw']) {
+    if (formData[formIds.postcode]) {
+      locationDetails = formData[formIds.postcode].value
+    } else if (formData[formIds.coordinates]) {
+      locationDetails = formData[formIds.coordinates].value
+    } else if (formData[formIds.mapBoundary]) {
+      locationDetails =
+        formData[formIds.mapBoundary].value || 'Map boundary drawn'
+    } else if (formData[formIds.uploadBoundary]) {
       locationDetails = 'File uploaded'
     }
 
     // £2,500 per house for DLL
-    const numberOfHouses = parseInt(formData['numberOfHouses']?.value || 0, 10)
+    const numberOfHouses = parseInt(
+      formData[formIds.numberOfHouses]?.value || 0,
+      10
+    )
     const ratePerHouse = 2500
     const calculatedLevy = numberOfHouses * ratePerHouse
 
@@ -426,9 +431,9 @@ const outputService = {
       data: {
         // Keep for backward compatibility
         location:
-          formData['postcode']?.value ||
-          formData['coordinates']?.value ||
-          formData['mapBoundary']?.value ||
+          formData[formIds.postcode]?.value ||
+          formData[formIds.coordinates]?.value ||
+          formData[formIds.mapBoundary]?.value ||
           'Unknown location'
       }
     }

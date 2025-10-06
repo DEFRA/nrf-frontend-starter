@@ -1,6 +1,7 @@
 import { SummaryPageController } from '@defra/forms-engine-plugin/controllers/SummaryPageController.js'
 import { formatCurrency } from '../../../config/nunjucks/filters/format-currency.js'
 import { routes } from '../../common/constants/routes.js'
+import { formIds } from '../../common/constants/form-ids.js'
 
 /**
  * Controller for the Quote page.
@@ -19,7 +20,7 @@ export class QuotePageController extends SummaryPageController {
    * @returns {number} Calculated levy amount
    */
   calculateLevy(state) {
-    const numberOfHouses = parseInt(state?.numberOfHouses || 0, 10)
+    const numberOfHouses = parseInt(state?.[formIds.numberOfHouses] || 0, 10)
     const ratePerHouse = 2500 // £2,500 per house for DLL
     return numberOfHouses * ratePerHouse
   }
@@ -36,7 +37,7 @@ export class QuotePageController extends SummaryPageController {
     const { state } = context
 
     const levy = this.calculateLevy(state)
-    const numberOfHouses = parseInt(state?.numberOfHouses || 0, 10)
+    const numberOfHouses = parseInt(state?.[formIds.numberOfHouses] || 0, 10)
     const ratePerHouse = 2500
 
     viewModel.quote = {
