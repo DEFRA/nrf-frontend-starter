@@ -7,5 +7,6 @@ export const routes = {
   enterPostcode: '/postcode',
   enterCoordinates: '/coordinates',
   drawBoundary: '/draw-boundary',
-  quote: '/quote'
+  quote: '/quote',
+  status: '/status'
 }

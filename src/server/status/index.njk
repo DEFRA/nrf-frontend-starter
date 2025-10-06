@@ -1,0 +1,150 @@
+{% extends 'layouts/page.njk' %}
+
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukPanel({
+        titleText: "Application " + submission.id,
+        html: "Submitted on " + (submission.date | formatDate('dd MMMM yyyy')) + " at " + (submission.date | formatDate('HH:mm'))
+      }) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-margin-top-6">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">Application status</h2>
+      <p class="govuk-body">
+        {{ govukTag({
+          text: submission.status,
+          classes: statusTagClass
+        }) }}
+      </p>
+
+      <h2 class="govuk-heading-m govuk-!-margin-top-6">Development details</h2>
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Development name"
+            },
+            value: {
+              text: submission.formData.developmentName.value if submission.formData.developmentName else "-"
+            }
+          },
+          {
+            key: {
+              text: "Number of houses"
+            },
+            value: {
+              text: submission.formData.numberOfHouses.value if submission.formData.numberOfHouses else "-"
+            }
+          },
+          {
+            key: {
+              text: "Location method"
+            },
+            value: {
+              text: submission.locationMethod
+            }
+          },
+          {
+            key: {
+              text: "Location details"
+            },
+            value: {
+              text: submission.locationDetails
+            }
+          }
+        ]
+      }) }}
+
+      <h2 class="govuk-heading-m govuk-!-margin-top-6">Environmental Development Plan breakdown</h2>
+      {{ govukTable({
+        head: [
+          {
+            text: "EDP Type"
+          },
+          {
+            text: "Description"
+          },
+          {
+            text: "Rate per house",
+            format: "numeric"
+          },
+          {
+            text: "Amount",
+            format: "numeric"
+          }
+        ],
+        rows: [
+          [
+            {
+              text: "DLL"
+            },
+            {
+              text: "District Level Licensing - Thames Valley"
+            },
+            {
+              text: quote.ratePerHouseFormatted,
+              format: "numeric"
+            },
+            {
+              text: quote.totalLevyFormatted,
+              format: "numeric"
+            }
+          ],
+          [
+            {
+              text: "Total",
+              attributes: {
+                colspan: "3"
+              }
+            },
+            {
+              text: quote.totalLevyFormatted,
+              format: "numeric"
+            }
+          ]
+        ]
+      }) }}
+
+      <div class="govuk-button-group govuk-!-margin-top-6">
+        {% if submission.status == 'Pending Payment' %}
+          {{ govukButton({
+            text: "Make payment",
+            href: "#"
+          }) }}
+        {% endif %}
+        <a class="govuk-link" href="/">Back to applications</a>
+      </div>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <aside class="app-related-items" role="complementary">
+        <h2 class="govuk-heading-s">Quote summary</h2>
+        <p class="govuk-body-s">
+          <strong>Total levy:</strong> {{ quote.totalLevyFormatted }}<br>
+          <strong>Houses:</strong> {{ quote.numberOfHouses }}<br>
+          <strong>EDPs:</strong> 1
+        </p>
+
+        <h2 class="govuk-heading-s govuk-!-margin-top-4">Reference number</h2>
+        <p class="govuk-body-s">
+          {{ submission.id }}
+        </p>
+
+        <h2 class="govuk-heading-s govuk-!-margin-top-4">Submitted</h2>
+        <p class="govuk-body-s">
+          {{ submission.date | formatDate('dd MMMM yyyy') }}<br>
+          {{ submission.date | formatDate('HH:mm') }}
+        </p>
+      </aside>
+    </div>
+  </div>
+{% endblock %}

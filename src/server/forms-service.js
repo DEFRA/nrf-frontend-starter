@@ -447,13 +447,13 @@ const outputService = {
     session.set('submissions', submissions)
 
     logger.info({ submission: simpleSubmission }, 'Submission stored')
+    // Store the submission ID in session for redirect
+    session.set('lastSubmissionId', referenceNumber)
 
+    // Return confirmation object for forms engine
     return {
-      reference: referenceNumber,
-      confirmation: {
-        title: 'Application complete',
-        message: `Your reference number is ${referenceNumber}`
-      }
+      title: 'Application submitted',
+      content: 'Your environmental levy application has been submitted.'
     }
   },
 
@@ -462,6 +462,19 @@ const outputService = {
     const session = request.yar
     const submissions = session.get('submissions') || []
     return submissions
+  },
+
+  // Get a single submission by ID
+  getSubmissionById: async function (request, id) {
+    const session = request.yar
+    const submissions = session.get('submissions') || []
+    const submission = submissions.find((s) => s.id === id)
+
+    if (!submission) {
+      throw Boom.notFound(`Submission '${id}' not found`)
+    }
+
+    return submission
   }
 }
 

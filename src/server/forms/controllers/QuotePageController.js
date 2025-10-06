@@ -30,6 +30,16 @@ export class QuotePageController extends SummaryPageController {
   }
 
   /**
+   * Override getStatusPath to redirect to custom status page after submission
+   * Note: This method is called WITHOUT parameters by the forms engine
+   */
+  getStatusPath() {
+    // We can't access the request object here, so return the relative path
+    // The submission ID will be passed via URL parameter
+    return `${routes.status}/latest`
+  }
+
+  /**
    * Override getSummaryViewModel to add quote calculation and context
    */
   getSummaryViewModel(request, context) {
