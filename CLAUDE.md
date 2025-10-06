@@ -164,6 +164,13 @@ docker build --tag nrf-frontend-starter .                       # Production ima
 - `outputService.submit(request, formId, result)`: handle form submission
 - `formSubmissionService.persistFiles(context, request, model)`: handle file uploads
 
+## File Naming Conventions
+
+- **kebab-case** for most files: `forms-service.js`, `session-cache.js`, `routes.js`
+- **PascalCase** for controllers: `QuotePageController.js`, `MapDrawingController.js`
+
+This convention makes it clear what kind of export to expect from the file.
+
 ## Node.js Version
 
 Requires Node.js >= 22.16.0 (use `nvm use` to set correct version)
