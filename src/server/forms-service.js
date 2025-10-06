@@ -1,6 +1,9 @@
 import Boom from '@hapi/boom'
 import { routes } from './common/constants/routes.js'
 import { formIds } from './common/constants/form-ids.js'
+import { createLogger } from './common/helpers/logging/logger.js'
+
+const logger = createLogger()
 
 // Form metadata
 const now = new Date()
@@ -349,7 +352,7 @@ const outputService = {
     items,
     submitResponse
   ) {
-    console.log('OUTPUT SERVICE SUBMIT CALLED')
+    logger.info('Output service submit called')
 
     const referenceNumber = `REF-${Date.now()}`
 
@@ -358,7 +361,7 @@ const outputService = {
 
     // Check if we have submitResponse with processed data (from formSubmissionService)
     if (submitResponse && submitResponse.main) {
-      console.log('Using submitResponse data (V2 format)')
+      logger.info('Using submitResponse data (V2 format)')
       if (Array.isArray(submitResponse.main)) {
         submitResponse.main.forEach((item) => {
           formData[item.name] = {
@@ -370,7 +373,7 @@ const outputService = {
     }
     // Fallback to items if no submitResponse (shouldn't happen in V2)
     else if (Array.isArray(items)) {
-      console.log('Falling back to items array')
+      logger.info('Falling back to items array')
       items.forEach((item) => {
         try {
           // Only extract simple, serializable properties
@@ -386,12 +389,12 @@ const outputService = {
             }
           }
         } catch (e) {
-          console.log('Error extracting item:', e.message)
+          logger.error({ err: e }, 'Error extracting item')
         }
       })
     }
 
-    console.log('Form data extracted:', JSON.stringify(formData, null, 2))
+    logger.info({ formData }, 'Form data extracted')
 
     let locationMethod = '-'
     let locationDetails = '-'
@@ -443,7 +446,7 @@ const outputService = {
     submissions.push(simpleSubmission)
     session.set('submissions', submissions)
 
-    console.log('Submission stored:', simpleSubmission)
+    logger.info({ submission: simpleSubmission }, 'Submission stored')
 
     return {
       reference: referenceNumber,
@@ -464,7 +467,7 @@ const outputService = {
 
 const formSubmissionService = {
   submit: async function (payload, request) {
-    console.log('Form submission service called')
+    logger.info('Form submission service called')
 
     const reference = `REF-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
 
