@@ -120,8 +120,4 @@
       </aside>
     </div>
   </div>
-
-  {% if config.cdpEnvironment == 'local' and context and context | length > 0 and not context.isForceAccess %}
-    {% include "partials/debug.html" %}
-  {% endif %}
 {% endblock %}
