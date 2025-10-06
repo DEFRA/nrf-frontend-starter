@@ -29,13 +29,7 @@ export class QuotePageController extends SummaryPageController {
     return routes.quote
   }
 
-  /**
-   * Override getStatusPath to redirect to custom status page after submission
-   * Note: This method is called WITHOUT parameters by the forms engine
-   */
   getStatusPath() {
-    // We can't access the request object here, so return the relative path
-    // The submission ID will be passed via URL parameter
     return `${routes.status}/latest`
   }
 
@@ -75,8 +69,6 @@ export class QuotePageController extends SummaryPageController {
       'Receive confirmation'
     ]
 
-    // Remove returnUrl from location method field so changing it routes to the appropriate input page
-    // instead of back to the quote page
     if (viewModel.checkAnswers) {
       viewModel.checkAnswers.forEach((section) => {
         section.summaryList?.rows?.forEach((row) => {

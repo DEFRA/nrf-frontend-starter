@@ -7,7 +7,6 @@ export const statusController = {
   async handler(request, h) {
     let { id } = request.params
 
-    // Handle 'latest' as a special case to get the most recent submission
     if (id === 'latest') {
       const submissions = await services.outputService.getSubmissions(request)
       if (submissions.length === 0) {
