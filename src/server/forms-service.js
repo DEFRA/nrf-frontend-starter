@@ -1,6 +1,7 @@
 import Boom from '@hapi/boom'
 import { routes } from './common/constants/routes.js'
 import { formIds } from './common/constants/form-ids.js'
+import { LEVY_RATES } from './common/constants/levy-rates.js'
 import { createLogger } from './common/helpers/logging/logger.js'
 
 const logger = createLogger()
@@ -419,20 +420,32 @@ const outputService = {
       formData[formIds.numberOfHouses]?.value || 0,
       10
     )
-    const ratePerHouse = 2500
+    const ratePerHouse = LEVY_RATES.DLL_RATE_PER_HOUSE
     const calculatedLevy = numberOfHouses * ratePerHouse
 
     const simpleSubmission = {
       id: referenceNumber,
-      date: new Date().toISOString(), // Template expects 'date', not 'timestamp'
+      date: new Date().toISOString(),
       status: 'Pending Payment',
       formName: 'Environmental Development Plan',
       levy: calculatedLevy,
       locationMethod,
       locationDetails,
       formData,
+      quote: {
+        numberOfHouses,
+        ratePerHouse,
+        totalLevy: calculatedLevy,
+        edpBreakdown: [
+          {
+            type: 'DLL',
+            description: 'District Level Licensing - Thames Valley',
+            ratePerHouse,
+            amount: calculatedLevy
+          }
+        ]
+      },
       data: {
-        // Keep for backward compatibility
         location:
           formData[formIds.postcode]?.value ||
           formData[formIds.coordinates]?.value ||

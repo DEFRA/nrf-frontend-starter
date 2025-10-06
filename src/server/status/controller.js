@@ -21,12 +21,6 @@ export const statusController = {
       id
     )
 
-    const numberOfHouses = parseInt(
-      submission.formData?.numberOfHouses?.value || 0,
-      10
-    )
-    const ratePerHouse = 2500
-
     const statusTagClass =
       submission.status === 'Pending Payment'
         ? 'govuk-tag--orange'
@@ -41,11 +35,11 @@ export const statusController = {
       submission,
       statusTagClass,
       quote: {
-        totalLevy: submission.levy,
-        totalLevyFormatted: formatCurrency(submission.levy),
-        numberOfHouses,
-        ratePerHouse,
-        ratePerHouseFormatted: formatCurrency(ratePerHouse)
+        totalLevy: submission.quote.totalLevy,
+        totalLevyFormatted: formatCurrency(submission.quote.totalLevy),
+        numberOfHouses: submission.quote.numberOfHouses,
+        ratePerHouse: submission.quote.ratePerHouse,
+        ratePerHouseFormatted: formatCurrency(submission.quote.ratePerHouse)
       },
       routes
     })
