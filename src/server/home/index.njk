@@ -1,17 +1,119 @@
 {% extends 'layouts/page.njk' %}
 
-{% block content %}
-  {{ appHeading({
-    text: heading,
-    caption: "nrf-frontend-starter"
-  }) }}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
 
+{% macro locationMethod(submission) %}
+  {%- if submission.locationMethod -%}
+    {{ submission.locationMethod }}
+  {%- elif submission.formData and submission.formData['locationMethod'] -%}
+    {{ submission.formData['locationMethod'].value }}
+  {%- else -%}
+    -
+  {%- endif -%}
+{% endmacro %}
+
+{% macro locationDetails(submission) %}
+  {%- if submission.locationDetails -%}
+    {{ submission.locationDetails }}
+  {%- elif submission.formData -%}
+    {%- if submission.formData['postcode'] -%}
+      {{ submission.formData['postcode'].value }}
+    {%- elif submission.formData['coordinates'] -%}
+      {{ submission.formData['coordinates'].value }}
+    {%- elif submission.formData['mapBoundary'] -%}
+      {{ submission.formData['mapBoundary'].value | default('Map boundary drawn') }}
+    {%- elif submission.formData['dVAPFw'] -%}
+      File uploaded
+    {%- else -%}
+      -
+    {%- endif -%}
+  {%- else -%}
+    -
+  {%- endif -%}
+{% endmacro %}
+
+{% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-body" data-testid="app-page-body">
-        <p></p>
-      </div>
+      <h1 class="govuk-heading-xl">Your Development Applications</h1>
+      <p class="govuk-body-l">View and manage your environmental development plan applications and levy payments.</p>
+
+      {% if submissions and submissions.length > 0 %}
+        <table class="govuk-table">
+          <caption class="govuk-table__caption govuk-visually-hidden">Development applications</caption>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Application</th>
+              <th scope="col" class="govuk-table__header">Location Method</th>
+              <th scope="col" class="govuk-table__header">Location Details</th>
+              <th scope="col" class="govuk-table__header">Status</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Levy Amount</th>
+              <th scope="col" class="govuk-table__header">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for submission in submissions %}
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header">
+                <strong>{{ submission.id }}</strong><br>
+                <span class="govuk-body-s">{{ submission.date }}</span>
+              </th>
+              <td class="govuk-table__cell">
+                {{ locationMethod(submission) }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ locationDetails(submission) }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ govukTag({
+                  text: submission.status,
+                  classes: "govuk-tag--orange"
+                }) }}
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                <strong>£{{ submission.levy.toLocaleString() }}</strong>
+              </td>
+              <td class="govuk-table__cell">
+                <a href="{{ routes.form }}{{ routes.status }}/{{ submission.id }}" class="govuk-link">View details</a>
+                {% if submission.status == 'Pending Payment' %}
+                  <br><a href="#" class="govuk-link">Make payment</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="govuk-body">You don't have any applications yet.</p>
+        <p class="govuk-body">Click the button below to create your first application.</p>
+      {% endif %}
+
+      {{ govukButton({
+        text: "Create new application",
+        href: routes.form + "/start",
+        isStartButton: true
+      }) }}
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <aside>
+        <h2 class="govuk-heading-m">Application Status Guide</h2>
+        <ul class="govuk-list govuk-list--bullet govuk-body-s">
+          <li><strong>Draft</strong> - Application in progress</li>
+          <li><strong>Pending Payment</strong> - Quote received, payment required</li>
+          <li><strong>Paid</strong> - Payment completed, under review</li>
+          <li><strong>Approved</strong> - Application approved and active</li>
+        </ul>
+
+        <h2 class="govuk-heading-m govuk-!-margin-top-6">Environmental Development Plans</h2>
+        <p class="govuk-body-s">Your development may be subject to one or more Environmental Development Plans:</p>
+        <ul class="govuk-list govuk-list--bullet govuk-body-s">
+          <li><strong>District Level Licensing (DLL)</strong> - For developments affecting protected species</li>
+          <li><strong>Nutrient Mitigation</strong> - For developments affecting water quality</li>
+        </ul>
+      </aside>
     </div>
   </div>
-
 {% endblock %}

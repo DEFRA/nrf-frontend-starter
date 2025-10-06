@@ -138,6 +138,13 @@ If you are having issues with formatting of line breaks on Windows update your g
 git config --global core.autocrlf false
 ```
 
+### File Naming Conventions
+
+- **kebab-case** for most files: `forms-service.js`, `session-cache.js`, `routes.js`
+- **PascalCase** for controllers: `QuotePageController.js`, `MapDrawingController.js`
+
+This convention makes it clear what kind of export to expect from the file.
+
 ## Docker
 
 ### Development image

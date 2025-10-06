@@ -1,6 +1,9 @@
 import path from 'path'
+import plugin from '@defra/forms-engine-plugin'
+import { secureContext } from '@defra/hapi-secure-context'
 import hapi from '@hapi/hapi'
 import Scooter from '@hapi/scooter'
+import Crumb from '@hapi/crumb'
 
 import { router } from './router.js'
 import { config } from '../config/config.js'
@@ -12,8 +15,14 @@ import { requestTracing } from './common/helpers/request-tracing.js'
 import { requestLogger } from './common/helpers/logging/request-logger.js'
 import { sessionCache } from './common/helpers/session-cache/session-cache.js'
 import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
-import { secureContext } from '@defra/hapi-secure-context'
 import { contentSecurityPolicy } from './common/helpers/content-security-policy.js'
+import { context } from '../config/nunjucks/context/context.js'
+import services from './forms-service.js'
+import { FormQuestionPageController } from './forms/controllers/FormQuestionPageController.js'
+import { MapDrawingController } from './forms/controllers/MapDrawingController.js'
+import { MockFileUploadPageController } from './forms/controllers/MockFileUploadPageController.js'
+import { CustomPageController } from './forms/controllers/CustomPageController.js'
+import { QuotePageController } from './forms/controllers/QuotePageController.js'
 
 export async function createServer() {
   setupProxy()
@@ -61,9 +70,35 @@ export async function createServer() {
     sessionCache,
     nunjucksConfig,
     Scooter,
+    Crumb,
     contentSecurityPolicy,
-    router // Register all the controllers/routes defined in src/server/router.js
+    router
   ])
+
+  await server.register({
+    plugin,
+    options: {
+      services,
+      controllers: {
+        FormQuestionPageController,
+        MapDrawingController,
+        MockFileUploadPageController,
+        CustomPageController,
+        QuotePageController
+      },
+      nunjucks: {
+        baseLayoutPath: 'layouts/page.njk',
+        paths: [
+          'node_modules/govuk-frontend/dist/',
+          'src/server/common/templates',
+          'src/server/common/components',
+          'src/server/forms/views'
+        ]
+      },
+      viewContext: context,
+      baseUrl: `http://localhost:${config.get('port')}`
+    }
+  })
 
   server.ext('onPreResponse', catchAll)
 

@@ -1,0 +1,95 @@
+{% extends baseLayoutPath %}
+
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errors %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: checkErrorTemplates(errors)
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+
+      {{ govukInsetText({
+        text: "File upload simulation: In a production environment, this would allow you to upload boundary files (.shp, .kml, .geojson). For this demo, you can simulate a file upload or use other input methods."
+      }) }}
+
+      <p class="govuk-body">We would accept the following file types:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>Shape files (.shp)</li>
+        <li>KML files (.kml)</li>
+        <li>GeoJSON files (.geojson)</li>
+        <li>JSON files (.json)</li>
+      </ul>
+
+      <p class="govuk-body"><strong>Maximum file size:</strong> {{ uploadInfo.maxFileSize }}</p>
+
+      {% if uploadedFiles and uploadedFiles.length > 0 %}
+        <h2 class="govuk-heading-m">Simulated uploaded files ({{ uploadedFiles.length }}/5)</h2>
+
+        <table class="govuk-table">
+          <caption class="govuk-table__caption govuk-visually-hidden">Files you've uploaded (simulated)</caption>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Filename</th>
+              <th scope="col" class="govuk-table__header">Size</th>
+              <th scope="col" class="govuk-table__header">Type</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for file in uploadedFiles %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{ file.filename }}</td>
+              <td class="govuk-table__cell">{{ ((file.size / 1024) | round(1)) }} KB</td>
+              <td class="govuk-table__cell">{{ file.type }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <p class="govuk-body govuk-!-font-size-16">These are simulated files for demonstration purposes. Maximum 5 files can be stored.</p>
+      {% endif %}
+
+      <form method="POST" novalidate>
+        <input type="hidden" name="crumb" value="{{ crumb }}" />
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Simulate file upload",
+            name: "simulateUpload",
+            value: "true",
+            classes: "govuk-button--secondary"
+          }) }}
+
+          {{ govukButton({
+            text: "Continue",
+            type: "submit"
+          }) }}
+        </div>
+      </form>
+
+      <details class="govuk-details">
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">
+            Alternative input methods
+          </span>
+        </summary>
+        <div class="govuk-details__text">
+          <p class="govuk-body">If you can't upload a file, you can:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>Enter a postcode to search by location</li>
+            <li>Enter specific latitude/longitude coordinates</li>
+            <li>Draw directly on an interactive map</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div>
+{% endblock %}
