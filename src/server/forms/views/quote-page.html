@@ -4,6 +4,7 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
 
 {% block content %}
   <div class="govuk-grid-row">
@@ -24,11 +25,10 @@
         Based on your development details, here is your environmental levy calculation.
       </p>
 
-      {# Green panel with total levy amount #}
-      <div class="app-quote-panel">
-        <h2 class="app-quote-panel__title govuk-heading-m">Total Environmental Levy</h2>
-        <p class="app-quote-panel__amount">{{ quote.totalLevyFormatted }}</p>
-      </div>
+      {{ govukPanel({
+        titleText: "Total Environmental Levy",
+        html: quote.totalLevyFormatted
+      }) }}
 
       {# Development summary section #}
       <h2 class="govuk-heading-m govuk-!-margin-top-6">Development summary</h2>
