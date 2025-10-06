@@ -29,8 +29,8 @@
               <td class="govuk-table__cell">
                 {% if submission.locationMethod %}
                   {{ submission.locationMethod }}
-                {% elif submission.formData and submission.formData['SYQpGU'] %}
-                  {{ submission.formData['SYQpGU'].value }}
+                {% elif submission.formData and submission.formData['locationMethod'] %}
+                  {{ submission.formData['locationMethod'].value }}
                 {% else %}
                   -
                 {% endif %}
@@ -39,12 +39,12 @@
                 {% if submission.locationDetails %}
                   {{ submission.locationDetails }}
                 {% elif submission.formData %}
-                  {% if submission.formData['StTHJK'] %}
-                    {{ submission.formData['StTHJK'].value }}
-                  {% elif submission.formData['nVXqZE'] %}
-                    {{ submission.formData['nVXqZE'].value }}
-                  {% elif submission.formData['NiAeAB'] %}
-                    {{ submission.formData['NiAeAB'].value | default('Map boundary drawn') }}
+                  {% if submission.formData['postcode'] %}
+                    {{ submission.formData['postcode'].value }}
+                  {% elif submission.formData['coordinates'] %}
+                    {{ submission.formData['coordinates'].value }}
+                  {% elif submission.formData['mapBoundary'] %}
+                    {{ submission.formData['mapBoundary'].value | default('Map boundary drawn') }}
                   {% elif submission.formData['dVAPFw'] %}
                     File uploaded
                   {% else %}

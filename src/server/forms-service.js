@@ -83,7 +83,7 @@ const definition = {
           type: 'RadiosField',
           title:
             'How would you like to provide your development site location?',
-          name: 'SYQpGU',
+          name: 'locationMethod',
           shortDescription: 'Select your preferred method',
           hint: 'Choose the method that works best for you. You can upload a file with your development boundary, enter a postcode, provide coordinates, or draw on a map.',
           options: {
@@ -131,7 +131,7 @@ const definition = {
         {
           type: 'TextField',
           title: 'Enter your development site postcode',
-          name: 'StTHJK',
+          name: 'postcode',
           shortDescription: 'Postcode',
           hint: "Enter the postcode of your development site. We'll use this to locate your site on a map where you can draw the boundary.",
           options: {
@@ -161,7 +161,7 @@ const definition = {
         {
           type: 'TextField',
           title: 'Enter your development site coordinates',
-          name: 'nVXqZE',
+          name: 'coordinates',
           shortDescription: 'Coordinates',
           hint: "Enter the latitude and longitude coordinates of your development site. We'll use this to locate your site on a map where you can draw the boundary.",
           options: {
@@ -183,7 +183,7 @@ const definition = {
         {
           type: 'TextField',
           title: 'Draw your development boundary',
-          name: 'NiAeAB',
+          name: 'mapBoundary',
           shortDescription: 'Map drawing',
           hint: 'Use the map below to draw the boundary of your development site. Click on the map to add points and create a polygon.',
           options: {
@@ -275,7 +275,7 @@ const definition = {
   lists: [
     {
       name: 'ErNfeI',
-      title: 'List for question SYQpGU',
+      title: 'List for question locationMethod',
       type: 'string',
       items: [
         {
@@ -395,16 +395,16 @@ const outputService = {
     let locationMethod = '-'
     let locationDetails = '-'
 
-    if (formData['SYQpGU']) {
-      locationMethod = formData['SYQpGU'].value
+    if (formData['locationMethod']) {
+      locationMethod = formData['locationMethod'].value
     }
 
-    if (formData['StTHJK']) {
-      locationDetails = formData['StTHJK'].value
-    } else if (formData['nVXqZE']) {
-      locationDetails = formData['nVXqZE'].value
-    } else if (formData['NiAeAB']) {
-      locationDetails = formData['NiAeAB'].value || 'Map boundary drawn'
+    if (formData['postcode']) {
+      locationDetails = formData['postcode'].value
+    } else if (formData['coordinates']) {
+      locationDetails = formData['coordinates'].value
+    } else if (formData['mapBoundary']) {
+      locationDetails = formData['mapBoundary'].value || 'Map boundary drawn'
     } else if (formData['dVAPFw']) {
       locationDetails = 'File uploaded'
     }
@@ -426,9 +426,9 @@ const outputService = {
       data: {
         // Keep for backward compatibility
         location:
-          formData['StTHJK']?.value ||
-          formData['nVXqZE']?.value ||
-          formData['NiAeAB']?.value ||
+          formData['postcode']?.value ||
+          formData['coordinates']?.value ||
+          formData['mapBoundary']?.value ||
           'Unknown location'
       }
     }
