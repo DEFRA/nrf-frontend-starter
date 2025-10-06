@@ -1,4 +1,5 @@
 import Boom from '@hapi/boom'
+import { routes } from './common/constants/routes.js'
 
 // Form metadata
 const now = new Date()
@@ -33,7 +34,7 @@ const definition = {
   pages: [
     {
       title: '',
-      path: '/how-would-you-like-to-provide-your-development-site-location',
+      path: routes.locationMethod,
       controller: 'FormQuestionPageController',
       components: [
         {
@@ -53,19 +54,19 @@ const definition = {
       ],
       next: [
         {
-          path: '/upload-your-development-boundary-file',
+          path: routes.uploadBoundary,
           condition: '4d237c09-217e-4ad2-aae9-fa8243276d56'
         },
         {
-          path: '/enter-your-development-site-postcode',
+          path: routes.enterPostcode,
           condition: 'cad5f36c-71db-4ece-83ec-26b8921dcea4'
         },
         {
-          path: '/enter-your-development-site-coordinates',
+          path: routes.enterCoordinates,
           condition: '00c2571c-6ae1-4445-91b6-ade76b95126c'
         },
         {
-          path: '/draw-your-development-boundary',
+          path: routes.drawBoundary,
           condition: 'a971b6c9-a565-4500-b8eb-903e9dfbaff5'
         }
       ],
@@ -73,16 +74,16 @@ const definition = {
     },
     {
       title: 'Upload your development boundary file',
-      path: '/upload-your-development-boundary-file',
+      path: routes.uploadBoundary,
       controller: 'MockFileUploadPageController',
       components: [],
-      next: [{ path: '/additional-development-details' }],
+      next: [{ path: routes.additionalDetails }],
       id: '84254391-93ae-445c-96b1-ef5018948577',
       condition: '4d237c09-217e-4ad2-aae9-fa8243276d56'
     },
     {
       title: '',
-      path: '/enter-your-development-site-postcode',
+      path: routes.enterPostcode,
       controller: 'FormQuestionPageController',
       components: [
         {
@@ -106,13 +107,13 @@ const definition = {
           id: '218110d5-3b2c-4023-86c3-0f1f071da37b'
         }
       ],
-      next: [{ path: '/additional-development-details' }],
+      next: [{ path: routes.additionalDetails }],
       id: '41fcecf7-b004-442c-bd4c-941013ef88fc',
       condition: 'cad5f36c-71db-4ece-83ec-26b8921dcea4'
     },
     {
       title: '',
-      path: '/enter-your-development-site-coordinates',
+      path: routes.enterCoordinates,
       controller: 'FormQuestionPageController',
       components: [
         {
@@ -128,13 +129,13 @@ const definition = {
           id: '9bf931d7-c1b0-4437-89af-311bc9648541'
         }
       ],
-      next: [{ path: '/additional-development-details' }],
+      next: [{ path: routes.additionalDetails }],
       id: '48d045de-8306-4a34-b77b-6d441b1fcfd0',
       condition: '00c2571c-6ae1-4445-91b6-ade76b95126c'
     },
     {
       title: 'Draw your development boundary',
-      path: '/draw-your-development-boundary',
+      path: routes.drawBoundary,
       controller: 'MapDrawingController',
       components: [
         {
@@ -150,13 +151,13 @@ const definition = {
           id: '0d1c3d79-6f26-4fdf-ab0c-e57ec9740b63'
         }
       ],
-      next: [{ path: '/additional-development-details' }],
+      next: [{ path: routes.additionalDetails }],
       id: '138dfccf-aff9-4e5b-8ca4-54edc5862a6d',
       condition: 'a971b6c9-a565-4500-b8eb-903e9dfbaff5'
     },
     {
       title: 'Additional development details',
-      path: '/additional-development-details',
+      path: routes.additionalDetails,
       controller: 'AdditionalDetailsPageController',
       components: [
         {
@@ -183,13 +184,13 @@ const definition = {
           id: 'b2c3d4e5-6f7a-8b9c-0d1e-2f3a4b5c6d7e'
         }
       ],
-      next: [{ path: '/quote' }],
+      next: [{ path: routes.quote }],
       id: 'f1e2d3c4-b5a6-9788-6543-21fedcba9876'
     },
     {
       id: '449a45f6-4541-4a46-91bd-8b8931b07b50',
       title: 'Quote',
-      path: '/quote',
+      path: routes.quote,
       controller: 'QuotePageController',
       next: []
     }

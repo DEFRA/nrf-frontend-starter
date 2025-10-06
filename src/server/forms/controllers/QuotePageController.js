@@ -1,5 +1,6 @@
 import { SummaryPageController } from '@defra/forms-engine-plugin/controllers/SummaryPageController.js'
 import { formatCurrency } from '../../../config/nunjucks/filters/format-currency.js'
+import { routes } from '../../common/constants/routes.js'
 
 /**
  * Controller for the Quote page.
@@ -24,7 +25,7 @@ export class QuotePageController extends SummaryPageController {
   }
 
   getSummaryPath() {
-    return '/quote'
+    return routes.quote
   }
 
   /**
@@ -69,12 +70,7 @@ export class QuotePageController extends SummaryPageController {
       viewModel.checkAnswers.forEach((section) => {
         section.summaryList?.rows?.forEach((row) => {
           const href = row.actions?.items?.[0]?.href
-          if (
-            href &&
-            href.includes(
-              'how-would-you-like-to-provide-your-development-site-location'
-            )
-          ) {
+          if (href && href.includes(routes.locationMethod)) {
             row.actions.items[0].href = href.split('?')[0]
           }
         })
