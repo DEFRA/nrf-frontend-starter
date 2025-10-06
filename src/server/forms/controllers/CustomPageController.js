@@ -1,14 +1,13 @@
 import { QuestionPageController } from '@defra/forms-engine-plugin/controllers/QuestionPageController.js'
 
 /**
- * Controller for the Additional Development Details page.
- * This page collects development name and number of houses,
- * and displays a sidebar with development location summary.
+ * Generic custom page controller.
+ * Can be used for any page that needs custom view logic or sidebar context.
  */
-export class AdditionalDetailsPageController extends QuestionPageController {
+export class CustomPageController extends QuestionPageController {
   constructor(model, pageDef) {
     super(model, pageDef)
-    this.viewName = 'additional-development-details'
+    this.viewName = 'development-details-question'
   }
 
   getSummaryPath() {

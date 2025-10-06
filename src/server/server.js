@@ -21,7 +21,7 @@ import services from './forms-service.js'
 import { FormQuestionPageController } from './forms/controllers/FormQuestionPageController.js'
 import { MapDrawingController } from './forms/controllers/MapDrawingController.js'
 import { MockFileUploadPageController } from './forms/controllers/MockFileUploadPageController.js'
-import { AdditionalDetailsPageController } from './forms/controllers/AdditionalDetailsPageController.js'
+import { CustomPageController } from './forms/controllers/CustomPageController.js'
 import { QuotePageController } from './forms/controllers/QuotePageController.js'
 
 export async function createServer() {
@@ -83,7 +83,7 @@ export async function createServer() {
         FormQuestionPageController,
         MapDrawingController,
         MockFileUploadPageController,
-        AdditionalDetailsPageController,
+        CustomPageController,
         QuotePageController
       },
       nunjucks: {
