@@ -13,12 +13,13 @@ const author = {
 
 const metadata = {
   id: '12345678-90ab-cdef-1234-567890abcdef',
-  slug: 'location-form',
-  title: 'Development Site Location Form',
+  slug: 'environmental-levy',
+  title: 'Environmental Levy Application',
   organisation: 'Defra',
   teamName: 'Example team',
   teamEmail: 'example-team@defra.gov.uk',
-  submissionGuidance: 'Thanks for providing your development site location',
+  submissionGuidance:
+    'Thanks for submitting your environmental levy application',
   notificationEmail: 'example-email-submission-recipient@defra.com',
   ...author,
   live: author
