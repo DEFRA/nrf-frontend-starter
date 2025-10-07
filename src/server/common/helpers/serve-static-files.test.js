@@ -1,5 +1,5 @@
 import { startServer } from './start-server.js'
-import { statusCodes } from '../constants/status-codes.js'
+import { STATUS_CODES } from '../constants/status-codes.js'
 
 describe('#serveStaticFiles', () => {
   let server
@@ -19,7 +19,7 @@ describe('#serveStaticFiles', () => {
         url: '/favicon.ico'
       })
 
-      expect(statusCode).toBe(statusCodes.noContent)
+      expect(statusCode).toBe(STATUS_CODES.NO_CONTENT)
     })
 
     test('Should serve assets as expected', async () => {
@@ -30,7 +30,7 @@ describe('#serveStaticFiles', () => {
         url: '/public/assets/images/govuk-crest.svg'
       })
 
-      expect(statusCode).toBe(statusCodes.ok)
+      expect(statusCode).toBe(STATUS_CODES.OK)
     })
   })
 })

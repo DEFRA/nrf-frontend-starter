@@ -1,5 +1,5 @@
 import { createServer } from '../server.js'
-import { statusCodes } from '../common/constants/status-codes.js'
+import { STATUS_CODES } from '../common/constants/status-codes.js'
 
 describe('#aboutController', () => {
   let server
@@ -20,6 +20,6 @@ describe('#aboutController', () => {
     })
 
     expect(result).toEqual(expect.stringContaining('About |'))
-    expect(statusCode).toBe(statusCodes.ok)
+    expect(statusCode).toBe(STATUS_CODES.OK)
   })
 })

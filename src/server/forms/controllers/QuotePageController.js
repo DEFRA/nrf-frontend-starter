@@ -1,7 +1,7 @@
 import { SummaryPageController } from '@defra/forms-engine-plugin/controllers/SummaryPageController.js'
 import { formatCurrency } from '../../../config/nunjucks/filters/format-currency.js'
-import { routes } from '../../common/constants/routes.js'
-import { formIds } from '../../common/constants/form-ids.js'
+import { ROUTES } from '../../common/constants/routes.js'
+import { FORM_IDS } from '../../common/constants/form-ids.js'
 import { LEVY_RATES } from '../../common/constants/levy-rates.js'
 
 /**
@@ -21,16 +21,16 @@ export class QuotePageController extends SummaryPageController {
    * @returns {number} Calculated levy amount
    */
   calculateLevy(state) {
-    const numberOfHouses = parseInt(state?.[formIds.numberOfHouses] || 0, 10)
+    const numberOfHouses = parseInt(state?.[FORM_IDS.NUMBER_OF_HOUSES] || 0, 10)
     return numberOfHouses * LEVY_RATES.DLL_RATE_PER_HOUSE
   }
 
   getSummaryPath() {
-    return routes.quote
+    return ROUTES.QUOTE
   }
 
   getStatusPath() {
-    return `${routes.status}/latest`
+    return `${ROUTES.STATUS}/latest`
   }
 
   /**
@@ -41,7 +41,7 @@ export class QuotePageController extends SummaryPageController {
     const { state } = context
 
     const levy = this.calculateLevy(state)
-    const numberOfHouses = parseInt(state?.[formIds.numberOfHouses] || 0, 10)
+    const numberOfHouses = parseInt(state?.[FORM_IDS.NUMBER_OF_HOUSES] || 0, 10)
     const ratePerHouse = LEVY_RATES.DLL_RATE_PER_HOUSE
 
     viewModel.quote = {
@@ -73,7 +73,7 @@ export class QuotePageController extends SummaryPageController {
       viewModel.checkAnswers.forEach((section) => {
         section.summaryList?.rows?.forEach((row) => {
           const href = row.actions?.items?.[0]?.href
-          if (href && href.includes(routes.locationMethod)) {
+          if (href && href.includes(ROUTES.LOCATION_METHOD)) {
             row.actions.items[0].href = href.split('?')[0]
           }
         })

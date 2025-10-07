@@ -1,5 +1,5 @@
 import { environmentalLevyStartController } from './controller.js'
-import { routes } from '../common/constants/routes.js'
+import { ROUTES } from '../common/constants/routes.js'
 
 const environmentalLevyStart = {
   plugin: {
@@ -8,7 +8,7 @@ const environmentalLevyStart = {
       server.route([
         {
           method: 'GET',
-          path: `${routes.form}/start`,
+          path: `${ROUTES.FORM}/start`,
           ...environmentalLevyStartController
         }
       ])

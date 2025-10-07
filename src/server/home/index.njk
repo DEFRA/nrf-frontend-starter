@@ -76,7 +76,7 @@
                 <strong>£{{ submission.levy.toLocaleString() }}</strong>
               </td>
               <td class="govuk-table__cell">
-                <a href="{{ routes.form }}{{ routes.status }}/{{ submission.id }}" class="govuk-link">View details</a>
+                <a href="{{ routes.FORM }}{{ routes.STATUS }}/{{ submission.id }}" class="govuk-link">View details</a>
                 {% if submission.status == 'Pending Payment' %}
                   <br><a href="#" class="govuk-link">Make payment</a>
                 {% endif %}
@@ -92,7 +92,7 @@
 
       {{ govukButton({
         text: "Create new application",
-        href: routes.form + "/start",
+        href: routes.FORM + "/start",
         isStartButton: true
       }) }}
     </div>
