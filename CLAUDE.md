@@ -164,12 +164,46 @@ docker build --tag nrf-frontend-starter .                       # Production ima
 - `outputService.submit(request, formId, result)`: handle form submission
 - `formSubmissionService.persistFiles(context, request, model)`: handle file uploads
 
-## File Naming Conventions
+## Naming Conventions
+
+### File Names
 
 - **kebab-case** for most files: `forms-service.js`, `session-cache.js`, `routes.js`
 - **PascalCase** for controllers: `QuotePageController.js`, `MapDrawingController.js`
 
 This convention makes it clear what kind of export to expect from the file.
+
+### Constants
+
+**All constants MUST use SCREAMING_SNAKE_CASE** to maintain consistency across the codebase.
+
+- **Constant objects**: `LEVY_RATES`, `SUBMISSION_STATUS`, `STATUS_CODES`, `ROUTES`, `FORM_IDS`
+- **Constant object properties**: `LEVY_RATES.DLL_RATE_PER_HOUSE`, `STATUS_CODES.OK`, `ROUTES.QUOTE`
+
+This convention:
+
+- Makes constants immediately distinguishable from regular variables
+- Provides a single source of truth for values used across multiple files
+- Prevents brittle hardcoded strings and magic numbers
+- Improves maintainability by centralizing value definitions
+
+**Example:**
+
+```javascript
+// Good ✅
+export const SUBMISSION_STATUS = {
+  PENDING_PAYMENT: 'Pending Payment',
+  PAID: 'Paid',
+  APPROVED: 'Approved'
+}
+
+// Bad ❌
+export const submissionStatus = {
+  pendingPayment: 'Pending Payment',
+  paid: 'Paid',
+  approved: 'Approved'
+}
+```
 
 ## Node.js Version
 

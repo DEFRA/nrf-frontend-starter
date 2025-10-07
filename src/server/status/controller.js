@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom'
 import services from '../forms-service.js'
-import { routes } from '../common/constants/routes.js'
+import { ROUTES } from '../common/constants/routes.js'
 import { STATUS_TAG_CLASSES } from '../common/constants/submission-status.js'
 import { formatCurrency } from '../../config/nunjucks/filters/format-currency.js'
 
@@ -35,7 +35,7 @@ export const statusController = {
         ratePerHouse: submission.quote.ratePerHouse,
         ratePerHouseFormatted: formatCurrency(submission.quote.ratePerHouse)
       },
-      routes
+      routes: ROUTES
     })
   }
 }

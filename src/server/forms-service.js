@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom'
-import { routes } from './common/constants/routes.js'
-import { formIds } from './common/constants/form-ids.js'
+import { ROUTES } from './common/constants/routes.js'
+import { FORM_IDS } from './common/constants/form-ids.js'
 import { LEVY_RATES } from './common/constants/levy-rates.js'
 import { SUBMISSION_STATUS } from './common/constants/submission-status.js'
 import { createLogger } from './common/helpers/logging/logger.js'
@@ -40,13 +40,13 @@ const definition = {
   pages: [
     {
       title: '',
-      path: routes.developmentName,
+      path: ROUTES.DEVELOPMENT_NAME,
       controller: 'CustomPageController',
       components: [
         {
           type: 'TextField',
           title: 'Development name',
-          name: formIds.developmentName,
+          name: FORM_IDS.DEVELOPMENT_NAME,
           options: {
             required: true
           },
@@ -54,18 +54,18 @@ const definition = {
           id: 'a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d'
         }
       ],
-      next: [{ path: routes.numberOfHouses }],
+      next: [{ path: ROUTES.NUMBER_OF_HOUSES }],
       id: '0c8a1234-56ef-78ab-90cd-1234567890ab'
     },
     {
       title: '',
-      path: routes.numberOfHouses,
+      path: ROUTES.NUMBER_OF_HOUSES,
       controller: 'CustomPageController',
       components: [
         {
           type: 'NumberField',
           title: 'Number of houses in the development',
-          name: formIds.numberOfHouses,
+          name: FORM_IDS.NUMBER_OF_HOUSES,
           hint: 'Enter the total number of residential units in your development',
           options: {
             required: true,
@@ -77,19 +77,19 @@ const definition = {
           id: 'b2c3d4e5-6f7a-8b9c-0d1e-2f3a4b5c6d7e'
         }
       ],
-      next: [{ path: routes.locationMethod }],
+      next: [{ path: ROUTES.LOCATION_METHOD }],
       id: 'f1e2d3c4-b5a6-9788-6543-21fedcba9876'
     },
     {
       title: '',
-      path: routes.locationMethod,
+      path: ROUTES.LOCATION_METHOD,
       controller: 'FormQuestionPageController',
       components: [
         {
           type: 'RadiosField',
           title:
             'How would you like to provide your development site location?',
-          name: formIds.locationMethod,
+          name: FORM_IDS.LOCATION_METHOD,
           shortDescription: 'Select your preferred method',
           hint: 'Choose the method that works best for you. You can upload a file with your development boundary, enter a postcode, provide coordinates, or draw on a map.',
           options: {
@@ -102,19 +102,19 @@ const definition = {
       ],
       next: [
         {
-          path: routes.uploadBoundary,
+          path: ROUTES.UPLOAD_BOUNDARY,
           condition: '4d237c09-217e-4ad2-aae9-fa8243276d56'
         },
         {
-          path: routes.enterPostcode,
+          path: ROUTES.ENTER_POSTCODE,
           condition: 'cad5f36c-71db-4ece-83ec-26b8921dcea4'
         },
         {
-          path: routes.enterCoordinates,
+          path: ROUTES.ENTER_COORDINATES,
           condition: '00c2571c-6ae1-4445-91b6-ade76b95126c'
         },
         {
-          path: routes.drawBoundary,
+          path: ROUTES.DRAW_BOUNDARY,
           condition: 'a971b6c9-a565-4500-b8eb-903e9dfbaff5'
         }
       ],
@@ -122,22 +122,22 @@ const definition = {
     },
     {
       title: 'Upload your development boundary file',
-      path: routes.uploadBoundary,
+      path: ROUTES.UPLOAD_BOUNDARY,
       controller: 'MockFileUploadPageController',
       components: [],
-      next: [{ path: routes.quote }],
+      next: [{ path: ROUTES.QUOTE }],
       id: '84254391-93ae-445c-96b1-ef5018948577',
       condition: '4d237c09-217e-4ad2-aae9-fa8243276d56'
     },
     {
       title: '',
-      path: routes.enterPostcode,
+      path: ROUTES.ENTER_POSTCODE,
       controller: 'FormQuestionPageController',
       components: [
         {
           type: 'TextField',
           title: 'Enter your development site postcode',
-          name: formIds.postcode,
+          name: FORM_IDS.POSTCODE,
           shortDescription: 'Postcode',
           hint: "Enter the postcode of your development site. We'll use this to locate your site on a map where you can draw the boundary.",
           options: {
@@ -155,19 +155,19 @@ const definition = {
           id: '218110d5-3b2c-4023-86c3-0f1f071da37b'
         }
       ],
-      next: [{ path: routes.quote }],
+      next: [{ path: ROUTES.QUOTE }],
       id: '41fcecf7-b004-442c-bd4c-941013ef88fc',
       condition: 'cad5f36c-71db-4ece-83ec-26b8921dcea4'
     },
     {
       title: '',
-      path: routes.enterCoordinates,
+      path: ROUTES.ENTER_COORDINATES,
       controller: 'FormQuestionPageController',
       components: [
         {
           type: 'TextField',
           title: 'Enter your development site coordinates',
-          name: formIds.coordinates,
+          name: FORM_IDS.COORDINATES,
           shortDescription: 'Coordinates',
           hint: "Enter the latitude and longitude coordinates of your development site. We'll use this to locate your site on a map where you can draw the boundary.",
           options: {
@@ -177,19 +177,19 @@ const definition = {
           id: '9bf931d7-c1b0-4437-89af-311bc9648541'
         }
       ],
-      next: [{ path: routes.quote }],
+      next: [{ path: ROUTES.QUOTE }],
       id: '48d045de-8306-4a34-b77b-6d441b1fcfd0',
       condition: '00c2571c-6ae1-4445-91b6-ade76b95126c'
     },
     {
       title: 'Draw your development boundary',
-      path: routes.drawBoundary,
+      path: ROUTES.DRAW_BOUNDARY,
       controller: 'MapDrawingController',
       components: [
         {
           type: 'TextField',
           title: 'Draw your development boundary',
-          name: formIds.mapBoundary,
+          name: FORM_IDS.MAP_BOUNDARY,
           shortDescription: 'Map drawing',
           hint: 'Use the map below to draw the boundary of your development site. Click on the map to add points and create a polygon.',
           options: {
@@ -199,14 +199,14 @@ const definition = {
           id: '0d1c3d79-6f26-4fdf-ab0c-e57ec9740b63'
         }
       ],
-      next: [{ path: routes.quote }],
+      next: [{ path: ROUTES.QUOTE }],
       id: '138dfccf-aff9-4e5b-8ca4-54edc5862a6d',
       condition: 'a971b6c9-a565-4500-b8eb-903e9dfbaff5'
     },
     {
       id: '449a45f6-4541-4a46-91bd-8b8931b07b50',
       title: 'Quote',
-      path: routes.quote,
+      path: ROUTES.QUOTE,
       controller: 'QuotePageController',
       next: []
     }
@@ -401,24 +401,24 @@ const outputService = {
     let locationMethod = '-'
     let locationDetails = '-'
 
-    if (formData[formIds.locationMethod]) {
-      locationMethod = formData[formIds.locationMethod].value
+    if (formData[FORM_IDS.LOCATION_METHOD]) {
+      locationMethod = formData[FORM_IDS.LOCATION_METHOD].value
     }
 
-    if (formData[formIds.postcode]) {
-      locationDetails = formData[formIds.postcode].value
-    } else if (formData[formIds.coordinates]) {
-      locationDetails = formData[formIds.coordinates].value
-    } else if (formData[formIds.mapBoundary]) {
+    if (formData[FORM_IDS.POSTCODE]) {
+      locationDetails = formData[FORM_IDS.POSTCODE].value
+    } else if (formData[FORM_IDS.COORDINATES]) {
+      locationDetails = formData[FORM_IDS.COORDINATES].value
+    } else if (formData[FORM_IDS.MAP_BOUNDARY]) {
       locationDetails =
-        formData[formIds.mapBoundary].value || 'Map boundary drawn'
-    } else if (formData[formIds.uploadBoundary]) {
+        formData[FORM_IDS.MAP_BOUNDARY].value || 'Map boundary drawn'
+    } else if (formData[FORM_IDS.UPLOAD_BOUNDARY]) {
       locationDetails = 'File uploaded'
     }
 
     // £2,500 per house for DLL
     const numberOfHouses = parseInt(
-      formData[formIds.numberOfHouses]?.value || 0,
+      formData[FORM_IDS.NUMBER_OF_HOUSES]?.value || 0,
       10
     )
     const ratePerHouse = LEVY_RATES.DLL_RATE_PER_HOUSE
@@ -448,9 +448,9 @@ const outputService = {
       },
       data: {
         location:
-          formData[formIds.postcode]?.value ||
-          formData[formIds.coordinates]?.value ||
-          formData[formIds.mapBoundary]?.value ||
+          formData[FORM_IDS.POSTCODE]?.value ||
+          formData[FORM_IDS.COORDINATES]?.value ||
+          formData[FORM_IDS.MAP_BOUNDARY]?.value ||
           'Unknown location'
       }
     }

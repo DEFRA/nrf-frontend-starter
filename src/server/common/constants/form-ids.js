@@ -1,9 +1,9 @@
-export const formIds = {
-  developmentName: 'developmentName',
-  numberOfHouses: 'numberOfHouses',
-  locationMethod: 'locationMethod',
-  postcode: 'postcode',
-  coordinates: 'coordinates',
-  mapBoundary: 'mapBoundary',
-  uploadBoundary: 'dVAPFw'
+export const FORM_IDS = {
+  DEVELOPMENT_NAME: 'developmentName',
+  NUMBER_OF_HOUSES: 'numberOfHouses',
+  LOCATION_METHOD: 'locationMethod',
+  POSTCODE: 'postcode',
+  COORDINATES: 'coordinates',
+  MAP_BOUNDARY: 'mapBoundary',
+  UPLOAD_BOUNDARY: 'dVAPFw'
 }

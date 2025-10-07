@@ -1,5 +1,5 @@
 import services from '../forms-service.js'
-import { routes } from '../common/constants/routes.js'
+import { ROUTES } from '../common/constants/routes.js'
 
 /**
  * A GDS styled example home page controller.
@@ -14,7 +14,7 @@ export const homeController = {
       pageTitle: 'Home',
       heading: 'Home',
       submissions,
-      routes
+      routes: ROUTES
     })
   }
 }

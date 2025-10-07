@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 
 import hapi from '@hapi/hapi'
-import { statusCodes } from '../constants/status-codes.js'
+import { STATUS_CODES } from '../constants/status-codes.js'
 
 describe('#startServer', () => {
   let createServerSpy
@@ -42,7 +42,7 @@ describe('#startServer', () => {
       })
 
       expect(result).toEqual({ message: 'success' })
-      expect(statusCode).toBe(statusCodes.ok)
+      expect(statusCode).toBe(STATUS_CODES.OK)
     })
   })
 
