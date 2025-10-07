@@ -2,6 +2,7 @@ import Boom from '@hapi/boom'
 import { routes } from './common/constants/routes.js'
 import { formIds } from './common/constants/form-ids.js'
 import { LEVY_RATES } from './common/constants/levy-rates.js'
+import { SUBMISSION_STATUS } from './common/constants/submission-status.js'
 import { createLogger } from './common/helpers/logging/logger.js'
 
 const logger = createLogger()
@@ -426,7 +427,7 @@ const outputService = {
     const simpleSubmission = {
       id: referenceNumber,
       date: new Date().toISOString(),
-      status: 'Pending Payment',
+      status: SUBMISSION_STATUS.PENDING_PAYMENT,
       formName: 'Environmental Development Plan',
       levy: calculatedLevy,
       locationMethod,
