@@ -1,6 +1,8 @@
 import Boom from '@hapi/boom'
 import { routes } from './common/constants/routes.js'
 import { formIds } from './common/constants/form-ids.js'
+import { LEVY_RATES } from './common/constants/levy-rates.js'
+import { SUBMISSION_STATUS } from './common/constants/submission-status.js'
 import { createLogger } from './common/helpers/logging/logger.js'
 
 const logger = createLogger()
@@ -419,20 +421,32 @@ const outputService = {
       formData[formIds.numberOfHouses]?.value || 0,
       10
     )
-    const ratePerHouse = 2500
+    const ratePerHouse = LEVY_RATES.DLL_RATE_PER_HOUSE
     const calculatedLevy = numberOfHouses * ratePerHouse
 
     const simpleSubmission = {
       id: referenceNumber,
-      date: new Date().toISOString(), // Template expects 'date', not 'timestamp'
-      status: 'Pending Payment',
+      date: new Date().toISOString(),
+      status: SUBMISSION_STATUS.PENDING_PAYMENT,
       formName: 'Environmental Development Plan',
       levy: calculatedLevy,
       locationMethod,
       locationDetails,
       formData,
+      quote: {
+        numberOfHouses,
+        ratePerHouse,
+        totalLevy: calculatedLevy,
+        edpBreakdown: [
+          {
+            type: 'DLL',
+            description: 'District Level Licensing - Thames Valley',
+            ratePerHouse,
+            amount: calculatedLevy
+          }
+        ]
+      },
       data: {
-        // Keep for backward compatibility
         location:
           formData[formIds.postcode]?.value ||
           formData[formIds.coordinates]?.value ||
@@ -447,21 +461,29 @@ const outputService = {
     session.set('submissions', submissions)
 
     logger.info({ submission: simpleSubmission }, 'Submission stored')
+    session.set('lastSubmissionId', referenceNumber)
 
     return {
-      reference: referenceNumber,
-      confirmation: {
-        title: 'Application complete',
-        message: `Your reference number is ${referenceNumber}`
-      }
+      title: 'Application submitted',
+      content: 'Your environmental levy application has been submitted.'
     }
   },
 
-  // Get all submissions from session
   getSubmissions: async function (request) {
     const session = request.yar
     const submissions = session.get('submissions') || []
     return submissions
+  },
+  getSubmissionById: async function (request, id) {
+    const session = request.yar
+    const submissions = session.get('submissions') || []
+    const submission = submissions.find((s) => s.id === id)
+
+    if (!submission) {
+      throw Boom.notFound(`Submission '${id}' not found`)
+    }
+
+    return submission
   }
 }
 

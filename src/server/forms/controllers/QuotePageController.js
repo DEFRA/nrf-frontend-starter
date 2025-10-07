@@ -2,6 +2,7 @@ import { SummaryPageController } from '@defra/forms-engine-plugin/controllers/Su
 import { formatCurrency } from '../../../config/nunjucks/filters/format-currency.js'
 import { routes } from '../../common/constants/routes.js'
 import { formIds } from '../../common/constants/form-ids.js'
+import { LEVY_RATES } from '../../common/constants/levy-rates.js'
 
 /**
  * Controller for the Quote page.
@@ -21,12 +22,15 @@ export class QuotePageController extends SummaryPageController {
    */
   calculateLevy(state) {
     const numberOfHouses = parseInt(state?.[formIds.numberOfHouses] || 0, 10)
-    const ratePerHouse = 2500 // £2,500 per house for DLL
-    return numberOfHouses * ratePerHouse
+    return numberOfHouses * LEVY_RATES.DLL_RATE_PER_HOUSE
   }
 
   getSummaryPath() {
     return routes.quote
+  }
+
+  getStatusPath() {
+    return `${routes.status}/latest`
   }
 
   /**
@@ -38,7 +42,7 @@ export class QuotePageController extends SummaryPageController {
 
     const levy = this.calculateLevy(state)
     const numberOfHouses = parseInt(state?.[formIds.numberOfHouses] || 0, 10)
-    const ratePerHouse = 2500
+    const ratePerHouse = LEVY_RATES.DLL_RATE_PER_HOUSE
 
     viewModel.quote = {
       totalLevy: levy,
@@ -65,8 +69,6 @@ export class QuotePageController extends SummaryPageController {
       'Receive confirmation'
     ]
 
-    // Remove returnUrl from location method field so changing it routes to the appropriate input page
-    // instead of back to the quote page
     if (viewModel.checkAnswers) {
       viewModel.checkAnswers.forEach((section) => {
         section.summaryList?.rows?.forEach((row) => {
