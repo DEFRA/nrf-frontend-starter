@@ -1,6 +1,9 @@
 import path from 'path'
 import hapi from '@hapi/hapi'
 import Scooter from '@hapi/scooter'
+import Crumb from '@hapi/crumb'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 
 import { router } from './router.js'
 import { config } from '../config/config.js'
@@ -14,6 +17,11 @@ import { sessionCache } from './common/helpers/session-cache/session-cache.js'
 import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
 import { secureContext } from '@defra/hapi-secure-context'
 import { contentSecurityPolicy } from './common/helpers/content-security-policy.js'
+import formsPlugin from '@defra/forms-engine-plugin'
+import { context } from '../config/nunjucks/context/context.js'
+import helloWorldServices from './hello-world-service.js'
+
+const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export async function createServer() {
   setupProxy()
@@ -61,9 +69,29 @@ export async function createServer() {
     sessionCache,
     nunjucksConfig,
     Scooter,
+    Crumb,
     contentSecurityPolicy,
     router // Register all the controllers/routes defined in src/server/router.js
   ])
+
+  const allServices = helloWorldServices
+
+  await server.register({
+    plugin: formsPlugin,
+    options: {
+      services: allServices,
+      nunjucks: {
+        baseLayoutPath: 'layouts/page.njk',
+        paths: [
+          'node_modules/govuk-frontend/dist/',
+          'src/server/common/templates',
+          'src/server/common/components'
+        ]
+      },
+      viewContext: context,
+      baseUrl: `http://localhost:${config.get('port')}`
+    }
+  })
 
   server.ext('onPreResponse', catchAll)
 
