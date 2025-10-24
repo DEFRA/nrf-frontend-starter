@@ -19,7 +19,8 @@ import { secureContext } from '@defra/hapi-secure-context'
 import { contentSecurityPolicy } from './common/helpers/content-security-policy.js'
 import formsPlugin from '@defra/forms-engine-plugin'
 import { context } from '../config/nunjucks/context/context.js'
-import helloWorldServices from './hello-world-service.js'
+import helloWorldServices from './form-examples/hello-world-service.js'
+import conditionalRoutingServices from './form-examples/conditional-routing-example-service.js'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -74,12 +75,62 @@ export async function createServer() {
     router // Register all the controllers/routes defined in src/server/router.js
   ])
 
-  const allServices = helloWorldServices
+  // Combine all form services
+  const allServices = [...helloWorldServices, ...conditionalRoutingServices]
+
+  // Create a merged services object that routes to the correct form
+  const formsMap = new Map()
+
+  const mergedServices = {
+    formsService: {
+      getFormMetadata: async (slug) => {
+        for (const service of allServices) {
+          try {
+            const metadata = await service.formsService.getFormMetadata(slug)
+            formsMap.set(metadata.id, service)
+            return metadata
+          } catch (e) {
+            // Try next service
+          }
+        }
+        throw new Error(`Form '${slug}' not found`)
+      },
+      getFormDefinition: async (id) => {
+        for (const service of allServices) {
+          try {
+            return await service.formsService.getFormDefinition(id)
+          } catch (e) {
+            // Try next service
+          }
+        }
+        throw new Error(`Form '${id}' not found`)
+      }
+    },
+    outputService: {
+      submit: async (context, request, model, emailAddress, items, submitResponse) => {
+        const formId = model?.def?.id || model?.formId
+        const service = formsMap.get(formId) || allServices[0]
+        return await service.outputService.submit(context, request, model, emailAddress, items, submitResponse)
+      }
+    },
+    formSubmissionService: {
+      submit: async (payload, request) => {
+        // Default to first service for submission
+        const service = allServices[0]
+        return await service.formSubmissionService.submit(payload, request)
+      },
+      persistFiles: async (context, request, model) => {
+        const formId = model?.def?.id || model?.formId
+        const service = formsMap.get(formId) || allServices[0]
+        return await service.formSubmissionService.persistFiles(context, request, model)
+      }
+    }
+  }
 
   await server.register({
     plugin: formsPlugin,
     options: {
-      services: allServices,
+      services: mergedServices,
       nunjucks: {
         baseLayoutPath: 'layouts/page.njk',
         paths: [

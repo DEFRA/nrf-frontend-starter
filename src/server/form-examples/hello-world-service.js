@@ -121,4 +121,4 @@ const formSubmissionService = {
   }
 }
 
-export default { formsService, outputService, formSubmissionService }
+export default [{ formsService, outputService, formSubmissionService }]
