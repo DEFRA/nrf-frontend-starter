@@ -1,6 +1,130 @@
 # Defra Forms Engine - Complete Reference
 
+⚠️ **CRITICAL: READ THE RULES SECTION BEFORE CREATING ANY FORMS** ⚠️
+
 This document contains everything you need to know about implementing Defra Forms in this project.
+
+---
+
+## 🚨 THE 7 CRITICAL RULES - READ FIRST 🚨
+
+**THESE MUST BE FOLLOWED OR THE FORM WILL BREAK. NO EXCEPTIONS.**
+
+### Rule 1: Every Page MUST Have a UNIQUE ID
+```javascript
+// ❌ WRONG - Duplicate IDs will cause 500 errors
+const IDS = {
+  myPage: 'abc-123',  // Used by two pages - BREAKS!
+}
+
+// ✅ CORRECT - Every page has its own unique ID
+const IDS = {
+  startPage: 'abc-123',
+  redlineMapPage: 'def-456',    // Different ID
+  buildingTypePage: 'ghi-789',  // Different ID
+  summaryPage: 'jkl-012'        // Different ID
+}
+```
+
+### Rule 2: Static UUIDs Only (Never Runtime Generation)
+```javascript
+// ❌ WRONG - New IDs every request causes chaos
+import { randomUUID } from 'crypto'
+const definition = {
+  pages: [{ id: randomUUID() }]  // BREAKS - different every time!
+}
+
+// ✅ CORRECT - Always the same IDs
+const IDS = {
+  page1: '5ce116c4-fbda-4227-add3-57531b29ced2'  // Static constant
+}
+const definition = {
+  pages: [{ id: IDS.page1 }]  // Always the same
+}
+```
+
+### Rule 3: Export as Array (For Spreading in server.js)
+```javascript
+// ❌ WRONG - Can't spread in server.js
+export default { formsService, outputService, formSubmissionService }
+
+// ✅ CORRECT - Array can be spread
+export default [{ formsService, outputService, formSubmissionService }]
+```
+
+### Rule 4: Dual-Condition Pattern (Routing + Page Guard)
+```javascript
+// ❌ WRONG - Page shows always, conditional routing doesn't work
+{
+  path: '/choose',
+  next: [{ path: '/option-a', condition: IDS.condition1 }]
+}
+{
+  path: '/option-a',
+  // Missing: condition property!
+}
+
+// ✅ CORRECT - Condition in BOTH places
+{
+  path: '/choose',
+  next: [{ path: '/option-a', condition: IDS.condition1 }]  // In next array
+}
+{
+  path: '/option-a',
+  condition: IDS.condition1  // AND on the page itself
+}
+```
+
+### Rule 5: List Items Need IDs (For Conditional Routing)
+```javascript
+// ❌ WRONG - Can't use in ListItemRef conditions
+lists: [{
+  items: [
+    { text: 'Yes', value: 'yes' }  // No id field!
+  ]
+}]
+
+// ✅ CORRECT - Has ID for ListItemRef
+lists: [{
+  items: [
+    {
+      id: IDS.yesItem,  // ID from IDS object
+      text: 'Yes',
+      value: 'yes'
+    }
+  ]
+}]
+```
+
+### Rule 6: No Slug in Paths (Engine Adds Automatically)
+```javascript
+// ❌ WRONG - Duplicate slug in URL
+metadata.slug = 'my-form'
+pages: [
+  { path: '/my-form/page-1' }  // Results in /my-form/my-form/page-1
+]
+
+// ✅ CORRECT - Engine prepends slug
+metadata.slug = 'my-form'
+pages: [
+  { path: '/page-1' }  // Results in /my-form/page-1
+]
+```
+
+### Rule 7: Valid UUIDs Only (Hex Characters Only)
+```javascript
+// ❌ WRONG - Contains invalid characters (g, x, y, z)
+const IDS = {
+  page1: 'xyz12345-ghij-klmn-opqr-stuvwxyz1234'  // Invalid!
+}
+
+// ✅ CORRECT - Only 0-9 and a-f
+const IDS = {
+  page1: '5ce116c4-fbda-4227-add3-57531b29ced2'  // Valid hex
+}
+```
+
+---
 
 ## Package Information
 
@@ -20,6 +144,7 @@ All examples are in [`src/server/form-examples/`](../src/server/form-examples/):
    - Simple single-page form with TextField
    - Shows basic metadata, definition, and services pattern
    - No conditional routing, no lists
+   - **USE THIS** for simple forms
 
 2. **[conditional-routing-example-service.js](../src/server/form-examples/conditional-routing-example-service.js)**
    - Multi-page form with conditional branching
@@ -27,19 +152,7 @@ All examples are in [`src/server/form-examples/`](../src/server/form-examples/):
    - Shows dual-condition pattern for conditional routing
    - Includes sections for summary page
    - Uses static IDS object for all UUIDs
-
----
-
-## The 6 Critical Rules
-
-**THESE MUST BE FOLLOWED OR THE FORM WILL BREAK:**
-
-1. ✅ **Static UUIDs only** - Define all IDs in a const IDS object. NEVER call `randomUUID()` inside definitions
-2. ✅ **Export as array** - `export default [{ formsService, outputService, formSubmissionService }]`
-3. ✅ **Dual-condition pattern** - Conditions go in `next` array AND as `condition` property on pages
-4. ✅ **List items need IDs** - When using ListItemRef conditions, list items must have `id` field
-5. ✅ **No slug in paths** - Engine adds slug automatically (`/my-form` + `/page` = `/my-form/page`)
-6. ✅ **Valid UUIDs** - Only hexadecimal (0-9, a-f). No letters g-z
+   - **USE THIS** for forms with branching logic
 
 ---
 
