@@ -21,6 +21,7 @@ import formsPlugin from '@defra/forms-engine-plugin'
 import { context } from '../config/nunjucks/context/context.js'
 import helloWorldServices from './form-examples/hello-world-service.js'
 import conditionalRoutingServices from './form-examples/conditional-routing-example-service.js'
+import equipmentRegistrationServices from './form-examples/equipment-registration-service.js'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -76,7 +77,11 @@ export async function createServer() {
   ])
 
   // Combine all form services
-  const allServices = [...helloWorldServices, ...conditionalRoutingServices]
+  const allServices = [
+    ...helloWorldServices,
+    ...conditionalRoutingServices,
+    ...equipmentRegistrationServices
+  ]
 
   // Create a merged services object that routes to the correct form
   const formsMap = new Map()
@@ -107,10 +112,24 @@ export async function createServer() {
       }
     },
     outputService: {
-      submit: async (context, request, model, emailAddress, items, submitResponse) => {
+      submit: async (
+        context,
+        request,
+        model,
+        emailAddress,
+        items,
+        submitResponse
+      ) => {
         const formId = model?.def?.id || model?.formId
         const service = formsMap.get(formId) || allServices[0]
-        return await service.outputService.submit(context, request, model, emailAddress, items, submitResponse)
+        return await service.outputService.submit(
+          context,
+          request,
+          model,
+          emailAddress,
+          items,
+          submitResponse
+        )
       }
     },
     formSubmissionService: {
@@ -122,7 +141,11 @@ export async function createServer() {
       persistFiles: async (context, request, model) => {
         const formId = model?.def?.id || model?.formId
         const service = formsMap.get(formId) || allServices[0]
-        return await service.formSubmissionService.persistFiles(context, request, model)
+        return await service.formSubmissionService.persistFiles(
+          context,
+          request,
+          model
+        )
       }
     }
   }
