@@ -1,0 +1,53 @@
+{% extends 'layouts/page.njk' %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    href: backLink
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if error %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: [
+            {
+              text: error,
+              href: "#name"
+            }
+          ]
+        }) }}
+      {% endif %}
+
+      <form method="post" novalidate>
+        {{ govukInput({
+          label: {
+            text: heading,
+            isPageHeading: true,
+            classes: "govuk-label--xl"
+          },
+          hint: {
+            text: "We'll use this in your personalized greeting"
+          },
+          id: "name",
+          name: "name",
+          value: name,
+          errorMessage: {
+            text: error
+          } if error,
+          autocomplete: "name"
+        }) }}
+
+        {{ govukButton({
+          text: "Continue"
+        }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

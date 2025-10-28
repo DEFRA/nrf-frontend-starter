@@ -1,0 +1,32 @@
+{% extends 'layouts/page.njk' %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{{ heading }}</h1>
+
+      <p class="govuk-body">
+        This is a simple demonstration journey showing how to build forms with conditional logic using GOV.UK Frontend.
+      </p>
+
+      <p class="govuk-body">
+        In this journey, you will:
+      </p>
+
+      <ul class="govuk-list govuk-list--bullet">
+        <li>Choose your preferred greeting style</li>
+        <li>Provide your name (if you chose a formal greeting)</li>
+        <li>Select your favourite colour</li>
+        <li>Review your answers</li>
+        <li>See a personalized confirmation message</li>
+      </ul>
+
+      {{ govukButton({
+        text: "Start now",
+        href: "/hello-world/preference",
+        isStartButton: true
+      }) }}
+    </div>
+  </div>
+{% endblock %}
