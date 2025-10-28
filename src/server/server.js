@@ -2,8 +2,6 @@ import path from 'path'
 import hapi from '@hapi/hapi'
 import Scooter from '@hapi/scooter'
 import Crumb from '@hapi/crumb'
-import { readFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
 
 import { router } from './router.js'
 import { config } from '../config/config.js'
@@ -22,8 +20,6 @@ import { context } from '../config/nunjucks/context/context.js'
 import helloWorldServices from './form-examples/hello-world-service.js'
 import conditionalRoutingServices from './form-examples/conditional-routing-example-service.js'
 import equipmentRegistrationServices from './form-examples/equipment-registration-service.js'
-
-const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export async function createServer() {
   setupProxy()

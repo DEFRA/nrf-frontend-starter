@@ -22,12 +22,12 @@ This form supports two distinct user journeys:
 
 ### Page 1: Start Page
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 1                                                                  |
-| **Path:**                  | /nrf-estimate/start                                                |
-| **Title:**                 | Get an estimate for the Nature Restoration Fund levy              |
-| **Conditional page flow:** | None                                                               |
+| **Field**                  | **Value**                                            |
+| -------------------------- | ---------------------------------------------------- |
+| **Order number:**          | 1                                                    |
+| **Path:**                  | /nrf-estimate/start                                  |
+| **Title:**                 | Get an estimate for the Nature Restoration Fund levy |
+| **Conditional page flow:** | None                                                 |
 
 #### Content
 
@@ -35,6 +35,7 @@ This form supports two distinct user journeys:
 # Get an estimate for the Nature Restoration Fund levy
 
 Use this service to:
+
 - Get an estimate for the Nature Restoration Fund levy on your development
 - Make a payment for the levy
 
@@ -47,12 +48,12 @@ The levy applies to developments within Environmental Delivery Partner (EDP) are
 
 ### Page 2: What Would You Like To Do (Journey Selection)
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 2                                                                  |
-| **Path:**                  | /nrf-estimate/what-would-you-like-to-do                            |
-| **Title:**                 | What would you like to do?                                         |
-| **Conditional page flow:** | **Major branch**: estimate path vs payment path                    |
+| **Field**                  | **Value**                                       |
+| -------------------------- | ----------------------------------------------- |
+| **Order number:**          | 2                                               |
+| **Path:**                  | /nrf-estimate/what-would-you-like-to-do         |
+| **Title:**                 | What would you like to do?                      |
+| **Conditional page flow:** | **Major branch**: estimate path vs payment path |
 
 #### Data points
 
@@ -84,10 +85,10 @@ The levy applies to developments within Environmental Delivery Partner (EDP) are
 
 #### Errors
 
-| **Field**      | **Value**                                |
-| -------------- | ---------------------------------------- |
-| Description:   | No option selected                       |
-| Error message: | Select what you would like to do         |
+| **Field**      | **Value**                        |
+| -------------- | -------------------------------- |
+| Description:   | No option selected               |
+| Error message: | Select what you would like to do |
 
 ---
 
@@ -95,12 +96,12 @@ The levy applies to developments within Environmental Delivery Partner (EDP) are
 
 ### Page 3: Do You Have an Estimate Reference
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 3                                                                  |
-| **Path:**                  | /nrf-estimate/do-you-have-an-estimate-ref                          |
-| **Title:**                 | Do you have an estimate reference?                                 |
-| **Conditional page flow:** | Only shown if `journeyType === "payment"`                          |
+| **Field**                  | **Value**                                 |
+| -------------------------- | ----------------------------------------- |
+| **Order number:**          | 3                                         |
+| **Path:**                  | /nrf-estimate/do-you-have-an-estimate-ref |
+| **Title:**                 | Do you have an estimate reference?        |
+| **Conditional page flow:** | Only shown if `journeyType === "payment"` |
 
 #### Data points
 
@@ -134,21 +135,21 @@ This is a reference number starting with EST- that was sent to you by email
 
 #### Errors
 
-| **Field**      | **Value**                                           |
-| -------------- | --------------------------------------------------- |
-| Description:   | No option selected                                  |
-| Error message: | Select yes if you have an estimate reference        |
+| **Field**      | **Value**                                    |
+| -------------- | -------------------------------------------- |
+| Description:   | No option selected                           |
+| Error message: | Select yes if you have an estimate reference |
 
 ---
 
 ### Page 4: Enter Your Estimate Reference
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 4                                                                  |
-| **Path:**                  | /nrf-estimate/enter-estimate-ref                                   |
-| **Title:**                 | Enter your estimate reference                                      |
-| **Conditional page flow:** | Only shown if `hasEstimateRef === "yes"`                           |
+| **Field**                  | **Value**                                |
+| -------------------------- | ---------------------------------------- |
+| **Order number:**          | 4                                        |
+| **Path:**                  | /nrf-estimate/enter-estimate-ref         |
+| **Title:**                 | Enter your estimate reference            |
+| **Conditional page flow:** | Only shown if `hasEstimateRef === "yes"` |
 
 #### Data points
 
@@ -173,23 +174,23 @@ This is a 6-digit number that starts with EST-, for example EST-123456
 
 #### Errors
 
-| **Field**      | **Value**                                      |
-| -------------- | ---------------------------------------------- |
-| Description:   | Field empty                                    |
-| Error message: | Enter your estimate reference to continue      |
-| Description:   | Non-numeric value                              |
-| Error message: | Enter a valid estimate reference number        |
+| **Field**      | **Value**                                 |
+| -------------- | ----------------------------------------- |
+| Description:   | Field empty                               |
+| Error message: | Enter your estimate reference to continue |
+| Description:   | Non-numeric value                         |
+| Error message: | Enter a valid estimate reference number   |
 
 ---
 
 ### Page 5: Retrieve Estimate Email
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 5                                                                  |
-| **Path:**                  | /nrf-estimate/retrieve-estimate-email                              |
-| **Title:**                 | Enter the email address you used for your estimate                 |
-| **Conditional page flow:** | Only shown after entering estimate ref                             |
+| **Field**                  | **Value**                                          |
+| -------------------------- | -------------------------------------------------- |
+| **Order number:**          | 5                                                  |
+| **Path:**                  | /nrf-estimate/retrieve-estimate-email              |
+| **Title:**                 | Enter the email address you used for your estimate |
+| **Conditional page flow:** | Only shown after entering estimate ref             |
 
 #### Data points
 
@@ -214,25 +215,25 @@ We'll send a link to your estimate so you can proceed with payment
 
 #### Errors
 
-| **Field**      | **Value**                                                        |
-| -------------- | ---------------------------------------------------------------- |
-| Description:   | Field empty                                                      |
-| Error message: | Enter your email address to continue                             |
-| Description:   | Invalid format                                                   |
+| **Field**      | **Value**                                                           |
+| -------------- | ------------------------------------------------------------------- |
+| Description:   | Field empty                                                         |
+| Error message: | Enter your email address to continue                                |
+| Description:   | Invalid format                                                      |
 | Error message: | Enter an email address in the correct format, like name@example.com |
-| Description:   | Too long                                                         |
-| Error message: | Email address must not exceed 256 characters                     |
+| Description:   | Too long                                                            |
+| Error message: | Email address must not exceed 256 characters                        |
 
 ---
 
 ### Page 6: Estimate Email Retrieval Content
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 6                                                                  |
-| **Path:**                  | /nrf-estimate/estimate-email-retrieval-content                     |
-| **Title:**                 | We've sent you an email                                            |
-| **Conditional page flow:** | Information page                                                   |
+| **Field**                  | **Value**                                      |
+| -------------------------- | ---------------------------------------------- |
+| **Order number:**          | 6                                              |
+| **Path:**                  | /nrf-estimate/estimate-email-retrieval-content |
+| **Title:**                 | We've sent you an email                        |
+| **Conditional page flow:** | Information page                               |
 
 #### Content
 
@@ -256,12 +257,12 @@ The link will expire in 24 hours.
 
 ### Page 7: Do You Have a Red Line Boundary File
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 7                                                                  |
-| **Path:**                  | /nrf-estimate/redline-map                                          |
-| **Title:**                 | Do you have a red line boundary file for your development?         |
-| **Conditional page flow:** | Branches to upload or manual entry                                 |
+| **Field**                  | **Value**                                                  |
+| -------------------------- | ---------------------------------------------------------- |
+| **Order number:**          | 7                                                          |
+| **Path:**                  | /nrf-estimate/redline-map                                  |
+| **Title:**                 | Do you have a red line boundary file for your development? |
+| **Conditional page flow:** | Branches to upload or manual entry                         |
 
 #### Data points
 
@@ -295,22 +296,22 @@ A red line boundary file is a geographic file (such as .shp or .geojson) that de
 
 #### Errors
 
-| **Field**      | **Value**                                              |
-| -------------- | ------------------------------------------------------ |
-| Description:   | No option selected                                     |
-| Error message: | Select yes if you have a red line boundary file        |
+| **Field**      | **Value**                                       |
+| -------------- | ----------------------------------------------- |
+| Description:   | No option selected                              |
+| Error message: | Select yes if you have a red line boundary file |
 
 ---
 
 ### Page 8: Upload Red Line Boundary File
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 8                                                                  |
-| **Path:**                  | /nrf-estimate/upload-redline                                       |
-| **Title:**                 | Upload your red line boundary file                                 |
-| **Conditional page flow:** | Only if `hasRedlineBoundaryFile === "yes"`                         |
-| **Controller:**            | FileUploadPageController                                           |
+| **Field**                  | **Value**                                  |
+| -------------------------- | ------------------------------------------ |
+| **Order number:**          | 8                                          |
+| **Path:**                  | /nrf-estimate/upload-redline               |
+| **Title:**                 | Upload your red line boundary file         |
+| **Conditional page flow:** | Only if `hasRedlineBoundaryFile === "yes"` |
+| **Controller:**            | FileUploadPageController                   |
 
 #### Data points
 
@@ -369,12 +370,12 @@ The file must be a .shp or .geojson file and smaller than 2MB
 
 ### Page 9: Define Boundary on Map
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 9                                                                  |
-| **Path:**                  | /nrf-estimate/map                                                  |
-| **Title:**                 | Enter your development site boundary coordinates                   |
-| **Conditional page flow:** | Shown if no file uploaded or after file upload for confirmation    |
+| **Field**                  | **Value**                                                       |
+| -------------------------- | --------------------------------------------------------------- |
+| **Order number:**          | 9                                                               |
+| **Path:**                  | /nrf-estimate/map                                               |
+| **Title:**                 | Enter your development site boundary coordinates                |
+| **Conditional page flow:** | Shown if no file uploaded or after file upload for confirmation |
 
 #### Data points
 
@@ -408,6 +409,7 @@ For example: -0.4, 51.5
 #### Routing Logic
 
 After submission:
+
 - Parse and validate coordinates
 - Check if coordinates intersect with EDP boundaries
 - If NO intersection → Page 10 (No EDP area - terminal)
@@ -416,23 +418,23 @@ After submission:
 
 #### Errors
 
-| **Field**      | **Value**                                      |
-| -------------- | ---------------------------------------------- |
-| Description:   | Field empty                                    |
-| Error message: | Enter boundary coordinates to continue         |
-| Description:   | Invalid format                                 |
-| Error message: | Enter coordinates in the correct format        |
+| **Field**      | **Value**                               |
+| -------------- | --------------------------------------- |
+| Description:   | Field empty                             |
+| Error message: | Enter boundary coordinates to continue  |
+| Description:   | Invalid format                          |
+| Error message: | Enter coordinates in the correct format |
 
 ---
 
 ### Page 10: No EDP Area (Terminal)
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 10                                                                 |
-| **Path:**                  | /nrf-estimate/no-edp                                               |
-| **Title:**                 | Your development is not in an Environmental Delivery Partner area  |
-| **Conditional page flow:** | Terminal page - journey ends here                                  |
+| **Field**                  | **Value**                                                         |
+| -------------------------- | ----------------------------------------------------------------- |
+| **Order number:**          | 10                                                                |
+| **Path:**                  | /nrf-estimate/no-edp                                              |
+| **Title:**                 | Your development is not in an Environmental Delivery Partner area |
+| **Conditional page flow:** | Terminal page - journey ends here                                 |
 
 #### Content
 
@@ -452,12 +454,12 @@ You may need to check your boundary coordinates.
 
 ### Page 11: Select Building Types
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 11                                                                 |
-| **Path:**                  | /nrf-estimate/building-type                                        |
-| **Title:**                 | What types of buildings are part of your development?              |
-| **Conditional page flow:** | **Complex multi-branch** based on selections                       |
+| **Field**                  | **Value**                                             |
+| -------------------------- | ----------------------------------------------------- |
+| **Order number:**          | 11                                                    |
+| **Path:**                  | /nrf-estimate/building-type                           |
+| **Title:**                 | What types of buildings are part of your development? |
+| **Conditional page flow:** | **Complex multi-branch** based on selections          |
 
 #### Data points
 
@@ -507,6 +509,7 @@ Select all that apply
 4. Else → Jump to email or planning ref (determined by journey type)
 
 **When changing from summary (`?change=true&nav=summary`):**
+
 - Compare new selections with previous
 - Clear data for removed building types
 - Collect data for newly added building types
@@ -514,21 +517,21 @@ Select all that apply
 
 #### Errors
 
-| **Field**      | **Value**                                  |
-| -------------- | ------------------------------------------ |
-| Description:   | No checkboxes selected                     |
-| Error message: | Select a building type to continue         |
+| **Field**      | **Value**                          |
+| -------------- | ---------------------------------- |
+| Description:   | No checkboxes selected             |
+| Error message: | Select a building type to continue |
 
 ---
 
 ### Page 12: Non-Residential Development (Terminal)
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 12                                                                 |
-| **Path:**                  | /nrf-estimate/non-residential                                      |
-| **Title:**                 | Non-residential developments                                       |
-| **Conditional page flow:** | Terminal page                                                      |
+| **Field**                  | **Value**                     |
+| -------------------------- | ----------------------------- |
+| **Order number:**          | 12                            |
+| **Path:**                  | /nrf-estimate/non-residential |
+| **Title:**                 | Non-residential developments  |
+| **Conditional page flow:** | Terminal page                 |
 
 #### Content
 
@@ -544,12 +547,12 @@ You will need to contact your Environmental Delivery Partner directly for guidan
 
 ### Page 13: Room Count (Multi-Step Iterative)
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 13                                                                 |
-| **Path:**                  | /nrf-estimate/room-count                                           |
-| **Title:**                 | How many rooms are in your [building type]?                        |
-| **Conditional page flow:** | **Iterates** for each building type requiring room counts          |
+| **Field**                  | **Value**                                                 |
+| -------------------------- | --------------------------------------------------------- |
+| **Order number:**          | 13                                                        |
+| **Path:**                  | /nrf-estimate/room-count                                  |
+| **Title:**                 | How many rooms are in your [building type]?               |
+| **Conditional page flow:** | **Iterates** for each building type requiring room counts |
 
 #### Data points
 
@@ -590,6 +593,7 @@ You will need to contact your Environmental Delivery Partner directly for guidan
 **Step X of Y** (show progress)
 
 **Hints by type:**
+
 - Hotel: Enter the total number of guest rooms
 - HMO: Enter the total number of bedrooms available for rent
 - Residential institution: Enter the total number of resident rooms or beds
@@ -607,6 +611,7 @@ This page implements a **multi-step iteration pattern**:
 6. If all types processed: Continue to next step in journey
 
 **Mapping building types to data keys:**
+
 ```javascript
 {
   'Hotel': 'hotelCount',
@@ -616,27 +621,28 @@ This page implements a **multi-step iteration pattern**:
 ```
 
 **Next step after all room counts collected:**
+
 - If `buildingTypes` includes "Dwellinghouse" → Page 14 (Residential count)
 - Else if from summary with changes → Back to summary
 - Else → Page 15 (Email) or Page 16 (Planning ref) based on journey type
 
 #### Errors
 
-| **Field**      | **Value**                                  |
-| -------------- | ------------------------------------------ |
-| Description:   | Field empty or invalid                     |
-| Error message: | Enter the number of rooms to continue      |
+| **Field**      | **Value**                             |
+| -------------- | ------------------------------------- |
+| Description:   | Field empty or invalid                |
+| Error message: | Enter the number of rooms to continue |
 
 ---
 
 ### Page 14: Residential Building Count
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 14                                                                 |
-| **Path:**                  | /nrf-estimate/residential                                          |
-| **Title:**                 | How many dwellinghouse buildings are part of your development?     |
-| **Conditional page flow:** | Only if "Dwellinghouse" selected                                   |
+| **Field**                  | **Value**                                                      |
+| -------------------------- | -------------------------------------------------------------- |
+| **Order number:**          | 14                                                             |
+| **Path:**                  | /nrf-estimate/residential                                      |
+| **Title:**                 | How many dwellinghouse buildings are part of your development? |
+| **Conditional page flow:** | Only if "Dwellinghouse" selected                               |
 
 #### Data points
 
@@ -669,21 +675,21 @@ Enter the total number of separate dwellinghouse structures
 
 #### Errors
 
-| **Field**      | **Value**                                                        |
-| -------------- | ---------------------------------------------------------------- |
-| Description:   | Field empty or invalid                                           |
-| Error message: | Enter the number of dwellinghouse buildings to continue          |
+| **Field**      | **Value**                                               |
+| -------------- | ------------------------------------------------------- |
+| Description:   | Field empty or invalid                                  |
+| Error message: | Enter the number of dwellinghouse buildings to continue |
 
 ---
 
 ### Page 15: Email Address
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 15                                                                 |
-| **Path:**                  | /nrf-estimate/email                                                |
-| **Title:**                 | What is your email address?                                        |
-| **Conditional page flow:** | Appears in most journeys before summary                            |
+| **Field**                  | **Value**                               |
+| -------------------------- | --------------------------------------- |
+| **Order number:**          | 15                                      |
+| **Path:**                  | /nrf-estimate/email                     |
+| **Title:**                 | What is your email address?             |
+| **Conditional page flow:** | Appears in most journeys before summary |
 
 #### Data points
 
@@ -712,30 +718,31 @@ We'll send your estimate reference and details to this email address
 - Always goes to Page 17 (Summary) after submission
 
 **Back link varies by journey:**
+
 - Payment without estimate ref → Page 16 (Planning ref)
 - Otherwise → Last building details page collected
 
 #### Errors
 
-| **Field**      | **Value**                                                        |
-| -------------- | ---------------------------------------------------------------- |
-| Description:   | Field empty                                                      |
-| Error message: | Enter your email address                                         |
-| Description:   | Invalid format                                                   |
+| **Field**      | **Value**                                                           |
+| -------------- | ------------------------------------------------------------------- |
+| Description:   | Field empty                                                         |
+| Error message: | Enter your email address                                            |
+| Description:   | Invalid format                                                      |
 | Error message: | Enter an email address in the correct format, like name@example.com |
-| Description:   | Too long                                                         |
-| Error message: | Email address must not exceed 256 characters                     |
+| Description:   | Too long                                                            |
+| Error message: | Email address must not exceed 256 characters                        |
 
 ---
 
 ### Page 16: Planning Application Reference
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 16                                                                 |
-| **Path:**                  | /nrf-estimate/planning-ref                                         |
-| **Title:**                 | What is the planning application reference?                        |
-| **Conditional page flow:** | **Only for payment journey without estimate ref**                  |
+| **Field**                  | **Value**                                         |
+| -------------------------- | ------------------------------------------------- |
+| **Order number:**          | 16                                                |
+| **Path:**                  | /nrf-estimate/planning-ref                        |
+| **Title:**                 | What is the planning application reference?       |
+| **Conditional page flow:** | **Only for payment journey without estimate ref** |
 
 #### Data points
 
@@ -765,41 +772,45 @@ This is the unique reference number for your planning application, for example P
 - Else → Page 17 (Summary)
 
 **Back link logic:**
+
 - Payment without estimate ref → Last building details page
 - Otherwise → Page 6 (Estimate email retrieval content)
 
 #### Errors
 
-| **Field**      | **Value**                                      |
-| -------------- | ---------------------------------------------- |
-| Description:   | Field empty                                    |
-| Error message: | Enter the planning application reference       |
+| **Field**      | **Value**                                |
+| -------------- | ---------------------------------------- |
+| Description:   | Field empty                              |
+| Error message: | Enter the planning application reference |
 
 ---
 
 ### Page 17: Check Your Answers (Summary)
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 17                                                                 |
-| **Path:**                  | /nrf-estimate/summary                                              |
-| **Title:**                 | Check your answers (varies by journey type)                        |
-| **Conditional page flow:** | **Conditional template** based on journey type                     |
-| **Controller:**            | SummaryPageController                                              |
+| **Field**                  | **Value**                                      |
+| -------------------------- | ---------------------------------------------- |
+| **Order number:**          | 17                                             |
+| **Path:**                  | /nrf-estimate/summary                          |
+| **Title:**                 | Check your answers (varies by journey type)    |
+| **Conditional page flow:** | **Conditional template** based on journey type |
+| **Controller:**            | SummaryPageController                          |
 
 #### Content
 
 **Heading varies:**
+
 - Estimate journey: "Check your answers before getting your estimate"
 - Payment journey: "Check your answers before making payment"
 
 **Summary Sections:**
 
 **Development Boundary:**
+
 - Development site boundary → "Defined" or show coordinates → Change link: `/nrf-estimate/map?change=true&nav=summary`
 - (If uploaded file) Boundary file → `{redlineFile}` → Change link: `/nrf-estimate/upload-redline?change=true&nav=summary`
 
 **Building Details:**
+
 - Building types → List of selected types → Change link: `/nrf-estimate/building-type?change=true&nav=summary`
 - (If Dwellinghouse) Number of dwellinghouses → `{count}` → Change: `/nrf-estimate/residential?change=true&nav=summary`
 - (If Hotel) Hotel rooms → `{count}` → Change: `/nrf-estimate/room-count?change=true&nav=summary&type=hotel`
@@ -807,17 +818,21 @@ This is the unique reference number for your planning application, for example P
 - (If Residential institution) Residential institution rooms → `{count}` → Change: `/nrf-estimate/room-count?change=true&nav=summary&type=residential-institution`
 
 **Contact Details:**
+
 - Email address → `{email}` → Change: `/nrf-estimate/email?change=true&nav=summary`
 - (If payment) Planning reference → `{planningRef}` → Change: `/nrf-estimate/planning-ref?change=true&nav=summary`
 
 **Button text varies:**
+
 - Estimate journey: "Get estimate"
 - Payment journey: "Continue to payment"
 
 #### Submission Logic
 
 **On POST:**
+
 - Estimate journey:
+
   - Generate `estimateReference` = 'EST-' + Date.now().toString().slice(-6)
   - Store in session
   - Redirect to Page 18 (Estimate confirmation)
@@ -830,6 +845,7 @@ This is the unique reference number for your planning application, for example P
 #### Validation
 
 Before rendering:
+
 - Estimate journey: Must have `email`
 - Payment journey: Must have `planningRef`
 - If missing → Redirect to appropriate collection page
@@ -838,12 +854,12 @@ Before rendering:
 
 ### Page 18: Estimate Confirmation
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 18                                                                 |
-| **Path:**                  | /nrf-estimate/confirmation                                         |
-| **Title:**                 | Estimate created                                                   |
-| **Conditional page flow:** | Terminal page for estimate journey                                 |
+| **Field**                  | **Value**                          |
+| -------------------------- | ---------------------------------- |
+| **Order number:**          | 18                                 |
+| **Path:**                  | /nrf-estimate/confirmation         |
+| **Title:**                 | Estimate created                   |
+| **Conditional page flow:** | Terminal page for estimate journey |
 
 #### Content
 
@@ -872,12 +888,12 @@ Your estimate is valid for 30 days
 
 ### Page 19: Payment Confirmation
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 19                                                                 |
-| **Path:**                  | /nrf-estimate/payment-confirmation                                 |
-| **Title:**                 | Payment complete                                                   |
-| **Conditional page flow:** | Terminal page for payment journey                                  |
+| **Field**                  | **Value**                          |
+| -------------------------- | ---------------------------------- |
+| **Order number:**          | 19                                 |
+| **Path:**                  | /nrf-estimate/payment-confirmation |
+| **Title:**                 | Payment complete                   |
+| **Conditional page flow:** | Terminal page for payment journey  |
 
 #### Content
 
@@ -952,8 +968,10 @@ Determines next route after all building details collected.
 
 ```javascript
 function getNextRouteAfterBuildingDetails(sessionData) {
-  if (sessionData.journeyType === 'payment' &&
-      sessionData.hasEstimateRef === 'no') {
+  if (
+    sessionData.journeyType === 'payment' &&
+    sessionData.hasEstimateRef === 'no'
+  ) {
     return '/nrf-estimate/planning-ref'
   }
   return '/nrf-estimate/email'
@@ -978,7 +996,7 @@ Returns building types that were removed (for cleanup).
 
 ```javascript
 function getRemovedBuildingTypes(previous, current) {
-  return previous.filter(type => !current.includes(type))
+  return previous.filter((type) => !current.includes(type))
 }
 ```
 
@@ -988,7 +1006,7 @@ Returns building types that were newly added (need data collection).
 
 ```javascript
 function getNewlyAddedBuildingTypes(previous, current) {
-  return current.filter(type => !previous.includes(type))
+  return current.filter((type) => !previous.includes(type))
 }
 ```
 
@@ -1010,8 +1028,8 @@ const BUILDING_TYPES_REQUIRING_ROOM_COUNT = [
 ]
 
 const BUILDING_TYPE_DATA_KEYS = {
-  'hmo': 'hmoCount',
-  'hotel': 'hotelCount',
+  hmo: 'hmoCount',
+  hotel: 'hotelCount',
   'residential-institution': 'residentialInstitutionCount'
 }
 ```
@@ -1021,7 +1039,7 @@ const BUILDING_TYPE_DATA_KEYS = {
 - Use `FileUploadPageController` from DEFRA Forms
 - Configure multer:
   - Storage: `multer.memoryStorage()`
-  - File size limit: 2MB (2 * 1024 * 1024 bytes)
+  - File size limit: 2MB (2 _ 1024 _ 1024 bytes)
 - Accepted types: `.shp`, `.geojson`
 - Parse GeoJSON to extract coordinates (handle FeatureCollection, Feature, Polygon, MultiPolygon)
 
@@ -1045,11 +1063,13 @@ if (geojson.type === 'FeatureCollection') {
 ### Change Flow from Summary
 
 All change links include query parameters:
+
 - `?change=true` - Indicates edit operation
 - `&nav=summary` - Return destination
 - `&type={key}` - For specific room count edits
 
 **Change handling logic:**
+
 1. Render page with existing data pre-filled
 2. On submission, update only changed field
 3. Handle cascade effects (e.g., removing building type clears counts)
@@ -1187,6 +1207,7 @@ All change links include query parameters:
 - **Back links**: Dynamically calculated based on journey path taken
 
 This is the most complex journey in the system due to:
+
 - Multiple journey types
 - Extensive conditional routing
 - Multi-step iteration (room counts)

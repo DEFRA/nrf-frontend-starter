@@ -6,44 +6,47 @@ This document contains everything you need to know about implementing Defra Form
 
 ---
 
-## 🚨 THE 7 CRITICAL RULES - READ FIRST 🚨
+## 🚨 CRITICAL RULES - READ FIRST 🚨
 
 **THESE MUST BE FOLLOWED OR THE FORM WILL BREAK. NO EXCEPTIONS.**
 
 ### Rule 1: Every Page MUST Have a UNIQUE ID
+
 ```javascript
 // ❌ WRONG - Duplicate IDs will cause 500 errors
 const IDS = {
-  myPage: 'abc-123',  // Used by two pages - BREAKS!
+  myPage: 'abc-123' // Used by two pages - BREAKS!
 }
 
 // ✅ CORRECT - Every page has its own unique ID
 const IDS = {
   startPage: 'abc-123',
-  redlineMapPage: 'def-456',    // Different ID
-  buildingTypePage: 'ghi-789',  // Different ID
-  summaryPage: 'jkl-012'        // Different ID
+  redlineMapPage: 'def-456', // Different ID
+  buildingTypePage: 'ghi-789', // Different ID
+  summaryPage: 'jkl-012' // Different ID
 }
 ```
 
 ### Rule 2: Static UUIDs Only (Never Runtime Generation)
+
 ```javascript
 // ❌ WRONG - New IDs every request causes chaos
 import { randomUUID } from 'crypto'
 const definition = {
-  pages: [{ id: randomUUID() }]  // BREAKS - different every time!
+  pages: [{ id: randomUUID() }] // BREAKS - different every time!
 }
 
 // ✅ CORRECT - Always the same IDs
 const IDS = {
-  page1: '5ce116c4-fbda-4227-add3-57531b29ced2'  // Static constant
+  page1: '5ce116c4-fbda-4227-add3-57531b29ced2' // Static constant
 }
 const definition = {
-  pages: [{ id: IDS.page1 }]  // Always the same
+  pages: [{ id: IDS.page1 }] // Always the same
 }
 ```
 
 ### Rule 3: Export as Array (For Spreading in server.js)
+
 ```javascript
 // ❌ WRONG - Can't spread in server.js
 export default { formsService, outputService, formSubmissionService }
@@ -53,6 +56,7 @@ export default [{ formsService, outputService, formSubmissionService }]
 ```
 
 ### Rule 4: Dual-Condition Pattern (Routing + Page Guard)
+
 ```javascript
 // ❌ WRONG - Page shows always, conditional routing doesn't work
 {
@@ -76,51 +80,58 @@ export default [{ formsService, outputService, formSubmissionService }]
 ```
 
 ### Rule 5: List Items Need IDs (For Conditional Routing)
+
 ```javascript
 // ❌ WRONG - Can't use in ListItemRef conditions
-lists: [{
-  items: [
-    { text: 'Yes', value: 'yes' }  // No id field!
-  ]
-}]
+lists: [
+  {
+    items: [
+      { text: 'Yes', value: 'yes' } // No id field!
+    ]
+  }
+]
 
 // ✅ CORRECT - Has ID for ListItemRef
-lists: [{
-  items: [
-    {
-      id: IDS.yesItem,  // ID from IDS object
-      text: 'Yes',
-      value: 'yes'
-    }
-  ]
-}]
+lists: [
+  {
+    items: [
+      {
+        id: IDS.yesItem, // ID from IDS object
+        text: 'Yes',
+        value: 'yes'
+      }
+    ]
+  }
+]
 ```
 
 ### Rule 6: No Slug in Paths (Engine Adds Automatically)
+
 ```javascript
 // ❌ WRONG - Duplicate slug in URL
 metadata.slug = 'my-form'
 pages: [
-  { path: '/my-form/page-1' }  // Results in /my-form/my-form/page-1
+  { path: '/my-form/page-1' } // Results in /my-form/my-form/page-1
 ]
 
 // ✅ CORRECT - Engine prepends slug
 metadata.slug = 'my-form'
 pages: [
-  { path: '/page-1' }  // Results in /my-form/page-1
+  { path: '/page-1' } // Results in /my-form/page-1
 ]
 ```
 
 ### Rule 7: Valid UUIDs Only (Hex Characters Only)
+
 ```javascript
 // ❌ WRONG - Contains invalid characters (g, x, y, z)
 const IDS = {
-  page1: 'xyz12345-ghij-klmn-opqr-stuvwxyz1234'  // Invalid!
+  page1: 'xyz12345-ghij-klmn-opqr-stuvwxyz1234' // Invalid!
 }
 
 // ✅ CORRECT - Only 0-9 and a-f
 const IDS = {
-  page1: '5ce116c4-fbda-4227-add3-57531b29ced2'  // Valid hex
+  page1: '5ce116c4-fbda-4227-add3-57531b29ced2' // Valid hex
 }
 ```
 
@@ -141,6 +152,7 @@ const IDS = {
 All examples are in [`src/server/form-examples/`](../src/server/form-examples/):
 
 1. **[hello-world-service.js](../src/server/form-examples/hello-world-service.js)**
+
    - Simple single-page form with TextField
    - Shows basic metadata, definition, and services pattern
    - No conditional routing, no lists
@@ -200,10 +212,18 @@ const definition = {
   engine: 'V2',
   schema: 2,
   startPage: '/first-page',
-  pages: [/* ... */],
-  conditions: [/* if needed */],
-  sections: [/* if needed */],
-  lists: [/* if needed */]
+  pages: [
+    /* ... */
+  ],
+  conditions: [
+    /* if needed */
+  ],
+  sections: [
+    /* if needed */
+  ],
+  lists: [
+    /* if needed */
+  ]
 }
 
 // 4. Services
@@ -219,11 +239,21 @@ const formsService = {
 }
 
 const outputService = {
-  submit: async function (context, request, model, emailAddress, items, submitResponse) {
+  submit: async function (
+    context,
+    request,
+    model,
+    emailAddress,
+    items,
+    submitResponse
+  ) {
     const referenceNumber = `REF-${Date.now()}`
     console.log('✅ Form submitted successfully!')
     console.log('Reference:', referenceNumber)
-    console.log('Data:', items.map(i => ({ name: i.name, value: i.value })))
+    console.log(
+      'Data:',
+      items.map((i) => ({ name: i.name, value: i.value }))
+    )
 
     return {
       title: 'Form submitted',
@@ -257,6 +287,7 @@ export default [{ formsService, outputService, formSubmissionService }]
 ## Component Types Reference
 
 ### Input Components
+
 - `TextField` - Single line text input
 - `MultilineTextField` - Textarea
 - `NumberField` - Numeric input
@@ -267,6 +298,7 @@ export default [{ formsService, outputService, formSubmissionService }]
 - `UkAddressField` - UK address lookup
 
 ### Selection Components
+
 - `RadiosField` - Radio buttons (requires `list` property)
 - `CheckboxesField` - Checkboxes (requires `list` property)
 - `SelectField` - Dropdown (requires `list` property)
@@ -274,8 +306,63 @@ export default [{ formsService, outputService, formSubmissionService }]
 - `YesNoField` - Yes/No toggle
 
 ### Other
-- `FileUploadField` - File upload
+
+- `FileUploadField` - File upload (see File Upload Pattern below)
 - `Html`, `Para`, `InsetText`, `Details` - Content components
+
+---
+
+## File Upload Pattern
+
+File uploads require **both** a page controller and a field component:
+
+```javascript
+const IDS = {
+  uploadPage: '5ce116c4-fbda-4227-add3-57531b29ced2',
+  uploadField: 'a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d'
+}
+
+const definition = {
+  pages: [
+    {
+      title: 'Upload your document',
+      path: '/upload-document',
+      controller: 'FileUploadPageController', // ✅ Required for file uploads
+      components: [
+        {
+          type: 'FileUploadField',
+          name: 'document',
+          title: 'Upload your document',
+          options: {
+            required: true,
+            accept: 'application/pdf,.pdf' // MIME types and extensions
+          },
+          schema: {
+            min: 1, // Minimum files
+            max: 3, // Maximum files
+            error: {
+              required: 'Upload a document'
+            }
+          },
+          id: IDS.uploadField
+        }
+      ],
+      next: [{ path: '/summary' }],
+      id: IDS.uploadPage
+    }
+  ]
+}
+```
+
+**Key Points:**
+
+- Page must have `controller: 'FileUploadPageController'`
+- Field uses `FileUploadField` component type
+- `options.accept` specifies allowed file types (MIME types or extensions)
+- `schema.min` and `schema.max` control file count
+- Maximum file size is 100MB (enforced by framework)
+
+**Reference:** [Official File Upload Docs](https://defra.github.io/forms-engine-plugin/features/code-based/FILE_UPLOAD.html)
 
 ---
 
@@ -372,7 +459,7 @@ const definition = {
           title: 'Choose an option',
           name: 'choice',
           options: { required: true },
-          list: IDS.choicesList,  // References list ID
+          list: IDS.choicesList, // References list ID
           id: IDS.choiceComponent
         }
       ],
@@ -388,8 +475,10 @@ const definition = {
     {
       title: 'Option 1 Page',
       path: '/option-1',
-      condition: IDS.option1Condition,  // ✅ STEP 2: Guard the page
-      components: [/* ... */],
+      condition: IDS.option1Condition, // ✅ STEP 2: Guard the page
+      components: [
+        /* ... */
+      ],
       next: [{ path: '/summary' }],
       id: IDS.option1Page
     },
@@ -398,8 +487,10 @@ const definition = {
     {
       title: 'Option 2 Page',
       path: '/option-2',
-      condition: IDS.option2Condition,  // ✅ STEP 2: Guard the page
-      components: [/* ... */],
+      condition: IDS.option2Condition, // ✅ STEP 2: Guard the page
+      components: [
+        /* ... */
+      ],
       next: [{ path: '/summary' }],
       id: IDS.option2Page
     }
@@ -411,11 +502,11 @@ const definition = {
       items: [
         {
           id: IDS.option1ConditionItem,
-          componentId: IDS.choiceComponent,  // References the RadiosField
+          componentId: IDS.choiceComponent, // References the RadiosField
           operator: 'is',
           value: {
-            itemId: IDS.option1Item,  // References list item
-            listId: IDS.choicesList   // References list
+            itemId: IDS.option1Item, // References list item
+            listId: IDS.choicesList // References list
           },
           type: 'ListItemRef'
         }
@@ -450,12 +541,12 @@ const definition = {
       id: IDS.choicesList,
       items: [
         {
-          id: IDS.option1Item,  // ✅ MUST have ID
+          id: IDS.option1Item, // ✅ MUST have ID
           text: 'Option 1',
           value: 'Option 1'
         },
         {
-          id: IDS.option2Item,  // ✅ MUST have ID
+          id: IDS.option2Item, // ✅ MUST have ID
           text: 'Option 2',
           value: 'Option 2'
         }
@@ -581,38 +672,43 @@ await server.register({
 ## Common Mistakes (DO NOT DO THESE)
 
 ### ❌ Runtime UUID Generation
+
 ```javascript
 // WRONG - New IDs every time!
 import { randomUUID } from 'crypto'
 const definition = {
-  pages: [{ id: randomUUID() }]  // ❌
+  pages: [{ id: randomUUID() }] // ❌
 }
 ```
 
 ### ✅ Static UUIDs
+
 ```javascript
 // CORRECT - Always the same
 const IDS = {
   page1: '5ce116c4-fbda-4227-add3-57531b29ced2'
 }
 const definition = {
-  pages: [{ id: IDS.page1 }]  // ✅
+  pages: [{ id: IDS.page1 }] // ✅
 }
 ```
 
 ### ❌ Export as Object
+
 ```javascript
 // WRONG - Can't spread in server.js
-export default { formsService, outputService, formSubmissionService }  // ❌
+export default { formsService, outputService, formSubmissionService } // ❌
 ```
 
 ### ✅ Export as Array
+
 ```javascript
 // CORRECT - Can spread
-export default [{ formsService, outputService, formSubmissionService }]  // ✅
+export default [{ formsService, outputService, formSubmissionService }] // ✅
 ```
 
 ### ❌ Missing Page Condition
+
 ```javascript
 // WRONG - Page shows always
 {
@@ -626,6 +722,7 @@ export default [{ formsService, outputService, formSubmissionService }]  // ✅
 ```
 
 ### ✅ Dual-Condition Pattern
+
 ```javascript
 // CORRECT - Condition in both places
 {
@@ -639,44 +736,52 @@ export default [{ formsService, outputService, formSubmissionService }]  // ✅
 ```
 
 ### ❌ List Items Without IDs
+
 ```javascript
 // WRONG - Can't use ListItemRef
-lists: [{
-  items: [
-    { text: 'Option 1', value: 'opt1' }  // ❌ No id
-  ]
-}]
+lists: [
+  {
+    items: [
+      { text: 'Option 1', value: 'opt1' } // ❌ No id
+    ]
+  }
+]
 ```
 
 ### ✅ List Items With IDs
+
 ```javascript
 // CORRECT - Can use ListItemRef
-lists: [{
-  items: [
-    {
-      id: 'd28789ad-aeee-40f6-a39c-a2ef186465c1',  // ✅
-      text: 'Option 1',
-      value: 'opt1'
-    }
-  ]
-}]
+lists: [
+  {
+    items: [
+      {
+        id: 'd28789ad-aeee-40f6-a39c-a2ef186465c1', // ✅
+        text: 'Option 1',
+        value: 'opt1'
+      }
+    ]
+  }
+]
 ```
 
 ### ❌ Slug in Paths
+
 ```javascript
 // WRONG - Duplicate slug
 metadata.slug = 'my-form'
 definition.pages = [
-  { path: '/my-form/page-1' }  // ❌ Results in /my-form/my-form/page-1
+  { path: '/my-form/page-1' } // ❌ Results in /my-form/my-form/page-1
 ]
 ```
 
 ### ✅ No Slug in Paths
+
 ```javascript
 // CORRECT - Engine adds slug
 metadata.slug = 'my-form'
 definition.pages = [
-  { path: '/page-1' }  // ✅ Results in /my-form/page-1
+  { path: '/page-1' } // ✅ Results in /my-form/page-1
 ]
 ```
 
@@ -685,22 +790,27 @@ definition.pages = [
 ## Troubleshooting
 
 ### Form returns 404
+
 - **Cause**: Missing `condition` property on conditional pages
 - **Fix**: Add `condition: IDS.conditionName` to the page
 
 ### "must be a valid GUID" error
+
 - **Cause**: UUID contains non-hex characters (g-z)
 - **Fix**: Regenerate UUIDs with only 0-9, a-f
 
 ### All pages show (no branching)
+
 - **Cause**: Missing `condition` property on pages
 - **Fix**: Use dual-condition pattern
 
 ### "is not iterable" error
+
 - **Cause**: Exported as object instead of array
 - **Fix**: Export as `[{ ... }]`
 
 ### Summary page empty
+
 - **Cause**: Missing `sections` array or pages don't reference sections
 - **Fix**: Add sections and `section:` property to pages
 
@@ -709,6 +819,7 @@ definition.pages = [
 ## Generating UUIDs
 
 Run in terminal:
+
 ```bash
 node -e "for(let i=0; i<20; i++) console.log(require('crypto').randomUUID())"
 ```
@@ -720,15 +831,13 @@ Copy and paste into your IDS object. Generate more than you think you need.
 ## URL Structure
 
 Forms are automatically mounted at:
+
 ```
 http://localhost:3000/{slug}/{page-path}
 ```
 
 Example:
+
 - `metadata.slug = 'location-form'`
 - `page.path = '/enter-postcode'`
 - URL: `http://localhost:3000/location-form/enter-postcode`
-
----
-
-Last updated: October 24, 2025

@@ -6,11 +6,10 @@ This document captures our experience building forms with DEFRA Forms Engine v2 
 
 1. **Generic 500 errors with limited diagnostic information**
 
-   - Duplicate page IDs cause 500 errors with no indication of which IDs are duplicated
    - Requires manual code inspection to diagnose
    - More specific error messages would significantly improve the development experience
 
-2. **Component options could be more discoverable**
+2. **Component options could be more discoverable and better documented**
 
    - Full list of valid options for each component type isn't easily found
    - Controllers (like FileUploadPageController) aren't easily discoverable, making it difficult for humans and AI to problem solve
@@ -38,7 +37,7 @@ This document captures our experience building forms with DEFRA Forms Engine v2 
 
 We've created comprehensive local documentation to address these gaps:
 
-- **7 Critical Rules** ([docs/DEFRA_FORMS.md](docs/DEFRA_FORMS.md)) with wrong/correct examples for common mistakes
+- **Critical Rules** ([docs/DEFRA_FORMS.md](docs/DEFRA_FORMS.md)) with wrong/correct examples for common mistakes
 - **Automated slash command** ([.cursor/commands/new-journey.md](.cursor/commands/new-journey.md)) that walks AI through form creation step-by-step with verification checkpoints
 - **Phased implementation approach** ([prompts/nrf-estimate-journey-phased.md](prompts/nrf-estimate-journey-phased.md)) for complex multi-page forms with human approval gates between phases
 - **Working reference examples** (hello-world, conditional-routing, equipment-registration) demonstrating key patterns

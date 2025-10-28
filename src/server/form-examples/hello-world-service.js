@@ -92,7 +92,10 @@ const outputService = {
     // Log submission (in production, you'd send to an API or database)
     console.log('✅ Form submitted successfully!')
     console.log('Reference:', referenceNumber)
-    console.log('Data:', items.map(i => ({ name: i.name, value: i.value })))
+    console.log(
+      'Data:',
+      items.map((i) => ({ name: i.name, value: i.value }))
+    )
 
     const yourName = items.find((i) => i.name === 'yourName')?.value || 'there'
 

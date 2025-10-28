@@ -11,12 +11,12 @@
 
 ### Page 1: Location Method Selection
 
-| **Field**                  | **Value**                                                          |
-| -------------------------- | ------------------------------------------------------------------ |
-| **Order number:**          | 1                                                                  |
+| **Field**                  | **Value**                                                                   |
+| -------------------------- | --------------------------------------------------------------------------- |
+| **Order number:**          | 1                                                                           |
 | **Path:**                  | /location-form/how-would-you-like-to-provide-your-development-site-location |
-| **Title:**                 | How would you like to provide your development site location?      |
-| **Conditional page flow:** | Branches based on selection                                        |
+| **Title:**                 | How would you like to provide your development site location?               |
+| **Conditional page flow:** | Branches based on selection                                                 |
 
 #### Data points
 
@@ -42,22 +42,22 @@
 
 #### Errors
 
-| **Field**      | **Value**                                                    |
-| -------------- | ------------------------------------------------------------ |
-| Description:   | User has selected 'Continue' without choosing an option      |
-| Error summary: | There is a problem                                           |
+| **Field**      | **Value**                                                     |
+| -------------- | ------------------------------------------------------------- |
+| Description:   | User has selected 'Continue' without choosing an option       |
+| Error summary: | There is a problem                                            |
 | Error message: | Select how you would like to provide the development location |
 
 ---
 
 ### Page 2: Enter Postcode (Conditional)
 
-| **Field**                  | **Value**                                      |
-| -------------------------- | ---------------------------------------------- |
-| **Order number:**          | 2.1                                            |
+| **Field**                  | **Value**                                           |
+| -------------------------- | --------------------------------------------------- |
+| **Order number:**          | 2.1                                                 |
 | **Path:**                  | /location-form/enter-your-development-site-postcode |
-| **Title:**                 | Enter your development site postcode           |
-| **Conditional page flow:** | Display if locationMethod === "Enter a postcode" |
+| **Title:**                 | Enter your development site postcode                |
+| **Conditional page flow:** | Display if locationMethod === "Enter a postcode"    |
 
 #### Data points
 
@@ -80,25 +80,25 @@
 
 #### Errors
 
-| **Field**      | **Value**                                        |
-| -------------- | ------------------------------------------------ |
+| **Field**      | **Value**                                                |
+| -------------- | -------------------------------------------------------- |
 | Description:   | User has selected 'Continue' without entering a postcode |
-| Error summary: | There is a problem                               |
-| Error message: | Enter a postcode                                 |
-| Description:   | Invalid postcode format                          |
-| Error summary: | There is a problem                               |
-| Error message: | Enter a postcode in the correct format, like SW1A 1AA |
+| Error summary: | There is a problem                                       |
+| Error message: | Enter a postcode                                         |
+| Description:   | Invalid postcode format                                  |
+| Error summary: | There is a problem                                       |
+| Error message: | Enter a postcode in the correct format, like SW1A 1AA    |
 
 ---
 
 ### Page 3: Draw on Map (Conditional)
 
-| **Field**                  | **Value**                                      |
-| -------------------------- | ---------------------------------------------- |
-| **Order number:**          | 2.2                                            |
-| **Path:**                  | /location-form/draw-development-site-boundary  |
-| **Title:**                 | Draw your development site boundary            |
-| **Conditional page flow:** | Display if locationMethod === "Draw on a map"  |
+| **Field**                  | **Value**                                     |
+| -------------------------- | --------------------------------------------- |
+| **Order number:**          | 2.2                                           |
+| **Path:**                  | /location-form/draw-development-site-boundary |
+| **Title:**                 | Draw your development site boundary           |
+| **Conditional page flow:** | Display if locationMethod === "Draw on a map" |
 
 #### Data points
 
@@ -125,22 +125,22 @@ Hint: Click on the map to place points and create a boundary around your site.
 
 #### Errors
 
-| **Field**      | **Value**                                           |
-| -------------- | --------------------------------------------------- |
+| **Field**      | **Value**                                             |
+| -------------- | ----------------------------------------------------- |
 | Description:   | User has selected 'Continue' without drawing boundary |
-| Error summary: | There is a problem                                  |
-| Error message: | Draw a boundary on the map to continue              |
+| Error summary: | There is a problem                                    |
+| Error message: | Draw a boundary on the map to continue                |
 
 ---
 
 ### Page 4: Confirm Site Details
 
-| **Field**                  | **Value**                                      |
-| -------------------------- | ---------------------------------------------- |
-| **Order number:**          | 3                                              |
-| **Path:**                  | /location-form/confirm-site-details            |
-| **Title:**                 | Confirm your site details                      |
-| **Conditional page flow:** | None                                           |
+| **Field**                  | **Value**                           |
+| -------------------------- | ----------------------------------- |
+| **Order number:**          | 3                                   |
+| **Path:**                  | /location-form/confirm-site-details |
+| **Title:**                 | Confirm your site details           |
+| **Conditional page flow:** | None                                |
 
 #### Data points
 
@@ -173,22 +173,22 @@ Provide any additional details about the site
 
 #### Errors
 
-| **Field**      | **Value**                                        |
-| -------------- | ------------------------------------------------ |
+| **Field**      | **Value**                                               |
+| -------------- | ------------------------------------------------------- |
 | Description:   | User has selected 'Continue' without entering site name |
-| Error summary: | There is a problem                               |
-| Error message: | Enter a name for the development site            |
+| Error summary: | There is a problem                                      |
+| Error message: | Enter a name for the development site                   |
 
 ---
 
 ### Page 5: Check Your Answers
 
-| **Field**                  | **Value**                                      |
-| -------------------------- | ---------------------------------------------- |
-| **Order number:**          | 4                                              |
-| **Path:**                  | /location-form/check-your-answers              |
-| **Title:**                 | Check your answers                             |
-| **Conditional page flow:** | None                                           |
+| **Field**                  | **Value**                         |
+| -------------------------- | --------------------------------- |
+| **Order number:**          | 4                                 |
+| **Path:**                  | /location-form/check-your-answers |
+| **Title:**                 | Check your answers                |
+| **Conditional page flow:** | None                              |
 
 #### Data points
 
@@ -215,12 +215,12 @@ None
 
 ### Page 6: Confirmation
 
-| **Field**                  | **Value**                                      |
-| -------------------------- | ---------------------------------------------- |
-| **Order number:**          | 5                                              |
-| **Path:**                  | /location-form/confirmation                    |
-| **Title:**                 | Site location submitted                        |
-| **Conditional page flow:** | None                                           |
+| **Field**                  | **Value**                   |
+| -------------------------- | --------------------------- |
+| **Order number:**          | 5                           |
+| **Path:**                  | /location-form/confirmation |
+| **Title:**                 | Site location submitted     |
+| **Conditional page flow:** | None                        |
 
 #### Data points
 
@@ -265,10 +265,12 @@ This journey should be implemented using the Defra Forms Engine (@defra/forms-en
 ### Key Features
 
 1. **Conditional Routing**:
+
    - Based on `locationMethod` selection, show either postcode page or map page
    - Both paths merge at the "Confirm site details" page
 
 2. **Component Types**:
+
    - Radio buttons for location method selection
    - Text input for postcode (with validation)
    - Text input for map coordinates (simulated for prototype)
@@ -276,12 +278,14 @@ This journey should be implemented using the Defra Forms Engine (@defra/forms-en
    - Textarea for site description
 
 3. **Validation Requirements**:
+
    - All required fields must be validated
    - Postcode must match UK postcode format (basic validation)
    - Map coordinates must be provided if map option selected
    - Clear error messages for all validation failures
 
 4. **Data Structure**:
+
    ```javascript
    application: {
      locationMethod: 'Enter a postcode' | 'Draw on a map',
@@ -300,6 +304,7 @@ This journey should be implemented using the Defra Forms Engine (@defra/forms-en
 ### Form Services Required
 
 1. **formsService.get()**:
+
    - Return the complete form definition with all pages
    - Include conditional logic for routing
    - Define validation rules
@@ -313,6 +318,7 @@ This journey should be implemented using the Defra Forms Engine (@defra/forms-en
 ### Expected User Flows
 
 **Flow 1: Postcode Entry**
+
 1. Start page → Select "Enter a postcode"
 2. Enter postcode page → Enter postcode
 3. Confirm site details → Enter site name and optional description
@@ -320,6 +326,7 @@ This journey should be implemented using the Defra Forms Engine (@defra/forms-en
 5. Confirmation → Success message with reference
 
 **Flow 2: Map Drawing**
+
 1. Start page → Select "Draw on a map"
 2. Draw on map page → Provide map coordinates
 3. Confirm site details → Enter site name and optional description

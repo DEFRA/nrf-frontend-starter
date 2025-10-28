@@ -7,6 +7,7 @@
 This 19-page journey is too complex to build in one pass. It MUST be built in 5 phases, with testing and approval between each phase.
 
 **After completing each phase:**
+
 1. ✅ Test all pages in that phase
 2. ✅ Verify all routing works
 3. ✅ Show the user what you've built
@@ -19,13 +20,16 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
 **Goal:** Get the basic journey routing working
 
 ### Pages to Build:
+
 1. **Start Page** (`/start`)
+
    - Title: "Get an estimate for the Nature Restoration Fund levy"
    - Add Html component with content about the service
    - Button: "Start now"
    - Next: `/what-would-you-like-to-do`
 
 2. **Journey Selection** (`/what-would-you-like-to-do`)
+
    - RadiosField: "What would you like to do?"
    - Options:
      - "Get an estimate for the levy" (value: `estimate`)
@@ -39,6 +43,7 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
    - Will show collected data (initially empty in this phase)
 
 ### Phase 1 Success Criteria:
+
 - [ ] All 3 pages load without errors
 - [ ] Start page shows content
 - [ ] Journey selection page shows two radio options
@@ -47,6 +52,7 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
 - [ ] Summary page loads (even if empty)
 
 ### ⏸️ STOP HERE - Show user what you've built and ask:
+
 "Phase 1 complete. I've built the journey selection. Can you test it and approve before I continue to Phase 2?"
 
 ---
@@ -60,6 +66,7 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
 ### Pages to Build:
 
 4. **Redline Boundary Question** (`/redline-map`)
+
    - RadiosField: "Do you have a red line boundary file for your development?"
    - Hint: "A red line boundary file is a geographic file..."
    - Options:
@@ -70,6 +77,7 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
      - If `no` → `/map`
 
 5. **Upload Redline File** (`/upload-redline`)
+
    - **Controller:** FileUploadPageController
    - FileUploadField component
    - Accepts: .shp, .geojson
@@ -85,6 +93,7 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
      - For .shp files: Show error "Shapefile parsing not yet supported. Please use GeoJSON."
 
 6. **Define Boundary** (`/map`)
+
    - TextField: "Enter your development site boundary coordinates"
    - Hint: "Enter the center coordinates in format: longitude, latitude"
    - Example: "-0.4, 51.5"
@@ -97,9 +106,11 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
    - No next page (terminal)
 
 ### Phase 2 Updates to Phase 1:
+
 - Update journey selection page routing to point to `/redline-map` for estimate journey
 
 ### Phase 2 Success Criteria:
+
 - [ ] Can navigate from journey selection to redline question
 - [ ] Selecting "yes" routes to upload page
 - [ ] Selecting "no" routes to map page
@@ -109,6 +120,7 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
 - [ ] No EDP page shows error message
 
 ### ⏸️ STOP HERE - Show user what you've built and ask:
+
 "Phase 2 complete. I've built boundary collection with file upload and manual entry. Can you test it and approve before I continue to Phase 3?"
 
 ---
@@ -122,6 +134,7 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
 ### Pages to Build:
 
 8. **Select Building Types** (`/building-type`)
+
    - CheckboxesField: "What types of buildings are part of your development?"
    - Hint: "Select all that apply"
    - Options:
@@ -137,6 +150,7 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
      - Else → `/email`
 
 9. **Non-Residential** (`/non-residential`) - TERMINAL PAGE
+
    - Html component: "Non-residential developments have different requirements"
    - "Contact your EDP directly"
    - No next page (terminal)
@@ -148,9 +162,11 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
     - Next: `/email`
 
 ### Phase 3 Updates to Phase 2:
+
 - Update map page to route to `/building-type`
 
 ### Phase 3 Success Criteria:
+
 - [ ] Building type page shows checkboxes for all 5 types
 - [ ] Can select multiple building types
 - [ ] Selecting "Non-residential" routes to terminal page
@@ -159,6 +175,7 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
 - [ ] Non-residential terminal page shows message
 
 ### ⏸️ STOP HERE - Show user what you've built and ask:
+
 "Phase 3 complete. I've built building type selection and residential count. Can you test it and approve before I continue to Phase 4?"
 
 ---
@@ -172,6 +189,7 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
 ### Pages to Build:
 
 11. **Room Count** (`/room-count`) - MULTI-STEP PAGE
+
     - NumberField: "How many rooms are in your [building type]?"
     - This page ITERATES for each building type requiring room counts
     - Show progress: "Step X of Y"
@@ -191,6 +209,7 @@ This 19-page journey is too complex to build in one pass. It MUST be built in 5 
 
 **Room Count Iteration Logic:**
 This page needs custom logic to iterate through building types. You'll need to:
+
 1. Store `roomCountTypes` array in session (building types needing room counts)
 2. Track `currentRoomCountIndex` in session
 3. On page load: Show question for `roomCountTypes[currentRoomCountIndex]`
@@ -199,6 +218,7 @@ This page needs custom logic to iterate through building types. You'll need to:
 6. If done: Route to next page based on journey
 
 **The form definition will look like:**
+
 ```javascript
 {
   title: 'How many rooms are in your [building type]?',
@@ -219,6 +239,7 @@ This page needs custom logic to iterate through building types. You'll need to:
 **Note:** This may require a custom page controller to handle the iteration logic. If the standard DEFRA Forms engine can't handle this, we may need to simplify to separate pages for each building type.
 
 ### Phase 4 Success Criteria:
+
 - [ ] Room count page displays for Hotel (if selected in building types)
 - [ ] Shows progress indicator (Step 1 of X)
 - [ ] After entering count, shows next building type (if multiple selected)
@@ -226,6 +247,7 @@ This page needs custom logic to iterate through building types. You'll need to:
 - [ ] Email page accepts email input with validation
 
 ### ⏸️ STOP HERE - Show user what you've built and ask:
+
 "Phase 4 complete. I've built room count iteration and email collection. Can you test it and approve before I continue to Phase 5?"
 
 ---
@@ -239,6 +261,7 @@ This page needs custom logic to iterate through building types. You'll need to:
 ### Pages to Build:
 
 13. **Do You Have Estimate Ref** (`/do-you-have-an-estimate-ref`)
+
     - RadiosField: "Do you have an estimate reference?"
     - Hint: "Reference number starting with EST-"
     - Options: "Yes" / "No"
@@ -248,28 +271,33 @@ This page needs custom logic to iterate through building types. You'll need to:
     - Conditional display: Only if `journeyType === 'payment'`
 
 14. **Enter Estimate Ref** (`/enter-estimate-ref`)
+
     - TextField: "Enter your estimate reference"
     - Hint: "6-digit number starting with EST-, e.g. EST-123456"
     - Validation: Must be numeric
     - Next: `/retrieve-estimate-email`
 
 15. **Retrieve Estimate Email** (`/retrieve-estimate-email`)
+
     - EmailAddressField: "Enter the email you used for your estimate"
     - Hint: "We'll send a link to your estimate"
     - Next: `/estimate-email-retrieval-content`
 
 16. **Email Retrieval Content** (`/estimate-email-retrieval-content`)
+
     - Html component: "We've sent you an email"
     - Info about checking inbox and clicking link
     - Next: `/planning-ref`
 
 17. **Planning Reference** (`/planning-ref`)
+
     - TextField: "What is the planning application reference?"
     - Hint: "e.g. PLAN/2024/001"
     - Conditional: Only for payment journey without estimate ref
     - Next: `/email` (if no email collected yet) or `/summary`
 
 18. **Estimate Confirmation** (`/confirmation`)
+
     - Html component with panel showing estimate reference
     - "Your estimate reference is EST-XXXXXX"
     - "What happens next" content
@@ -282,11 +310,13 @@ This page needs custom logic to iterate through building types. You'll need to:
     - Terminal page (form complete)
 
 ### Phase 5 Updates to Previous Phases:
+
 - Update journey selection routing for payment option
 - Update summary page to conditionally render estimate vs payment template
 - Update outputService to generate different references based on journey type
 
 ### Phase 5 Success Criteria:
+
 - [ ] Payment journey flows from selection through estimate ref question
 - [ ] Can enter estimate ref and email, get retrieval content
 - [ ] Can skip estimate ref and go through full data collection
@@ -296,6 +326,7 @@ This page needs custom logic to iterate through building types. You'll need to:
 - [ ] Payment confirmation shows with PAY- reference
 
 ### ⏸️ STOP HERE - Show user what you've built and ask:
+
 "Phase 5 complete. The full journey is now implemented. Can you test both estimate and payment flows end-to-end?"
 
 ---
@@ -303,6 +334,7 @@ This page needs custom logic to iterate through building types. You'll need to:
 ## Testing Requirements Per Phase
 
 ### Phase 1 Testing:
+
 ```bash
 npm run dev
 # Visit: http://localhost:3000
@@ -316,6 +348,7 @@ npm run dev
 ```
 
 ### Phase 2 Testing:
+
 ```bash
 # From journey selection, select "Get an estimate"
 # Test:
@@ -328,6 +361,7 @@ npm run dev
 ```
 
 ### Phase 3 Testing:
+
 ```bash
 # Continue from boundary collection
 # Test:
@@ -339,6 +373,7 @@ npm run dev
 ```
 
 ### Phase 4 Testing:
+
 ```bash
 # Select Hotel + HMO in building types
 # Test:
@@ -350,6 +385,7 @@ npm run dev
 ```
 
 ### Phase 5 Testing:
+
 ```bash
 # Test payment journey:
 # From start, select "Make a payment"
@@ -374,11 +410,13 @@ npm run dev
 ### Before Starting Any Phase:
 
 1. ✅ **Verify previous phase is complete**
+
    - All pages from previous phases work
    - All routing is correct
    - User has approved proceeding
 
 2. ✅ **Read the phase requirements carefully**
+
    - Understand which pages to build
    - Understand the routing logic
    - Identify any conditional pages
@@ -391,6 +429,7 @@ npm run dev
 ### While Building a Phase:
 
 4. ✅ **Build pages in order**
+
    - Don't skip ahead
    - Test each page as you add it
    - Fix errors before continuing
@@ -407,6 +446,7 @@ npm run dev
 ### After Completing a Phase:
 
 6. ✅ **Test everything in this phase**
+
    - Every page loads
    - Every route works
    - Every validation works
@@ -422,18 +462,21 @@ npm run dev
 ## What to Do If You Get Stuck
 
 ### If a page won't load:
+
 1. Check for duplicate page IDs in IDS object
 2. Check browser console for errors
 3. Check server terminal for errors
 4. Verify the page path doesn't include the slug
 
 ### If conditional routing doesn't work:
+
 1. Check condition is in conditions array
 2. Check condition is in next array on parent page
 3. Check conditional page has condition property
 4. Verify list items have id field
 
 ### If you can't implement something:
+
 1. **STOP**
 2. Tell the user what you're stuck on
 3. Ask for guidance
@@ -446,6 +489,7 @@ npm run dev
 After each phase, verify:
 
 ### Code Verification:
+
 - [ ] All pages have unique IDs
 - [ ] All IDs in IDS object
 - [ ] Conditional pages have condition property
@@ -454,6 +498,7 @@ After each phase, verify:
 - [ ] Export is an array
 
 ### Testing Verification:
+
 - [ ] Server starts without errors
 - [ ] All new pages load without 500 errors
 - [ ] All new routes work correctly
@@ -462,6 +507,7 @@ After each phase, verify:
 - [ ] No errors in server terminal
 
 ### Approval Gate:
+
 - [ ] User has tested this phase
 - [ ] User has approved proceeding to next phase
 
@@ -475,15 +521,16 @@ After each phase, verify:
 **Total phases:** 5
 **Approach:** Incremental with approval gates
 
-| Phase | Pages | Approval Required |
-|-------|-------|-------------------|
-| 1 | 3 pages | ✅ Yes - before Phase 2 |
-| 2 | 4 pages | ✅ Yes - before Phase 3 |
-| 3 | 3 pages | ✅ Yes - before Phase 4 |
-| 4 | 2 pages | ✅ Yes - before Phase 5 |
-| 5 | 7 pages | ✅ Yes - final testing |
+| Phase | Pages   | Approval Required       |
+| ----- | ------- | ----------------------- |
+| 1     | 3 pages | ✅ Yes - before Phase 2 |
+| 2     | 4 pages | ✅ Yes - before Phase 3 |
+| 3     | 3 pages | ✅ Yes - before Phase 4 |
+| 4     | 2 pages | ✅ Yes - before Phase 5 |
+| 5     | 7 pages | ✅ Yes - final testing  |
 
 **This approach ensures:**
+
 - Complex journey is manageable
 - Errors are caught early
 - User has visibility into progress

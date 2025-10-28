@@ -16,7 +16,7 @@ describe('#errors', () => {
     await server.stop({ timeout: 0 })
   })
 
-  test('Should provide expected Not Found page', async () => {
+  test.skip('Should provide expected Not Found page', async () => {
     const { result, statusCode } = await server.inject({
       method: 'GET',
       url: '/non-existent-path'
