@@ -1,85 +1,110 @@
-{% extends 'layouts/page.njk' %}
+{% extends "layouts/page.njk" %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% block beforeContent %}
+  {% if preference === "formal" %}
+    {% set backLinkHref = ROUTES.NAME %}
+  {% elif name %}
+    {% set backLinkHref = ROUTES.COLOR %}
+  {% else %}
+    {% set backLinkHref = ROUTES.PREFERENCE %}
+  {% endif %}
   {{ govukBackLink({
-    href: backLink
+    href: backLinkHref
   }) }}
-{% endblock %}
+{% endblock beforeContent %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">{{ heading }}</h1>
 
+      {% if error %}
+        {% if preference === "formal" %}
+          {% set errorHref = "#name" %}
+        {% elif color %}
+          {% set errorHref = "#color" %}
+        {% else %}
+          {% set errorHref = "#preference" %}
+        {% endif %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: [
+            {
+              text: error,
+              href: errorHref
+            }
+          ]
+        }) }}
+      {% endif %}
+
       {{ govukSummaryList({
-        rows: [
-          {
+            rows: [
+            {
             key: {
-              text: "Greeting preference"
+            text: "Greeting preference"
             },
             value: {
-              text: preference | capitalize
+            text: preference | capitalize
             },
             actions: {
-              items: [
-                {
-                  href: ROUTES.PREFERENCE,
-                  text: "Change",
-                  visuallyHiddenText: "greeting preference"
-                }
-              ]
+            items: [
+            {
+            href: ROUTES.PREFERENCE,
+            text: "Change",
+            visuallyHiddenText: "greeting preference"
             }
-          },
-          {
+            ]
+            }
+            },
+            {
             key: {
-              text: "Name"
+            text: "Name"
             },
             value: {
-              text: name if name else "Not provided"
+            text: name if name else "Not provided"
             },
             actions: {
-              items: [
-                {
-                  href: ROUTES.NAME,
-                  text: "Change",
-                  visuallyHiddenText: "name"
-                }
-              ]
+            items: [
+            {
+            href: ROUTES.NAME,
+            text: "Change",
+            visuallyHiddenText: "name"
             }
-          } if preference === "formal",
-          {
+            ]
+            }
+            } if preference === "formal",
+            {
             key: {
-              text: "Favourite colour"
+            text: "Favourite colour"
             },
             value: {
-              text: color | capitalize
+            text: color | capitalize
             },
             actions: {
-              items: [
-                {
-                  href: ROUTES.COLOR,
-                  text: "Change",
-                  visuallyHiddenText: "favourite colour"
-                }
-              ]
+            items: [
+            {
+            href: ROUTES.COLOR ~ "?from=summary",
+            text: "Change",
+            visuallyHiddenText: "favourite colour"
             }
-          }
-        ]
-      }) }}
+            ]
+            }
+            }
+            ]
+            }) }}
 
       <h2 class="govuk-heading-m">Now complete your journey</h2>
 
-      <p class="govuk-body">
-        By submitting this form you are confirming that the information you have provided is correct.
-      </p>
+      <p class="govuk-body">By submitting this form you are confirming that the information you have provided is correct.</p>
 
       {{ govukButton({
-        text: "Accept and complete",
-        href: ROUTES.CONFIRMATION
-      }) }}
+            text: "Accept and complete",
+            href: ROUTES.CONFIRMATION
+            }) }}
     </div>
   </div>
-{% endblock %}
+{% endblock content %}

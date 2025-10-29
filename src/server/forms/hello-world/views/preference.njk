@@ -1,4 +1,4 @@
-{% extends 'layouts/page.njk' %}
+{% extends "layouts/page.njk" %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
@@ -7,58 +7,56 @@
 {% block beforeContent %}
   {{ govukBackLink({
     href: backLink
-  }) }}
-{% endblock %}
+    }) }}
+{% endblock beforeContent %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% if error %}
         {{ govukErrorSummary({
-          titleText: "There is a problem",
-          errorList: [
-            {
-              text: error,
-              href: "#preference"
-            }
-          ]
-        }) }}
+                titleText: "There is a problem",
+                errorList: [
+                {
+                text: error,
+                href: "#preference"
+                }
+                ]
+                }) }}
       {% endif %}
 
       <form method="post" novalidate>
         {{ govukRadios({
-          name: "preference",
-          fieldset: {
-            legend: {
-              text: heading,
-              isPageHeading: true,
-              classes: "govuk-fieldset__legend--xl"
-            }
-          },
-          hint: {
-            text: "This will determine how we greet you at the end of the journey"
-          },
-          errorMessage: {
-            text: error
-          } if error,
-          items: [
-            {
-              value: "formal",
-              text: "Formal (we'll ask for your name)",
-              checked: selectedPreference === "formal"
-            },
-            {
-              value: "casual",
-              text: "Casual (no name required)",
-              checked: selectedPreference === "casual"
-            }
-          ]
-        }) }}
+                name: "preference",
+                fieldset: {
+                legend: {
+                text: heading,
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--xl"
+                }
+                },
+                hint: {
+                text: "This will determine how we greet you at the end of the journey"
+                },
+                errorMessage: {
+                text: error
+                } if error,
+                items: [
+                {
+                value: "formal",
+                text: "Formal (we'll ask for your name)",
+                checked: selectedPreference === "formal"
+                },
+                {
+                value: "casual",
+                text: "Casual (no name required)",
+                checked: selectedPreference === "casual"
+                }
+                ]
+                }) }}
 
-        {{ govukButton({
-          text: "Continue"
-        }) }}
+        {{ govukButton({"text": "Continue"}) }}
       </form>
     </div>
   </div>
-{% endblock %}
+{% endblock content %}

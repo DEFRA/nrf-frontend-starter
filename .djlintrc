@@ -1,0 +1,10 @@
+{
+  "profile": "nunjucks",
+  "extension": "njk",
+  "ignore": "node_modules,dist,.cache",
+  "indent": 2,
+  "max_line_length": 120,
+  "preserve_blank_lines": true,
+  "format_attribute_template_tags": true,
+  "max_blank_lines": 1
+}

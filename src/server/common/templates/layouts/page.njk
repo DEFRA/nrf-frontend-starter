@@ -10,8 +10,9 @@
 {% set mainClasses = "app-main-wrapper" %}
 
 {% block head %}
-  <link href="{{ getAssetPath('stylesheets/application.scss') }}" rel="stylesheet">
-{% endblock %}
+  <link href="{{ getAssetPath("stylesheets/application.scss") }}"
+        rel="stylesheet">
+{% endblock head %}
 
 {% block header %}
   {# serviceName being used in govukHeader will be @deprecated in v6. It has moved to govukServiceNavigation - https://github.com/alphagov/govuk-frontend/blob/main/CHANGELOG.md#move-service-name-and-navigation-links-from-the-govuk-header-to-service-navigation-component #}
@@ -22,48 +23,49 @@
     serviceName: serviceName,
     serviceUrl: serviceUrl,
     useTudorCrown: true
-  }) }}
+    }) }}
 
   {{ govukServiceNavigation({
     navigation: navigation
-  }) }}
-{% endblock %}
+    }) }}
+{% endblock header %}
 
 {% block pageTitle %}
   {{ pageTitle }} | {{ serviceName }}
-{% endblock %}
+{% endblock pageTitle %}
 
 {% block beforeContent %}
   {% if breadcrumbs.length > 1 %}
     {{ govukBreadcrumbs({
-      items: breadcrumbs
-    }) }}
+        items: breadcrumbs
+        }) }}
   {% endif %}
-{% endblock %}
+{% endblock beforeContent %}
 
-{% block content %}{% endblock %}
+{% block content %}
+{% endblock content %}
 
 {% block footer %}
   {{ govukFooter({
-    meta: {
-      items: [
+    "meta": {
+      "items": [
         {
-          href: "https://www.gov.uk/help/privacy-notice",
-          text: "Privacy"
+          "href": "https://www.gov.uk/help/privacy-notice",
+          "text": "Privacy"
         },
         {
-          href: "https://www.gov.uk/help/cookies",
-          text: "Cookies"
+          "href": "https://www.gov.uk/help/cookies",
+          "text": "Cookies"
         },
         {
-          href: "https://www.gov.uk/help/accessibility-statement",
-          text: "Accessibility statement"
+          "href": "https://www.gov.uk/help/accessibility-statement",
+          "text": "Accessibility statement"
         }
       ]
     }
   }) }}
-{% endblock %}
+{% endblock footer %}
 
 {% block bodyEnd %}
   <script type="module" src="{{ getAssetPath('application.js') }}"></script>
-{% endblock %}
+{% endblock bodyEnd %}

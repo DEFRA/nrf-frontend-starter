@@ -1,18 +1,15 @@
-{% extends 'layouts/page.njk' %}
+{% extends "layouts/page.njk" %}
 
 {% block content %}
   {{ appHeading({
     text: heading,
     caption: "nrf-frontend-starter"
-  }) }}
+    }) }}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-body" data-testid="app-page-body">
-        <p>
-        </p>
-      </div>
+      <div class="govuk-body" data-testid="app-page-body"></div>
     </div>
   </div>
 
-{% endblock %}
+{% endblock content %}

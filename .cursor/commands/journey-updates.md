@@ -48,7 +48,7 @@ Type `/journey-updates` in the chat to trigger a merge of changes to the user jo
 
 # Instructions
 
-**IMPORTANT**: This command requires running `/content-review` as the final validation step (see step 5). Create a TODO list that includes this validation step and do not mark implementation complete until validation has been run.
+**IMPORTANT**: This command requires running linting checks (step 5) and `/content-review` as the final validation step (step 6). Create a TODO list that includes both linting and validation steps and do not mark implementation complete until both have been run.
 
 Take the instructions and parameters provided, then:
 
@@ -90,7 +90,7 @@ Take the instructions and parameters provided, then:
 
 3. **Implementation Steps**:
 
-   **CRITICAL**: Before starting implementation, create a TODO list that includes a validation step using `/content-review` (see step 5 below).
+   **CRITICAL**: Before starting implementation, create a TODO list that includes linting (step 5) and validation steps using `/content-review` (step 6).
 
    - **Structural Analysis First**:
      - Extract all page paths from the specification using grep for "Path:"
@@ -129,7 +129,7 @@ Take the instructions and parameters provided, then:
    - Ensure the changes integrate properly with existing functionality
    - Test the updated journey flow
 
-   **STOP HERE**: Before proceeding to step 4, you MUST complete step 5 (Validation) after all implementation is done. Do not mark implementation tasks as complete until validation has been run.
+   **STOP HERE**: Before proceeding to step 4, you MUST complete step 5 (Linting) and step 6 (Validation) after all implementation is done. Do not mark implementation tasks as complete until both linting and validation have been run.
 
 4. **Files to Update**:
 
@@ -147,17 +147,64 @@ Take the instructions and parameters provided, then:
 
    **Critical**: Follow all patterns from [forms.mdc](mdc:.cursor/rules/forms.mdc) and referenced rule files.
 
-5. **Validation** (MANDATORY - DO NOT SKIP):
+5. **Linting** (MANDATORY - DO NOT SKIP):
 
-   ⚠️ **REQUIRED STEP**: You MUST run the content-review command after completing all implementation tasks. This is not optional.
+   ⚠️ **REQUIRED STEP**: You MUST run linting checks after completing all implementation tasks. This is not optional.
 
    **Run this command IMMEDIATELY after step 3 (Implementation Steps) is complete:**
+
+   ```bash
+   npm run lint
+   ```
+
+   **This step MUST be completed before marking any TODOs as complete.** Do not skip this linting step.
+
+   **Linting checks include:**
+
+   - **JavaScript linting** (`lint:js`): ESLint checks for code quality issues
+   - **SCSS linting** (`lint:scss`): Stylelint checks for CSS/SCSS issues
+   - **Nunjucks linting** (`lint:nunjucks`): Template syntax validation and formatting checks
+     - Syntax validation: Detects ternary operators, string concatenation issues, and compilation errors
+     - Style checks: djLint formatting and best practices
+
+   **If linting fails:**
+
+   - Fix all JavaScript errors using `npm run lint:js:fix` (if auto-fixable)
+   - Fix all SCSS errors manually
+   - Fix all Nunjucks errors:
+     - Replace ternary operators (`? :`) with if/else blocks
+     - Replace string concatenation with `+` to use `~` (tilde) operator
+     - Fix any template compilation errors
+     - Run `npm run format:nunjucks` if needed for auto-formatting
+   - Re-run `npm run lint` to verify all issues are resolved
+   - Repeat until linting passes
+   - Do NOT mark the implementation as complete until linting shows no errors
+
+   **Common Nunjucks linting issues to fix:**
+
+   - ❌ `condition ? value1 : value2` → ✅ Use if/else blocks
+   - ❌ `string1 + string2` → ✅ Use `string1 ~ string2`
+   - ❌ `errorMessage: error ? { text: error } : null` → ✅ Use `errorMessage: { text: error } if error`
+   - ❌ Template compilation errors → ✅ Fix syntax issues
+
+   **Success Criteria for Linting**: The linting step is only complete when:
+
+   1. All JavaScript linting passes (`lint:js` exits with code 0)
+   2. All SCSS linting passes (`lint:scss` exits with code 0)
+   3. All Nunjucks linting passes (`lint:nunjucks` exits with code 0)
+   4. No errors or warnings remain in the output
+
+6. **Validation** (MANDATORY - DO NOT SKIP):
+
+   ⚠️ **REQUIRED STEP**: You MUST run the content-review command after completing step 5 (Linting). This is not optional.
+
+   **Run this command IMMEDIATELY after step 5 (Linting) is complete:**
 
    ```bash
    /content-review journey:{journey} spec-file:{changes}
    ```
 
-   **This step MUST be completed before marking any TODOs as complete.** Do not skip this validation step.
+   **This step MUST be completed after linting passes and before marking any TODOs as complete.** Do not skip this validation step.
 
    Review the validation report and fix any issues found. Repeat until all checks pass:
 
@@ -179,13 +226,15 @@ Take the instructions and parameters provided, then:
    **If validation fails:**
 
    - Fix identified issues
+   - Re-run `npm run lint` to ensure no linting issues were introduced
    - Re-run `/content-review journey:{journey} spec-file:{changes}` to verify fixes
    - Repeat until all checks pass
-   - Do NOT mark the implementation as complete until content-review shows no critical issues
+   - Do NOT mark the implementation as complete until both linting and content-review show no critical issues
 
    **Success Criteria**: The journey implementation is only complete when:
 
    1. All implementation tasks are done
-   2. `/content-review` command has been executed
-   3. Validation report shows no critical issues
-   4. All high-priority issues have been resolved
+   2. `npm run lint` passes with no errors
+   3. `/content-review` command has been executed
+   4. Validation report shows no critical issues
+   5. All high-priority issues have been resolved

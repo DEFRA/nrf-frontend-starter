@@ -1,4 +1,4 @@
-{% extends 'layouts/page.njk' %}
+{% extends "layouts/page.njk" %}
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
@@ -6,35 +6,32 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {{ govukPanel({
-        titleText: "Journey complete",
-        html: greeting
-      }) }}
+            titleText: "Journey complete",
+            html: greeting
+            }) }}
 
       <h2 class="govuk-heading-m">What happens next</h2>
 
-      <p class="govuk-body">
-        Based on your answers, we can see that:
-      </p>
+      <p class="govuk-body">Based on your answers, we can see that:</p>
 
       <ul class="govuk-list govuk-list--bullet">
-        <li>Your personalized greeting is: <strong>{{ greeting }}</strong></li>
-        <li>Your favourite colour is: <strong>{{ color | capitalize }}</strong></li>
+        <li>
+          Your personalized greeting is: <strong>{{ greeting }}</strong>
+        </li>
+        <li>
+          Your favourite colour is: <strong>{{ color | capitalize }}</strong>
+        </li>
       </ul>
 
       <p class="govuk-body">
         This demonstrates how conditional logic can be used to create different user experiences based on their choices.
       </p>
 
-      <p class="govuk-body">
-        {{ govukButton({
-          text: "Start a new journey",
-          href: "/hello-world/start"
-        }) }}
-      </p>
+      <p class="govuk-body">{{ govukButton({"text": "Start a new journey", "href": "/hello-world/start"}) }}</p>
 
       <p class="govuk-body">
         <a href="/" class="govuk-link">Return to homepage</a>
       </p>
     </div>
   </div>
-{% endblock %}
+{% endblock content %}
