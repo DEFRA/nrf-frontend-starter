@@ -1,0 +1,256 @@
+---
+description: GOV.UK Frontend component patterns and common mistakes
+globs: **/*.njk
+---
+
+# GOV.UK Frontend Components
+
+## Role in Form Journeys
+
+GOV.UK Frontend provides consistent, accessible UI components for all form journeys. Components are imported as Nunjucks macros and follow strict patterns for errors, validation, and accessibility.
+
+## Component Patterns
+
+### Importing Components
+
+```njk
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+```
+
+### Error Summary Pattern
+
+Always show error summary at top of form when errors exist:
+
+```njk
+{% if error %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: [{
+      text: error,
+      href: "#field-id"
+    }]
+  }) }}
+{% endif %}
+```
+
+### Field-Level Errors
+
+Use conditional syntax for error messages - NEVER use null:
+
+```njk
+{{ govukInput({
+  name: "fieldName",
+  errorMessage: { text: error } if error
+}) }}
+
+{# ❌ NEVER DO THIS - causes 500 errors #}
+{# errorMessage: error ? { text: error } : null #}
+```
+
+### Radio Buttons
+
+```njk
+{{ govukRadios({
+  name: "preference",
+  fieldset: {
+    legend: {
+      text: heading,
+      isPageHeading: true,
+      classes: "govuk-fieldset__legend--xl"
+    }
+  },
+  errorMessage: { text: error } if error,
+  items: [{
+    value: "option1",
+    text: "Option 1",
+    checked: selectedValue === "option1"
+  }]
+}) }}
+```
+
+### Checkboxes
+
+Checkboxes return array when multiple selected, single value when one selected. Normalize in POST controller:
+
+```javascript
+let { options } = request.payload
+if (!Array.isArray(options)) {
+  options = options ? [options] : []
+}
+```
+
+### Summary List with Change Links
+
+Summary page must pass entire ROUTES object (not string) from controller:
+
+```javascript
+// Controller
+return h.view('journey-name/summary', {
+  fieldValue: request.yar.get('field'),
+  ROUTES // Pass entire object
+})
+```
+
+```njk
+{{ govukSummaryList({
+  rows: [{
+    key: { text: "Field name" },
+    value: { text: fieldValue },
+    actions: {
+      items: [{
+        href: ROUTES.FIELD_PAGE,
+        text: "Change",
+        visuallyHiddenText: "field name"
+      }]
+    }
+  }]
+}) }}
+```
+
+### Conditional Summary Rows
+
+Only show relevant fields based on user choices:
+
+```njk
+{{ govukSummaryList({
+  rows: [
+    {
+      key: { text: "Always shown" },
+      value: { text: value }
+    },
+    {
+      key: { text: "Conditional field" },
+      value: { text: conditionalValue }
+    } if condition === "value"
+  ]
+}) }}
+```
+
+### Back Link
+
+Every page except start must have a back link:
+
+```njk
+{% block beforeContent %}
+  {{ govukBackLink({
+    href: backLink
+  }) }}
+{% endblock %}
+```
+
+Controller calculates back link (may be conditional):
+
+```javascript
+const backLink = userChoice === 'optionA' ? ROUTES.PAGE_A : ROUTES.PAGE_B
+return h.view('journey-name/page', { backLink })
+```
+
+### File Upload
+
+```njk
+{{ govukFileUpload({
+  id: "uploadFile",
+  name: "uploadFile",
+  label: {
+    text: "Upload a file"
+  },
+  errorMessage: { text: error } if error
+}) }}
+```
+
+## Common Mistakes
+
+### Using null in Conditional Properties (500 Error)
+
+❌ **Never use null or ternary with null:**
+
+```njk
+{{ govukInput({
+  errorMessage: error ? { text: error } : null
+}) }}
+```
+
+✅ **Use if expression instead:**
+
+```njk
+{{ govukInput({
+  errorMessage: { text: error } if error
+}) }}
+```
+
+This applies to all conditional properties: `errorMessage`, `value`, `hint`, etc.
+
+### Missing Error Summary
+
+Always show error summary when errors exist. Missing summary creates poor UX.
+
+### Incorrect Form Structure
+
+Forms must use:
+
+- `method="post" novalidate"` (never GET for submissions)
+- Proper form tags surrounding fields
+- Submit button (not link) inside form
+
+### Wrong Change Link Format
+
+❌ Passing route as string:
+
+```javascript
+return h.view('summary', { changeLink: '/journey/page' })
+```
+
+✅ Passing entire ROUTES object:
+
+```javascript
+return h.view('summary', { ROUTES })
+```
+
+```njk
+{{ govukSummaryList({
+  rows: [{
+    actions: {
+      items: [{
+        href: ROUTES.PAGE // Use from ROUTES object
+      }]
+    }
+  }]
+}) }}
+```
+
+### Missing visuallyHiddenText on Change Links
+
+Change links must include `visuallyHiddenText` for accessibility:
+
+```njk
+{
+  href: ROUTES.FIELD_PAGE,
+  text: "Change",
+  visuallyHiddenText: "field name" // Required!
+}
+```
+
+## Known Issues
+
+### Null Values in Macros Cause 500 Errors
+
+**Problem**: Using `null` in conditional macro parameters causes template rendering to crash with 500 Internal Server Error.
+
+**Root Cause**: Nunjucks doesn't handle `null` values in macro parameters properly.
+
+**Solution**: Use if expression syntax instead of ternary with null:
+
+```njk
+errorMessage: { text: error } if error
+```
+
+**Reference**: See [nunjucks.mdc](mdc:.cursor/rules/nunjucks.mdc) for template syntax patterns.
+
+## Examples
+
+See [src/server/forms/hello-world/views/](mdc:src/server/forms/hello-world/views/) for complete working examples.

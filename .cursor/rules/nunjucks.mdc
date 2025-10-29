@@ -1,0 +1,342 @@
+---
+description: Nunjucks template syntax, macros, and common pitfalls
+globs: **/*.njk
+---
+
+# Nunjucks Templates
+
+## Role in Form Journeys
+
+Nunjucks is the template engine that renders all form pages. Templates use GOV.UK Frontend macros and follow strict patterns for paths, conditionals, and error handling.
+
+## Template Path Format (CRITICAL)
+
+**Always use journey name prefix in template paths:**
+
+```javascript
+// ✅ Correct
+return h.view('journey-name/start', { ... })
+return h.view('hello-world/preference', { ... })
+
+// ❌ Wrong - causes 500 errors
+return h.view('start', { ... })
+return h.view('preference', { ... })
+```
+
+Template paths must match: `{journey-name}/{template-name}` where:
+
+- `journey-name` matches directory in `src/server/forms/`
+- `template-name` matches `.njk` filename (without extension)
+
+**Critical**: Wrong template paths cause 500 Internal Server Error. See [src/server/forms/hello-world/controller.js](mdc:src/server/forms/hello-world/controller.js) for correct examples.
+
+## Template Structure
+
+### Extending Base Layout
+
+All pages extend the base layout:
+
+```njk
+{% extends 'layouts/page.njk' %}
+```
+
+### Importing Macros
+
+Import GOV.UK components:
+
+```njk
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+```
+
+### Block Structure
+
+```njk
+{% block beforeContent %}
+  {{ govukBackLink({ href: backLink }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <!-- Page content -->
+    </div>
+  </div>
+{% endblock %}
+```
+
+## Conditional Syntax
+
+### Use if Expressions (Not Ternary)
+
+❌ **Never use ternary with null:**
+
+```njk
+{{ govukInput({
+  errorMessage: error ? { text: error } : null
+}) }}
+```
+
+✅ **Use if expression:**
+
+```njk
+{{ govukInput({
+  errorMessage: { text: error } if error
+}) }}
+```
+
+This syntax works for any conditional property:
+
+- `errorMessage: { text: error } if error`
+- `value: email if email`
+- `hint: { text: hint } if hint`
+
+### Conditional Rows in Summary Lists
+
+Show rows conditionally:
+
+```njk
+{{ govukSummaryList({
+  rows: [
+    {
+      key: { text: "Always shown" },
+      value: { text: value }
+    },
+    {
+      key: { text: "Conditional" },
+      value: { text: conditionalValue }
+    } if condition === "value"
+  ]
+}) }}
+```
+
+### Conditional Blocks
+
+Use if blocks for larger sections:
+
+```njk
+{% if error %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: [{ text: error, href: "#field" }]
+  }) }}
+{% endif %}
+```
+
+## Variable Access
+
+Access data passed from controller:
+
+```njk
+<h1>{{ heading }}</h1>
+<p>{{ fieldValue }}</p>
+```
+
+Access session data (if passed):
+
+```njk
+<p>{{ request.yar.get('field') }}</p>
+```
+
+Use filters:
+
+```njk
+{{ value | capitalize }}
+{{ value | lower }}
+```
+
+## Common Mistakes
+
+### Wrong Template Paths (500 Errors)
+
+**Problem**: Using incorrect template paths causes 500 Internal Server Error.
+
+❌ **Wrong:**
+
+```javascript
+return h.view('start', { ... })
+return h.view('summary', { ... })
+```
+
+✅ **Correct:**
+
+```javascript
+return h.view('journey-name/start', { ... })
+return h.view('journey-name/summary', { ... })
+```
+
+**Why it fails**: Hapi can't find template files because they're in `src/server/forms/{journey}/views/` but path doesn't include journey name.
+
+### Using null in Macros (500 Errors)
+
+**Problem**: Using `null` in conditional macro parameters causes template rendering to crash.
+
+❌ **Never:**
+
+```njk
+{{ govukInput({
+  errorMessage: error ? { text: error } : null
+}) }}
+```
+
+✅ **Always:**
+
+```njk
+{{ govukInput({
+  errorMessage: { text: error } if error
+}) }}
+```
+
+**Why it fails**: Nunjucks doesn't handle `null` values in macro parameters.
+
+### Ternary Operators Instead of if Expressions
+
+Nunjucks does NOT support JavaScript-style ternary operators (`? :`). Use if expressions or move complex logic to the controller.
+
+❌ **Never use JavaScript ternary:**
+
+```njk
+{% set value = condition ? "yes" : "no" %}
+href: condition ? ROUTES.PAGE_A : ROUTES.PAGE_B
+```
+
+✅ **Use if expressions for simple conditionals:**
+
+```njk
+value: { text: error } if error
+```
+
+✅ **Move complex logic to controller (RECOMMENDED for complex conditionals):**
+
+```javascript
+// Controller
+const status = complexCondition ? 'Added' : 'Not added'
+const link = application.hasFile ? ROUTES.UPLOAD : ROUTES.MAP
+return h.view('page', { status, link })
+```
+
+```njk
+{{ govukSummaryList({
+  rows: [{
+    value: { text: status },
+    actions: { items: [{ href: link }] }
+  }]
+}) }}
+```
+
+**Pattern**: For complex conditionals involving multiple conditions or ROUTES objects, compute values in the controller and pass simple variables to the template.
+
+### Missing Journey Name Prefix
+
+Template paths without journey name prefix will fail. Always include it.
+
+### Incorrect Block Names
+
+Use correct block names:
+
+- `{% block beforeContent %}` - For back links
+- `{% block content %}` - For main page content
+
+## Form Structure in Templates
+
+Forms must use proper structure:
+
+```njk
+<form method="post" novalidate>
+  {{ govukInput({ name: "field", ... }) }}
+  {{ govukButton({ text: "Continue" }) }}
+</form>
+```
+
+- Always `method="post"` (never GET for submissions)
+- Include `novalidate` attribute
+- Submit button inside form (not link)
+
+## Passing Data to Templates
+
+Controllers pass data as second argument to `h.view()`:
+
+```javascript
+return h.view('journey-name/page', {
+  pageTitle: 'Title',
+  heading: 'Heading',
+  error,
+  ROUTES // Pass entire object, not individual routes
+})
+```
+
+Templates access via variable names: `{{ heading }}`, `{{ ROUTES.PAGE }}`.
+
+## Common Mistakes
+
+### Error Summary href Must Match Actual Field
+
+When displaying error summaries for conditional forms (where different fields are shown based on user selections), the `href` in the error summary must dynamically match the actual field being displayed:
+
+❌ **Hardcoded href that doesn't match conditional field:**
+
+```njk
+{% if error %}
+  {{ govukErrorSummary({
+    errorList: [{
+      text: error,
+      href: "#hotelCount"  // Wrong if HMO or Residential institution selected
+    }]
+  }) }}
+{% endif %}
+```
+
+✅ **Dynamic href based on conditional field:**
+
+```njk
+{% if error %}
+  {% set errorField = "hotelCount" if "Hotel" in selectedBuildingTypes else ("hmoCount" if "House of multiple occupation (HMO)" in selectedBuildingTypes else "residentialInstitutionCount") %}
+  {{ govukErrorSummary({
+    errorList: [{
+      text: error,
+      href: "#" + errorField
+    }]
+  }) }}
+{% endif %}
+```
+
+**Pattern**: For conditional forms where different input fields are shown based on user selections, use Nunjucks conditional logic to set the correct field name for the error summary href.
+
+## Known Issues
+
+### Template Rendering Error (500) with Incorrect Template Paths
+
+**Problem**: Using incorrect template paths in `h.view()` calls causes 500 Internal Server Error.
+
+**Root Cause**: Templates are located in `src/server/forms/{journey}/views/` but path doesn't include journey name prefix.
+
+**Solution**: Always use `{journey-name}/{template-name}` format:
+
+```javascript
+return h.view('journey-name/start', { ... })
+```
+
+**Example**: See [src/server/forms/hello-world/controller.js](mdc:src/server/forms/hello-world/controller.js) line 8 for correct template path:
+
+```javascript
+return h.view('forms/hello-world/views/start', { ... })
+```
+
+### Template Rendering Error (500) with Conditional Properties
+
+**Problem**: Using ternary operators or `null` in Nunjucks macro parameters causes 500 Internal Server Error.
+
+**Root Cause**: Nunjucks doesn't handle `null` values in macro parameters properly.
+
+**Solution**: Use if expression syntax:
+
+```njk
+errorMessage: { text: error } if error
+```
+
+**Example**: See [src/server/forms/hello-world/views/name.njk](mdc:src/server/forms/hello-world/views/name.njk) line 41-43 for correct conditional error message pattern.
+
+## Examples
+
+See [src/server/forms/hello-world/views/](mdc:src/server/forms/hello-world/views/) for complete working examples of all patterns.

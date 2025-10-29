@@ -325,7 +325,25 @@ Check all 7 required patterns from `docs/README.md`:
 ✅ ROUTES object passed to summary template
 ✅ All fields have change links
 ✅ visuallyHiddenText present
+✅ Change links include `?from=summary` query parameter
+✅ POST controllers check for `from=summary` and return to SUMMARY after updates
+✅ Conditional logic allows intermediate pages when required (e.g., changing building type may require room count entry)
+❌ POST controllers missing return-to-summary logic
+❌ Change links missing `?from=summary` parameter
 ```
+
+**Change Link Return Flow Check:**
+
+- Verify all POST controllers check `request.payload.from === 'summary'` or `request.query.from === 'summary'`
+- When `cameFromSummary` is true, redirect to `ROUTES.SUMMARY` unless conditional branching requires intermediate pages
+- Intermediate pages must also preserve `from=summary` in redirects (e.g., `ROUTES.ROOM_COUNT + '?from=summary'`)
+- GET controllers should check `request.query.from === 'summary'` and set conditional back links
+
+**Form State Persistence Check:**
+
+- GET controllers accessed via change links should pass existing values to templates (e.g., `email: applicant.email`, `residentialBuildingCount: application.residentialBuildingCount`)
+- Forms should include hidden field `<input type="hidden" name="from" value="summary">` when `cameFromSummary` is true
+- Existing values should be pre-filled in form fields when editing
 
 **Pattern 3: Session Management**
 

@@ -1,0 +1,388 @@
+---
+alwaysApply: true
+---
+
+# Creating and Updating Form Journeys
+
+## Overview
+
+Form journeys are user-facing multi-step forms built with Hapi.js, Nunjucks, and GOV.UK Frontend. Each journey is a self-contained Hapi plugin located in `src/server/forms/{journey-name}/`.
+
+## Journey Structure
+
+Every journey requires these files:
+
+```
+src/server/forms/{journey-name}/
+├── index.js          # Plugin registration and route setup
+├── routes.js         # Route path constants (ROUTES object)
+├── controller.js     # GET and POST request handlers
+├── controller.test.js # Controller tests
+└── views/            # Nunjucks templates (.njk files)
+    ├── start.njk
+    ├── page1.njk
+    └── summary.njk
+```
+
+Reference: [src/server/forms/hello-world/](mdc:src/server/forms/hello-world/) for complete working example.
+
+## Required Implementation Patterns
+
+These 7 patterns are MANDATORY for all journeys:
+
+### 1. Back Links
+
+Every page except start must have a back link. Controller passes `backLink` to template.
+
+### 2. Change Links on Summary
+
+Summary page must allow changing answers. Controller passes `ROUTES` object (not string) to template.
+
+**IMPORTANT - Change Link Return Flow**: When a user clicks "Change" on the summary page, makes a change, and presses "Continue", they must be returned to the summary page (not the next page in the normal flow) unless conditional logic requires them to visit additional pages first.
+
+Example: If user changes building type from "Dwellinghouse" to "Hotel", and Hotel requires room count entry, they should:
+
+1. Change building type → Building Type page
+2. Select Hotel → submit → Room Count page (because Hotel requires room count)
+3. Enter room count → submit → Summary page (return, not continue to Email)
+
+The POST controller logic should redirect back to SUMMARY after successful updates unless conditional branching requires intermediate pages:
+
+```javascript
+export const postPageController = {
+  handler(request, h) {
+    // ... validation and save data ...
+
+    // Check if user came from summary (via change link)
+    const cameFromSummary = request.state.referrer === ROUTES.SUMMARY
+
+    if (cameFromSummary) {
+      // If conditional logic requires additional pages, go there
+      if (needsAdditionalPage) {
+        return h.redirect(ROUTES.ADDITIONAL_PAGE)
+      }
+      // Otherwise return to summary
+      return h.redirect(ROUTES.SUMMARY)
+    }
+
+    // Normal flow continues
+    return h.redirect(ROUTES.NEXT_PAGE)
+  }
+}
+```
+
+### 3. Session Management
+
+Use `request.yar.set()` in POST controllers, `request.yar.get()` in GET controllers, `request.yar.reset()` on confirmation.
+
+### 4. Error Handling
+
+POST controllers flash errors and redirect. GET controllers retrieve flash errors. Templates show error summary and field-level errors.
+
+### 5. Form Submission
+
+Forms use `method="post" novalidate"`. POST controllers validate, save data, redirect to next page.
+
+### 6. Guard Redirects
+
+Summary and confirmation pages check for required session data and redirect to start if missing.
+
+### 7. Conditional Summary Rows
+
+Summary shows only relevant fields based on user choices using conditional rows.
+
+See [session-management.mdc](mdc:.cursor/rules/session-management.mdc), [govuk-frontend.mdc](mdc:.cursor/rules/govuk-frontend.mdc), [nunjucks.mdc](mdc:.cursor/rules/nunjucks.mdc) for detailed patterns.
+
+## Registration Steps
+
+1. Create journey directory under `src/server/forms/{journey-name}/`
+2. Create `routes.js` with `BASE_PATH` and `ROUTES` object
+3. Create `controller.js` with GET and POST handlers
+4. Create `index.js` to export Hapi plugin and register routes
+5. Create `views/` directory with Nunjucks templates
+6. Register plugin in `src/server/router.js`: `await server.register([journeyName])`
+7. Add journey link to `src/server/home/index.njk` (optional, for navigation)
+
+## Development Workflow
+
+### Incremental Development
+
+Break tasks into small chunks that can be tested, so you can quickly get feedback and pinpoint bugs/regressions.
+
+### Read Dev Logs
+
+Check logs from the dev server (`npm run dev`) to diagnose issues. Errors will show in console.
+
+### Reference Examples
+
+If unsure about patterns, refer to:
+
+- [src/server/forms/hello-world/](mdc:src/server/forms/hello-world/) - Complete working example journey
+- Other rule files for specific patterns ([govuk-frontend.mdc](mdc:.cursor/rules/govuk-frontend.mdc), [hapi.mdc](mdc:.cursor/rules/hapi.mdc), [nunjucks.mdc](mdc:.cursor/rules/nunjucks.mdc), [session-management.mdc](mdc:.cursor/rules/session-management.mdc))
+
+### Ask When Uncertain
+
+Ask the developer/user if unsure about requirements or if something is taking longer than expected.
+
+### Document Mistakes
+
+When issues or mistakes are identified during workflow, document them in the relevant rule file(s) under "Common Mistakes" or "Known Issues" sections to prevent recurrence.
+
+### File Upload Pages (Rapid Prototyping)
+
+For rapid prototyping, file upload pages can bypass validation to allow quick testing:
+
+- **Controller**: Accept empty submissions and store placeholder values
+- **Template**: Remove `enctype="multipart/form-data"` attribute to avoid 415 errors without multipart parsing plugin
+
+Example controller pattern:
+
+```javascript
+export const postUploadController = {
+  handler(request, h) {
+    const application = request.yar.get('application') || {}
+    application.uploadedFile =
+      request.payload.uploadedFile || 'uploaded-file-placeholder'
+    request.yar.set('application', application)
+    return h.redirect(ROUTES.NEXT_PAGE)
+  }
+}
+```
+
+Example template (no enctype):
+
+```njk
+<form method="post" novalidate>
+  {{ govukFileUpload({ ... }) }}
+  {{ govukButton({ text: "Continue" }) }}
+</form>
+```
+
+This allows the journey to continue without configuring file upload handling.
+
+## Common Structural Mistakes
+
+### Wrong Template Paths (Causes 500 Errors)
+
+❌ `return h.view('start', { ... })`
+✅ `return h.view('journey-name/start', { ... })`
+
+Always use `{journey-name}/{template-name}` format. See [nunjucks.mdc](mdc:.cursor/rules/nunjucks.mdc).
+
+### Missing POST Routes
+
+Every form needs both GET (display) and POST (submit) routes registered in `index.js`.
+
+### Plugin Not Registered
+
+Journey plugin must be registered in [src/server/router.js](mdc:src/server/router.js) or routes won't work.
+
+### Missing ROUTES Object on Summary
+
+Summary template needs entire `ROUTES` object passed from controller, not individual route strings.
+
+### Missing Guard Redirects
+
+Summary and confirmation pages must check session data and redirect to start if missing.
+
+### File Upload Forms Causing 415 Errors
+
+❌ **Using multipart form data without plugin:**
+
+```njk
+<form method="post" novalidate enctype="multipart/form-data">
+```
+
+✅ **For rapid prototyping, remove enctype:**
+
+```njk
+<form method="post" novalidate>
+```
+
+Hapi.js requires a plugin (like `@hapi/inert` or multipart parser) to handle `enctype="multipart/form-data"`. For rapid prototyping, remove the enctype attribute and accept placeholder values in the controller.
+
+### Nested Session Data Access
+
+❌ **Reading from wrong location:**
+
+```javascript
+hotelCount: application.hotelCount
+hmoCount: application.hmoCount
+```
+
+✅ **Access nested objects correctly:**
+
+```javascript
+const roomCounts = application.roomCounts || {}
+hotelCount: roomCounts.hotelCount
+hmoCount: roomCounts.hmoCount
+```
+
+**Pattern**: When storing related data, group in nested objects (e.g., `roomCounts`, `roomDetails`) and access via the nested path in both GET controllers (for displaying) and POST controllers (for saving).
+
+### Conditional Back Links Based on User Selections
+
+Back links may need to be conditional based on previous user choices:
+
+❌ **Hardcoded back link:**
+
+```javascript
+backLink: ROUTES.UPLOAD_REDLINE
+```
+
+✅ **Conditional back link based on user journey:**
+
+```javascript
+const backLink = application.hasRedlineBoundaryFile
+  ? ROUTES.UPLOAD_REDLINE
+  : application.redlineBoundaryPolygon
+    ? ROUTES.MAP
+    : ROUTES.REDLINE_MAP
+```
+
+**Pattern**: Calculate back links dynamically based on session data to reflect the actual path the user took through the journey.
+
+### Exit Pages Need Back Links
+
+Exit pages (no-edp, non-residential, etc.) must have back links to allow users to return:
+
+❌ **Exit page without back link:**
+
+```javascript
+export const exitPageController = {
+  handler(_request, h) {
+    return h.view('journey-name/exit', { heading: 'Exit' })
+  }
+}
+```
+
+✅ **Exit page with conditional back link:**
+
+```javascript
+export const exitPageController = {
+  handler(request, h) {
+    const application = request.yar.get('application') || {}
+    const backLink = application.previousPage || ROUTES.START
+
+    return h.view('journey-name/exit', {
+      heading: 'Exit',
+      backLink
+    })
+  }
+}
+```
+
+**Pattern**: All pages except start must have back links, including exit/conditional pages.
+
+### Email Content Pages Must Use Session Data
+
+Email content pages should retrieve data from session, not use placeholder objects:
+
+❌ **Using placeholder data:**
+
+```javascript
+export const emailContentController = {
+  handler(_request, h) {
+    return h.view('journey-name/email-content', {
+      data: { estimateReference: 'PLACEHOLDER' }
+    })
+  }
+}
+```
+
+✅ **Retrieve from session:**
+
+```javascript
+export const emailContentController = {
+  handler(request, h) {
+    const application = request.yar.get('application') || {}
+    const applicant = request.yar.get('applicant') || {}
+
+    return h.view('journey-name/email-content', {
+      data: {
+        estimateReference: application.estimateReference,
+        email: applicant.email
+        // ... other session data
+      }
+    })
+  }
+}
+```
+
+**Pattern**: Email content and similar display pages should retrieve actual session data, not use hardcoded placeholders.
+
+### Missing Journey Links on Home Page
+
+Every new journey should have a link added to the home page table in `src/server/home/index.njk`:
+
+```njk
+<tr class="govuk-table__row">
+  <td class="govuk-table__cell">
+    <a href="/journey-name/start" class="govuk-link">Journey Name</a>
+  </td>
+  <td class="govuk-table__cell">
+    Journey description here.
+  </td>
+</tr>
+```
+
+Add after the existing journey rows in the table body.
+
+## Validation Checklist
+
+Before completing a journey:
+
+**Setup**
+
+- [ ] Plugin registered in `src/server/router.js`
+- [ ] Journey link added to home page (if needed)
+
+**Navigation**
+
+- [ ] All pages have back links (except start)
+- [ ] Back links point to correct previous page
+- [ ] Summary has Change links with ROUTES object passed
+- [ ] Change links return users to summary after updating (unless conditional logic requires intermediate pages)
+- [ ] All links use ROUTES constants (not hardcoded paths)
+- [ ] Template paths use correct journey-name/template format
+- [ ] Journey link added to home page table (src/server/home/index.njk)
+
+**Forms & Validation**
+
+- [ ] Forms use `method="post" novalidate"`
+- [ ] POST controllers validate input
+- [ ] Errors flash and redirect back to form
+- [ ] Error summary displayed when errors present
+- [ ] Field-level errors shown on inputs
+
+**Session Management**
+
+- [ ] POST controllers save data with `request.yar.set()`
+- [ ] GET controllers retrieve data with `request.yar.get()`
+- [ ] Summary retrieves all data from session
+- [ ] Confirmation clears session with `request.yar.reset()`
+- [ ] Summary/confirmation have guard redirects
+
+**Content Accuracy**
+
+- [ ] All page titles match specification exactly
+- [ ] All form labels match specification exactly
+- [ ] All error messages match specification word-for-word
+- [ ] All button text matches specification exactly
+- [ ] Dynamic content uses actual session data (not static values)
+- [ ] Email content pages retrieve data from session (not placeholders)
+- [ ] Nested session data accessed correctly (e.g., `application.roomCounts.hotelCount`)
+- [ ] Back links are conditional based on user's journey path (when applicable)
+- [ ] Exit pages have back links to allow users to return
+
+## Related Rules (REQUIRED READING)
+
+**IMPORTANT**: Before implementing or modifying form journeys, you MUST read and understand these related rule files. They contain critical patterns and common mistakes that will prevent errors:
+
+- **[govuk-frontend.mdc](mdc:.cursor/rules/govuk-frontend.mdc)** - Component patterns, error handling, summary lists, conditional rows
+- **[hapi.mdc](mdc:.cursor/rules/hapi.mdc)** - Routing, plugins, request handling, route registration
+- **[nunjucks.mdc](mdc:.cursor/rules/nunjucks.mdc)** - Template syntax, conditional expressions, variable scoping, template paths (CRITICAL for avoiding 500 errors)
+- **[session-management.mdc](mdc:.cursor/rules/session-management.mdc)** - Session data storage, flash messages, guard redirects
+- **[redis.mdc](mdc:.cursor/rules/redis.mdc)** - Session storage backend configuration
+
+**When working on form journeys**: Reference these files frequently, especially when creating new templates, adding conditional logic, building summary pages, handling form submissions, or working with session data.

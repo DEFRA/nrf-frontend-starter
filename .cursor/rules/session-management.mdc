@@ -1,0 +1,314 @@
+---
+description: Yar session management, flash messages, and data storage patterns
+---
+
+# Session Management
+
+## Role in Form Journeys
+
+Sessions manage user form data across multiple page requests. The `@hapi/yar` plugin provides `request.yar` methods to save, retrieve, and flash data. Sessions are backed by Redis (production) or in-memory cache (development).
+
+## Session Methods
+
+### Saving Data (POST Controllers)
+
+```javascript
+export const postPageController = {
+  handler(request, h) {
+    const { field } = request.payload
+    request.yar.set('field', field) // Save to session
+    return h.redirect(ROUTES.NEXT_PAGE)
+  }
+}
+```
+
+Store complex objects:
+
+```javascript
+request.yar.set('application', {
+  journeyType: 'estimate',
+  email: 'user@example.com'
+})
+```
+
+### Retrieving Data (GET Controllers)
+
+```javascript
+export const getPageController = {
+  handler(request, h) {
+    const field = request.yar.get('field') // Retrieve from session
+    const application = request.yar.get('application') || {}
+
+    return h.view('journey-name/page', { field, application })
+  }
+}
+```
+
+### Flash Messages (Errors)
+
+Flash messages are shown once then cleared:
+
+```javascript
+// POST controller - flash error
+if (!value) {
+  request.yar.flash('error', 'Enter a value to continue')
+  return h.redirect(ROUTES.CURRENT_PAGE)
+}
+
+// GET controller - retrieve flash
+const error = request.yar.flash('error')[0] // Returns array, get first item
+return h.view('journey-name/page', { error })
+```
+
+### Clearing Session (Confirmation)
+
+Clear all session data on journey completion:
+
+```javascript
+export const confirmationController = {
+  handler(request, h) {
+    // ... get data for display ...
+
+    request.yar.reset() // Clear all session data
+
+    return h.view('journey-name/confirmation', { ... })
+  }
+}
+```
+
+## Session Flow Pattern
+
+### Typical GET/POST Pattern
+
+```javascript
+// GET - Display form
+export const getPageController = {
+  handler(request, h) {
+    const error = request.yar.flash('error')[0]
+    const savedValue = request.yar.get('field') // Pre-fill if exists
+
+    return h.view('journey-name/page', {
+      error,
+      field: savedValue,
+      backLink: ROUTES.PREVIOUS_PAGE
+    })
+  }
+}
+
+// POST - Process form
+export const postPageController = {
+  handler(request, h) {
+    const { field } = request.payload
+
+    // Validate
+    if (!field) {
+      request.yar.flash('error', 'Enter a value to continue')
+      return h.redirect(ROUTES.CURRENT_PAGE)
+    }
+
+    // Save
+    request.yar.set('field', field)
+
+    // Redirect
+    return h.redirect(ROUTES.NEXT_PAGE)
+  }
+}
+```
+
+## Guard Redirects
+
+Summary and confirmation pages should check for required data and redirect if missing:
+
+```javascript
+export const summaryController = {
+  handler(request, h) {
+    const requiredData = request.yar.get('requiredField')
+
+    if (!requiredData) {
+      return h.redirect(ROUTES.START) // Guard redirect
+    }
+
+    // Display summary...
+  }
+}
+```
+
+## Conditional Data Retrieval
+
+Handle conditional fields:
+
+```javascript
+export const summaryController = {
+  handler(request, h) {
+    const buildingTypes = request.yar.get('buildingTypes') || []
+    const residentialCount = request.yar.get('residentialBuildingCount')
+    const hotelCount = request.yar.get('hotelCount')
+
+    return h.view('journey-name/summary', {
+      buildingTypes,
+      residentialCount: buildingTypes.includes('Dwellinghouse')
+        ? residentialCount
+        : null,
+      hotelCount: buildingTypes.includes('Hotel') ? hotelCount : null,
+      ROUTES
+    })
+  }
+}
+```
+
+## Common Mistakes
+
+### Not Clearing Session on Confirmation
+
+❌ **Sessions persist after completion:**
+
+```javascript
+export const confirmationController = {
+  handler(request, h) {
+    return h.view('confirmation', { ... })
+    // Missing request.yar.reset()
+  }
+}
+```
+
+✅ **Always clear on confirmation:**
+
+```javascript
+export const confirmationController = {
+  handler(request, h) {
+    const data = request.yar.get('data')
+    request.yar.reset() // Clear session
+    return h.view('confirmation', { data })
+  }
+}
+```
+
+### Missing Guard Redirects
+
+Summary and confirmation pages must validate session data exists before rendering.
+
+### Incorrect Flash Usage
+
+Flash returns an array:
+
+```javascript
+// ✅ Correct
+const error = request.yar.flash('error')[0]
+
+// ❌ Wrong
+const error = request.yar.flash('error') // This is an array!
+```
+
+### Not Pre-filling Forms
+
+GET controllers should pre-fill forms with saved data:
+
+```javascript
+const savedEmail = request.yar.get('email')
+return h.view('page', { email: savedEmail })
+```
+
+### Accessing Flash Multiple Times
+
+Flash messages clear after first access:
+
+```javascript
+// ❌ Wrong - second access will be empty
+const error1 = request.yar.flash('error')[0]
+const error2 = request.yar.flash('error')[0] // Empty!
+
+// ✅ Correct - save once
+const error = request.yar.flash('error')[0]
+```
+
+## Normalizing Checkbox Arrays
+
+Checkboxes return array when multiple selected, single value when one selected:
+
+```javascript
+export const postBuildingTypeController = {
+  handler(request, h) {
+    let { buildingTypes } = request.payload
+
+    // Normalize to array
+    if (!Array.isArray(buildingTypes)) {
+      buildingTypes = buildingTypes ? [buildingTypes] : []
+    }
+
+    if (buildingTypes.length === 0) {
+      request.yar.flash('error', 'Select a building type to continue')
+      return h.redirect(ROUTES.BUILDING_TYPE)
+    }
+
+    request.yar.set('buildingTypes', buildingTypes)
+    return h.redirect(ROUTES.NEXT_PAGE)
+  }
+}
+```
+
+## Session Data Structure
+
+Store related data in objects for easier management:
+
+```javascript
+// ✅ Organized structure
+request.yar.set('application', {
+  journeyType: 'estimate',
+  email: 'user@example.com',
+  buildingTypes: ['Dwellinghouse', 'Hotel']
+})
+
+// ❌ Flat structure (harder to manage)
+request.yar.set('journeyType', 'estimate')
+request.yar.set('email', 'user@example.com')
+request.yar.set('buildingTypes', ['Dwellinghouse', 'Hotel'])
+```
+
+## Known Issues
+
+### Sessions Persisting After Confirmation
+
+**Problem**: User data remains in session after journey completion, causing data leakage between sessions.
+
+**Root Cause**: Not calling `request.yar.reset()` on confirmation page.
+
+**Solution**: Always clear session on confirmation:
+
+```javascript
+request.yar.reset()
+```
+
+### Missing Guard Redirects Cause Errors
+
+**Problem**: Summary/confirmation pages error when accessing missing session data.
+
+**Root Cause**: Not checking if required data exists before rendering.
+
+**Solution**: Add guard redirects:
+
+```javascript
+const requiredData = request.yar.get('requiredField')
+if (!requiredData) {
+  return h.redirect(ROUTES.START)
+}
+```
+
+### Flash Messages Not Displaying
+
+**Problem**: Error messages don't appear on form pages.
+
+**Root Cause**: Flash returns array, accessing wrong or not accessing in GET controller.
+
+**Solution**:
+
+```javascript
+// POST - flash error
+request.yar.flash('error', 'Error message')
+
+// GET - retrieve flash
+const error = request.yar.flash('error')[0]
+```
+
+## Examples
+
+See [src/server/forms/hello-world/controller.js](mdc:src/server/forms/hello-world/controller.js) for complete session management examples.

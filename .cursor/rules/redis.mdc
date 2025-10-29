@@ -1,0 +1,83 @@
+---
+description: Redis session caching role and configuration
+---
+
+# Redis Session Caching
+
+## Role in Form Journeys
+
+Redis (or in-memory cache for local development) provides the backend storage for user sessions. The `@hapi/yar` plugin uses this cache to persist form data across requests.
+
+## How Sessions Work
+
+Sessions are managed by the `@hapi/yar` plugin, which uses the configured cache backend:
+
+- **Production**: Redis via `@hapi/catbox-redis`
+- **Local Development**: In-memory cache via `@hapi/catbox-memory`
+
+Form controllers don't interact with Redis directly - they use `request.yar` which abstracts the storage layer.
+
+## Configuration
+
+Cache engine is selected automatically based on environment:
+
+```javascript
+// src/server/common/helpers/session-cache/cache-engine.js
+if (engine === 'redis') {
+  return new CatboxRedis({ client: redisClient })
+}
+return new CatboxMemory() // Local development
+```
+
+Session configuration in [src/config/config.js](mdc:src/config/config.js):
+
+- `session.cache.engine`: 'redis' or 'memory'
+- `session.cache.ttl`: Time-to-live (default: 4 hours)
+- `session.cookie.ttl`: Cookie expiration
+
+## Redis Setup
+
+For production, Redis is configured with:
+
+- Single instance or cluster mode
+- TLS support if required
+- Authentication (username/password)
+
+Reference: [src/server/common/helpers/redis-client.js](mdc:src/server/common/helpers/redis-client.js)
+
+## Common Issues
+
+### Session Not Persisting
+
+If sessions aren't persisting:
+
+1. Check Redis connection (check logs for connection errors)
+2. Verify cache engine configuration
+3. Check session TTL settings
+
+### Session Cache Errors
+
+Errors typically appear in server logs:
+
+- "Redis connection error" → Redis connectivity issue
+- "Catbox Memory is for local development only" → Using memory cache in production
+
+## For Form Development
+
+As a form developer, you don't need to configure Redis. Just use `request.yar` methods:
+
+- `request.yar.set(key, value)` - Save data
+- `request.yar.get(key)` - Retrieve data
+- `request.yar.flash(key, value)` - Flash message
+- `request.yar.reset()` - Clear session
+
+The storage backend (Redis or memory) is transparent to form code.
+
+## Debugging Sessions
+
+If session issues occur:
+
+1. Check dev server logs (`npm run dev`)
+2. Verify Redis connection (if in production-like environment)
+3. Check session TTL - data may have expired
+4. Verify session cookie settings (secure flag, domain)

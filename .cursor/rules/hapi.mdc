@@ -1,0 +1,252 @@
+---
+description: Hapi.js routing, plugins, and request handling patterns
+globs: **/forms/**/*.js
+---
+
+# Hapi.js Patterns
+
+## Role in Form Journeys
+
+Hapi.js is the server framework that handles routing, request processing, and plugin architecture. Each form journey is a self-contained Hapi plugin that registers routes for GET (display pages) and POST (form submissions).
+
+## Plugin Structure
+
+Every journey is a Hapi plugin exported from `index.js`:
+
+```javascript
+import { ROUTES } from './routes.js'
+import { getPageController, postPageController } from './controller.js'
+
+export const journeyName = {
+  plugin: {
+    name: 'journey-name',
+    register(server) {
+      server.route([
+        {
+          method: 'GET',
+          path: ROUTES.PAGE,
+          ...getPageController
+        },
+        {
+          method: 'POST',
+          path: ROUTES.PAGE,
+          ...postPageController
+        }
+      ])
+    }
+  }
+}
+```
+
+Reference: [src/server/forms/hello-world/index.js](mdc:src/server/forms/hello-world/index.js)
+
+## Plugin Registration
+
+All journey plugins must be registered in the main router:
+
+```javascript
+// src/server/router.js
+import { journeyName } from './forms/journey-name/index.js'
+
+export const router = {
+  plugin: {
+    name: 'router',
+    async register(server) {
+      await server.register([journeyName]) // Register journey plugin
+    }
+  }
+}
+```
+
+Reference: [src/server/router.js](mdc:src/server/router.js)
+
+## Route Handlers
+
+### GET Handlers (Display Pages)
+
+```javascript
+export const getPageController = {
+  handler(request, h) {
+    const error = request.yar.flash('error')[0]
+    const data = request.yar.get('field')
+
+    return h.view('journey-name/page', {
+      pageTitle: 'Page Title',
+      heading: 'Page Title',
+      error,
+      data,
+      backLink: ROUTES.PREVIOUS_PAGE
+    })
+  }
+}
+```
+
+### POST Handlers (Form Submissions)
+
+```javascript
+export const postPageController = {
+  handler(request, h) {
+    const { field } = request.payload
+
+    if (!field) {
+      request.yar.flash('error', 'Enter a value to continue')
+      return h.redirect(ROUTES.CURRENT_PAGE)
+    }
+
+    request.yar.set('field', field)
+    return h.redirect(ROUTES.NEXT_PAGE)
+  }
+}
+```
+
+### Conditional Routing
+
+Handle different paths based on user choices:
+
+```javascript
+export const postChoiceController = {
+  handler(request, h) {
+    const { choice } = request.payload
+    request.yar.set('choice', choice)
+
+    if (choice === 'optionA') {
+      return h.redirect(ROUTES.PAGE_A)
+    } else {
+      return h.redirect(ROUTES.PAGE_B)
+    }
+  }
+}
+```
+
+## Request/Response Lifecycle
+
+1. **Request arrives** → Matched to route by method and path
+2. **Handler executes** → Controller function runs
+3. **Session access** → `request.yar` available (session data)
+4. **Response** → `h.view()` for templates or `h.redirect()` for navigation
+
+## Route Path Constants
+
+Define all routes in `routes.js`:
+
+```javascript
+const BASE_PATH = '/journey-name'
+
+export const ROUTES = {
+  START: `${BASE_PATH}/start`,
+  PAGE: `${BASE_PATH}/page`,
+  SUMMARY: `${BASE_PATH}/summary`,
+  CONFIRMATION: `${BASE_PATH}/confirmation`
+}
+```
+
+Always use ROUTES constants, never hardcode paths.
+
+## Common Mistakes
+
+### Missing POST Routes
+
+❌ **Only registering GET route:**
+
+```javascript
+{
+  method: 'GET',
+  path: ROUTES.PAGE,
+  ...getPageController
+}
+// Missing POST route!
+```
+
+✅ **Register both GET and POST:**
+
+```javascript
+{
+  method: 'GET',
+  path: ROUTES.PAGE,
+  ...getPageController
+},
+{
+  method: 'POST',
+  path: ROUTES.PAGE,
+  ...postPageController
+}
+```
+
+### Plugin Not Registered
+
+Journey plugin must be imported and registered in `src/server/router.js` or routes won't work.
+
+### Incorrect Route Configuration
+
+Routes must use spread operator for controller handlers:
+
+```javascript
+// ✅ Correct
+{
+  method: 'GET',
+  path: ROUTES.PAGE,
+  ...getPageController
+}
+
+// ❌ Wrong
+{
+  method: 'GET',
+  path: ROUTES.PAGE,
+  handler: getPageController.handler // Missing other controller properties
+}
+```
+
+### Hardcoded Paths
+
+❌ Using hardcoded paths instead of ROUTES constants:
+
+```javascript
+return h.redirect('/journey-name/page')
+```
+
+✅ Use ROUTES constants:
+
+```javascript
+return h.redirect(ROUTES.PAGE)
+```
+
+## Known Issues
+
+### Missing POST Route Causes Form Submit Failures
+
+**Problem**: Form submits but no action occurs, often shows 404 or no route error.
+
+**Root Cause**: Only GET route registered, POST route missing from plugin registration.
+
+**Solution**: Every form page needs both GET and POST routes:
+
+```javascript
+server.route([
+  { method: 'GET', path: ROUTES.PAGE, ...getPageController },
+  { method: 'POST', path: ROUTES.PAGE, ...postPageController }
+])
+```
+
+### Plugin Not Registered
+
+**Problem**: Routes defined but return 404 errors when accessed.
+
+**Root Cause**: Plugin not imported/registered in `src/server/router.js`.
+
+**Solution**: Import and register plugin in router:
+
+```javascript
+import { journeyName } from './forms/journey-name/index.js'
+await server.register([journeyName])
+```
+
+## Server Setup
+
+The server is configured in [src/server/server.js](mdc:src/server/server.js) with:
+
+- Session cache (Redis in production, memory in development)
+- Nunjucks template engine
+- Security plugins
+- Request logging
+
+Journeys don't need to configure these - they're set up globally.
