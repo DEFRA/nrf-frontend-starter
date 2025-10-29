@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { checkProblematicPatterns } from './validate-nunjucks.js'
+import {
+  checkProblematicPatterns,
+  checkUnsafeNestedPropertyAccess
+} from './validate-nunjucks.js'
 import { fileURLToPath } from 'node:url'
 import path from 'path'
 
@@ -44,91 +47,77 @@ describe('validate-nunjucks - Pattern Detection', () => {
   describe('Unsafe Nested Property Access', () => {
     it('should detect unsafe nested property access in template output', () => {
       const content = '{{ application.roomCounts.hmoCount }}'
-      const errors = checkProblematicPatterns(testFilePath, content)
+      const errors = checkUnsafeNestedPropertyAccess(testFilePath, content)
       expect(errors.length).toBeGreaterThan(0)
       expect(errors[0].message).toContain('Unsafe nested property access')
     })
 
     it('should detect unsafe nested property in macro parameter', () => {
       const content = 'value: application.roomCounts.hotelCount'
-      const errors = checkProblematicPatterns(testFilePath, content)
+      const errors = checkUnsafeNestedPropertyAccess(testFilePath, content)
       expect(errors.length).toBeGreaterThan(0)
       expect(errors[0].message).toContain('Unsafe nested property access')
+    })
+
+    it('should detect unsafe nested property when using checkProblematicPatterns', () => {
+      // This test verifies that validateTemplate (which calls both functions) works
+      // We test this separately since nested access is now in its own function
+      const content = '{{ application.roomCounts.hmoCount }}'
+      const nestedErrors = checkUnsafeNestedPropertyAccess(
+        testFilePath,
+        content
+      )
+      const patternErrors = checkProblematicPatterns(testFilePath, content)
+      const allErrors = [...nestedErrors, ...patternErrors]
+      expect(allErrors.length).toBeGreaterThan(0)
     })
 
     it('should NOT flag when parent is checked with "and"', () => {
       const content =
         '(application.roomCounts and application.roomCounts.hmoCount) | default("")'
-      const errors = checkProblematicPatterns(testFilePath, content)
-      const nestedErrors = errors.filter((e) =>
-        e.message.includes('Unsafe nested property access')
-      )
-      expect(nestedErrors.length).toBe(0)
+      const errors = checkUnsafeNestedPropertyAccess(testFilePath, content)
+      expect(errors.length).toBe(0)
     })
 
     it('should NOT flag when inside {% if %} block checking parent', () => {
       const content = `{% if application.roomCounts %}
   {{ application.roomCounts.hotelCount }}
 {% endif %}`
-      const errors = checkProblematicPatterns(testFilePath, content)
-      const nestedErrors = errors.filter((e) =>
-        e.message.includes('Unsafe nested property access')
-      )
-      // Note: The validator attempts to detect {% if parent %} blocks,
-      // but the pattern matching may not always catch nested accesses
-      // inside conditional blocks. This is a known limitation.
-      // In practice, this pattern IS safe, but the validator may flag it.
-      // The test verifies the validator runs without errors.
-      expect(nestedErrors.length).toBeLessThanOrEqual(1)
+      const errors = checkUnsafeNestedPropertyAccess(testFilePath, content)
+      // This pattern IS safe because parent is checked in {% if %} block
+      expect(errors.length).toBe(0)
     })
 
     it('should NOT flag when in conditional expression checking parent', () => {
       const content =
         '{{ data.roomCounts.hotelCount if data.roomCounts else "" }}'
-      const errors = checkProblematicPatterns(testFilePath, content)
-      const nestedErrors = errors.filter((e) =>
-        e.message.includes('Unsafe nested property access')
-      )
-      // Note: This is currently flagged due to pattern limitations.
-      // The validator may improve to handle this case in the future.
-      // For now, we verify it detects the pattern (even if it's a false positive).
-      expect(nestedErrors.length).toBeGreaterThanOrEqual(0)
+      const errors = checkUnsafeNestedPropertyAccess(testFilePath, content)
+      // This pattern IS safe because parent is checked with "if"
+      expect(errors.length).toBe(0)
     })
 
     it('should NOT flag URLs (https://)', () => {
       const content = 'href: "https://www.gov.uk/"'
-      const errors = checkProblematicPatterns(testFilePath, content)
-      const nestedErrors = errors.filter((e) =>
-        e.message.includes('Unsafe nested property access')
-      )
-      expect(nestedErrors.length).toBe(0)
+      const errors = checkUnsafeNestedPropertyAccess(testFilePath, content)
+      expect(errors.length).toBe(0)
     })
 
     it('should NOT flag mailto links', () => {
       const content = 'href: "mailto:test@example.com"'
-      const errors = checkProblematicPatterns(testFilePath, content)
-      const nestedErrors = errors.filter((e) =>
-        e.message.includes('Unsafe nested property access')
-      )
-      expect(nestedErrors.length).toBe(0)
+      const errors = checkUnsafeNestedPropertyAccess(testFilePath, content)
+      expect(errors.length).toBe(0)
     })
 
     it('should NOT flag nested properties in quoted strings', () => {
       const content = 'text: "Visit https://example.com for more info"'
-      const errors = checkProblematicPatterns(testFilePath, content)
-      const nestedErrors = errors.filter((e) =>
-        e.message.includes('Unsafe nested property access')
-      )
-      expect(nestedErrors.length).toBe(0)
+      const errors = checkUnsafeNestedPropertyAccess(testFilePath, content)
+      expect(errors.length).toBe(0)
     })
 
     it('should NOT flag href attributes with URLs', () => {
       const content = 'href: "https://www.gov.uk/help"'
-      const errors = checkProblematicPatterns(testFilePath, content)
-      const nestedErrors = errors.filter((e) =>
-        e.message.includes('Unsafe nested property access')
-      )
-      expect(nestedErrors.length).toBe(0)
+      const errors = checkUnsafeNestedPropertyAccess(testFilePath, content)
+      expect(errors.length).toBe(0)
     })
   })
 
@@ -203,8 +192,13 @@ describe('validate-nunjucks - Pattern Detection', () => {
 value: application.data.count
 items: items | join(", ")
 error: null`
-      const errors = checkProblematicPatterns(testFilePath, content)
-      expect(errors.length).toBeGreaterThanOrEqual(4)
+      const nestedErrors = checkUnsafeNestedPropertyAccess(
+        testFilePath,
+        content
+      )
+      const patternErrors = checkProblematicPatterns(testFilePath, content)
+      const allErrors = [...nestedErrors, ...patternErrors]
+      expect(allErrors.length).toBeGreaterThanOrEqual(4)
     })
 
     it('should not duplicate errors for same line', () => {
@@ -257,8 +251,13 @@ error: null`
     }
   ]
 }) }}`
-      const errors = checkProblematicPatterns(testFilePath, content)
-      expect(errors.length).toBeGreaterThanOrEqual(3)
+      const nestedErrors = checkUnsafeNestedPropertyAccess(
+        testFilePath,
+        content
+      )
+      const patternErrors = checkProblematicPatterns(testFilePath, content)
+      const allErrors = [...nestedErrors, ...patternErrors]
+      expect(allErrors.length).toBeGreaterThanOrEqual(3)
     })
 
     it('should handle template with conditional blocks correctly', () => {
@@ -283,11 +282,12 @@ error: null`
 {% if application.roomCounts %}
   Safe access: {{ application.roomCounts.hmoCount }}
 {% endif %}`
-      const errors = checkProblematicPatterns(testFilePath, content)
-      const unsafeErrors = errors.filter((e) =>
-        e.message.includes('Unsafe nested property')
-      )
-      expect(unsafeErrors.length).toBeGreaterThan(0)
+      const errors = checkUnsafeNestedPropertyAccess(testFilePath, content)
+      // First line (line 1) is unsafe (no check), second line is safe (inside {% if %})
+      // The function should detect the unsafe one on line 1
+      expect(errors.length).toBeGreaterThan(0)
+      // Verify the unsafe one is flagged
+      expect(errors.some((e) => e.line === 1)).toBe(true)
     })
   })
 
@@ -318,11 +318,64 @@ error: null`
 Line 2: text: condition ? "Yes" : "No"
 Line 3: more content
 Line 4: value: application.data.count`
-      const errors = checkProblematicPatterns(testFilePath, content)
-      const line2Errors = errors.filter((e) => e.line === 2)
-      const line4Errors = errors.filter((e) => e.line === 4)
+      const nestedErrors = checkUnsafeNestedPropertyAccess(
+        testFilePath,
+        content
+      )
+      const patternErrors = checkProblematicPatterns(testFilePath, content)
+      const allErrors = [...nestedErrors, ...patternErrors]
+      const line2Errors = allErrors.filter((e) => e.line === 2)
+      const line4Errors = allErrors.filter((e) => e.line === 4)
       expect(line2Errors.length).toBeGreaterThan(0)
       expect(line4Errors.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('Array Push() Method', () => {
+    it('should detect .push() method call', () => {
+      const content =
+        '{% set summaryRows = summaryRows.push({key: {text: "Test"}}) %}'
+      const errors = checkProblematicPatterns(testFilePath, content)
+      expect(errors.length).toBeGreaterThan(0)
+      expect(errors.some((e) => e.message.includes('Array push()'))).toBe(true)
+    })
+
+    it('should detect comma operator with push() pattern', () => {
+      const content =
+        '{% set summaryRows = (summaryRows.push({key: {text: "Test"}}), summaryRows) %}'
+      const errors = checkProblematicPatterns(testFilePath, content)
+      const pushErrors = errors.filter((e) =>
+        e.message.includes('Comma operator with push()')
+      )
+      expect(pushErrors.length).toBeGreaterThan(0)
+    })
+
+    it('should detect push() in set statement', () => {
+      const content = '{% set rows = rows.push(item) %}'
+      const errors = checkProblematicPatterns(testFilePath, content)
+      const pushErrors = errors.filter((e) =>
+        e.message.includes('Array push()')
+      )
+      expect(pushErrors.length).toBeGreaterThan(0)
+    })
+
+    it('should detect push() pattern from summary page issue', () => {
+      const content = `{% set summaryRows = [] %}
+{% set summaryRows = (summaryRows.push({key: {text: "Red line boundary"}, value: {text: "Added"}, actions: {items: [{href: ROUTES.UPLOAD_REDLINE ~ "?from=summary", text: "Change"}]}}), summaryRows) %}`
+      const errors = checkProblematicPatterns(testFilePath, content)
+      const pushErrors = errors.filter(
+        (e) =>
+          e.message.includes('Array push()') ||
+          e.message.includes('Comma operator with push()')
+      )
+      expect(pushErrors.length).toBeGreaterThan(0)
+    })
+
+    it('should NOT flag push in comments', () => {
+      const content = '{# Using .push() here would be wrong #}'
+      const errors = checkProblematicPatterns(testFilePath, content)
+      const pushErrors = errors.filter((e) => e.message.includes('push()'))
+      expect(pushErrors.length).toBe(0)
     })
   })
 
@@ -333,14 +386,9 @@ Line 4: value: application.data.count`
     {{ data.roomCounts.hotelCount }} rooms
   {% endif %}
 {% endif %}`
-      const errors = checkProblematicPatterns(testFilePath, content)
-      const unsafeErrors = errors.filter((e) =>
-        e.message.includes('Unsafe nested property')
-      )
-      // Note: Nested {% if %} blocks may still trigger warnings.
-      // The validator primarily checks for the parent check pattern,
-      // but complex nested conditionals may need manual review.
-      expect(unsafeErrors.length).toBeLessThanOrEqual(1)
+      const errors = checkUnsafeNestedPropertyAccess(testFilePath, content)
+      // This is safe because parent is checked in outer {% if %}
+      expect(errors.length).toBe(0)
     })
 
     it('should not flag query strings in URLs', () => {
